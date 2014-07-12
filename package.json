@@ -1,0 +1,28 @@
+{
+  "name": "jscodeshift",
+  "version": "0.0.1",
+  "description": "An AST based code modding tool for JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "codemodding",
+    "recast"
+  ],
+  "author": "Felix Kling",
+  "license": "BSD",
+  "dependencies": {
+    "ast-types": "^0.4.2",
+    "esprima-fb": "^4001.1001.0-dev-harmony-fb",
+    "lodash": "^2.4.1",
+    "recast": "^0.6.3"
+  },
+  "devDependencies": {
+    "jest-cli": "^0.1.17",
+    "jstransform": "^6.0.0"
+  },
+  "jest": {
+    "scriptPreprocessor": "jest/transform.js"
+  }
+}
