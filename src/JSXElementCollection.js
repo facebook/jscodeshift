@@ -74,23 +74,49 @@ class JSXElementCollection extends Collection {
   static filterByHasChildren(name) {
     return function filter(path) {
       return XJSElement.check(path.value) &&
-        path.value.children.some(function(child) {
-          return XJSElement.check(child) &&
-            child.openingElement.name.name === name;
-        });
+        path.value.children.some(
+          child => XJSElement.check(child) &&
+                   child.openingElement.name.name === name
+        );
     };
   }
 
-  reorderChildElementNodes(mapping) {
-    if (!mapping) return this;
-    this.__paths.forEach(function(path) {
-      var children = path.value.children;
-      for (var from in mapping) {
-
+  /**
+   * Returns all child nodes, including literals and expressions.
+   *
+   * @return {Collection}
+   */
+  childNodes() {
+    var paths = [];
+    this.forEach(function(path) {
+      var children = path.get('children');
+      var l = children.value.length;
+      for (var i = 0; i < l; i++) {
+        paths.push(children.get(i));
       }
     });
-    return this;
+    return Collection.create(paths, this);
   }
+
+  /**
+   * Returns all child nodes, including literals and expressions.
+   *
+   * @return {Collection}
+   */
+  children() {
+    var paths = [];
+    this.forEach(function(path) {
+      var children = path.get('children');
+      var l = children.value.length;
+      for (var i = 0; i < l; i++) {
+        if (types.XJSElement.check(children.value[i])) {
+          paths.push(children.get(i));
+        }
+      }
+    });
+    return Collection.create(paths, this);
+  }
+
 }
 
 JSXElementCollection.type = types.XJSElement;

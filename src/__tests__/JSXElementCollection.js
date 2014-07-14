@@ -23,12 +23,12 @@ describe('JSXCollection API', function() {
     ].join('\n'), {esprima: esprima}).program.body;
   });
 
-  describe('selection', function() {
+  describe('Traversal', function() {
 
     it('returns a non empty JSXCollection', function() {
       var jsx = Collection.create(ast).find(types.XJSElement);
       expect(jsx instanceof JSXElementCollection).toBe(true);
-      expect(jsx.size() > 0).toBe(true);
+      expect(jsx.size()).toBeGreaterThan(0);
     });
 
     it('lets us find JSXElements by name conveniently', function() {
@@ -51,16 +51,62 @@ describe('JSXCollection API', function() {
       expect(jsx.size()).toBe(2);
     });
 
+    it('returns the child nodes of an JSXElement', function() {
+      var childElement = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Bar'), [], true)
+      );
+      var literal = b.literal('\n  ');
+      var ast = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Foo')),
+        b.xjsClosingElement(b.xjsIdentifier('Foo')),
+        [literal, childElement, literal, childElement, b.literal('\n')]
+      );
+
+      var children = Collection.create(ast).childNodes();
+      expect(children.size()).toBe(5);
+      expect(children instanceof Collection).toBe(true);
+    });
+
+    it('returns the child JSXElements of an JSXElement', function() {
+      var childElement = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Bar'), [], true)
+      );
+      var literal = b.literal('\n  ');
+      var ast = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Foo')),
+        b.xjsClosingElement(b.xjsIdentifier('Foo')),
+        [literal, childElement, literal, childElement, b.literal('\n')]
+      );
+
+      var children = Collection.create(ast).children();
+
+      expect(children.size()).toBe(2);
+      expect(children instanceof JSXElementCollection).toBe(true);
+    });
+
   });
 
-  describe('reorder child nodes', function() {
+  describe('Mutation', function() {
 
-    xit('reorders element nodes', function() {
-      var jsx = core(ast)
-        .findJSXElements('FooBar')
-        .reorderChildElementNodes({0: 2, 2: 0});
-      expect(ast[0].children[1].openingElement.attributes[0].value).toBe("3");
-      expect(ast[0].children[5].openingElement.attributes[0].value).toBe("1");
+    it('handles insertions before children correctly', function() {
+      var childElement = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Bar'), [], true)
+      );
+      var newChildElement = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Baz'), [], true)
+      );
+      var literal = b.literal('\n  ');
+      var ast = b.xjsElement(
+        b.xjsOpeningElement(b.xjsIdentifier('Foo')),
+        b.xjsClosingElement(b.xjsIdentifier('Foo')),
+        [literal, childElement, literal, childElement, b.literal('\n')]
+      );
+
+      var children = Collection.create(ast)
+        .children().get(1).insertBefore(newChildElement);
+
+      expect(ast.children.length).toBe(6);
+      expect(ast.children[3]).toBe(newChildElement);
     });
 
   });
