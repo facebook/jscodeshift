@@ -99,11 +99,11 @@ class JSXElementCollection extends Collection {
   }
 
   /**
-   * Returns all child nodes, including literals and expressions.
+   * Returns all children that are XJSElements.
    *
-   * @return {Collection}
+   * @return {JSXElementCollection}
    */
-  children() {
+  childElements() {
     var paths = [];
     this.forEach(function(path) {
       var children = path.get('children');

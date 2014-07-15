@@ -17,7 +17,9 @@ describe('JSXCollection API', function() {
     ast = recast.parse([
       '<FooBar foo="bar" bar="foo">',
       '  <Child id="1" />',
-      '  <Child id="2" foo="bar"><Child /></Child>',
+      '  <Child id="2" foo="bar">',
+      '     <Child />',
+      '  </Child>',
       '  <Child id="3" foo="baz"/>',
       '</FooBar>'
     ].join('\n'), {esprima: esprima}).program.body;
@@ -78,7 +80,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      var children = Collection.create(ast).children();
+      var children = Collection.create(ast).childElements();
 
       expect(children.size()).toBe(2);
       expect(children instanceof JSXElementCollection).toBe(true);
@@ -103,7 +105,7 @@ describe('JSXCollection API', function() {
       );
 
       var children = Collection.create(ast)
-        .children().get(1).insertBefore(newChildElement);
+        .childElements().get(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);
       expect(ast.children[3]).toBe(newChildElement);
