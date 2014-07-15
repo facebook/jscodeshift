@@ -11,10 +11,10 @@ var types = recast.types.namedTypes;
 var b = recast.types.builders;
 
 describe('JSXCollection API', function() {
-  var ast;
+  var nodes;
 
   beforeEach(function() {
-    ast = recast.parse([
+    nodes = [recast.parse([
       '<FooBar foo="bar" bar="foo">',
       '  <Child id="1" />',
       '  <Child id="2" foo="bar">',
@@ -22,32 +22,32 @@ describe('JSXCollection API', function() {
       '  </Child>',
       '  <Child id="3" foo="baz"/>',
       '</FooBar>'
-    ].join('\n'), {esprima: esprima}).program.body;
+    ].join('\n'), {esprima: esprima}).program];
   });
 
   describe('Traversal', function() {
 
     it('returns a non empty JSXCollection', function() {
-      var jsx = Collection.create(ast).find(types.XJSElement);
+      var jsx = Collection.fromNodes(nodes).find(types.XJSElement);
       expect(jsx instanceof JSXElementCollection).toBe(true);
       expect(jsx.size()).toBeGreaterThan(0);
     });
 
     it('lets us find JSXElements by name conveniently', function() {
-      var jsx = core(ast).findJSXElements('Child');
+      var jsx = core(nodes).findJSXElements('Child');
 
       expect(jsx.size()).toBe(4);
     });
 
     it('filters elements by attribute', function() {
-      var jsx = core(ast)
+      var jsx = core(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filterByAttributes({foo: "bar"}));
       expect(jsx.size()).toBe(2);
     });
 
     it('filters elements by children', function() {
-      var jsx = core(ast)
+      var jsx = core(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filterByHasChildren('Child'));
       expect(jsx.size()).toBe(2);
@@ -64,7 +64,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      var children = Collection.create(ast).childNodes();
+      var children = Collection.fromNodes([ast]).childNodes();
       expect(children.size()).toBe(5);
       expect(children instanceof Collection).toBe(true);
     });
@@ -80,7 +80,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      var children = Collection.create(ast).childElements();
+      var children = Collection.fromNodes([ast]).childElements();
 
       expect(children.size()).toBe(2);
       expect(children instanceof JSXElementCollection).toBe(true);
@@ -104,7 +104,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      var children = Collection.create(ast)
+      var children = Collection.fromNodes([ast])
         .childElements().get(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);

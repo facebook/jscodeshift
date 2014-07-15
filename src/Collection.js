@@ -2,10 +2,11 @@
 
 var TypedCollections = require('./TypedCollections');
 var assert = require('assert');
-var at = require('ast-types');
-var NodePath = at.NodePath;
+var recast = require('recast');
+var types = recast.types;
+var NodePath = types.NodePath;
+var Node = types.namedTypes.Node;
 
-var types = at.namedTypes;
 var hasOwn =
   Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 
@@ -46,11 +47,7 @@ function functionify(value) {
 class Collection {
 
   /**
-   * Creates a new collection. Always use this method to create a new
-   * collection.
-   *
-   * It either accepts a single node or path, or a list of nodes or paths, and
-   * will convert it to a list of paths.
+   * Creates a new collection from an array of node paths.
    *
    * If type is passed, it will create a typed collection if such a collection
    * exists. The nodes or path values must be of the same type.
@@ -59,32 +56,24 @@ class Collection {
    * element has the same type, a typed collection is created (if it exists),
    * otherwise, a generic collection will be created.
    *
-   * @param {Array|Node|Path} paths An array of AST nodes/paths or a single
-   *                                node/path
+   * @param {Array} paths An array of paths
    * @param {Collection} parent A parent collection
    * @param {Type} type An AST type
    * @return {Collection}
    */
-  static create(node, parent, type) {
-    var collection;
-    var paths;
-
-    if (node instanceof NodePath) {
-      paths = [node];
-    } else if (types.Node.check(node)) {
-      paths = [new NodePath(node)];
-    } else { // assume array
-      var nodes = node;
-      var isNodeArray = types.Node.check(nodes[0]);
-      if (isNodeArray) {
-        paths = nodes.map(n => new NodePath(n));
-      } else {
-        paths = nodes;
-      }
+  static fromPaths(paths, parent, type) {
+    if (paths.length === 0) {
+      return new Collection(paths, parent, type);
     }
+    assert.ok(
+      paths.every(n => n instanceof NodePath),
+      'Every element in the array is a NodePath'
+    );
 
-    if (!type && types.Node.check(paths[0].value)) {
-      var nodeType = types[paths[0].value.type];
+    var collection;
+
+    if (!type && Node.check(paths[0].value)) {
+      var nodeType = types.namedTypes[paths[0].value.type];
       var sameType = paths.length === 1 ||
         paths.every(path => nodeType.check(path.value));
 
@@ -100,6 +89,29 @@ class Collection {
       collection = new Collection(paths, parent);
     }
     return collection;
+  }
+
+  /**
+   * Creates a new collection from an array of nodes. This is a convenience
+   * method which converts the nodes to node paths first and calls
+   *
+   *    Collections.fromPaths(paths, parent, type)
+   *
+   * @param {Array} nodes An array of AST nodes
+   * @param {Collection} parent A parent collection
+   * @param {Type} type An AST type
+   * @return {Collection}
+   */
+  static fromNodes(nodes, parent, type) {
+    assert.ok(
+      nodes.every(n => Node.check(n)),
+      'Every element in the array is a Node'
+    );
+    return Collection.fromPaths(
+      nodes.map(n => new NodePath(n)),
+      parent,
+      type
+    );
   }
 
   /**
@@ -144,7 +156,7 @@ class Collection {
           return visit.call(this, path);
         }
       };
-      at.visit(p, visitor);
+      recast.visit(p, visitor);
     }, this);
 
     return TypedCollections.create(type, paths, this) ||
@@ -188,7 +200,7 @@ class Collection {
 
     return this.forEach(function(path, i) {
       var newNode = replacement.call(path, path, i);
-      assert(types.Node.check(newNode), 'Replacement function returns a node');
+      assert(Node.check(newNode), 'Replacement function returns a node');
       path.replace(newNode);
     });
   }
@@ -204,7 +216,7 @@ class Collection {
 
     return this.forEach(function(path, i) {
       var node = insert.call(path, path, i);
-      assert(types.Node.check(node), 'Insert function returns a node');
+      assert(Node.check(node), 'Insert function returns a node');
       path.insertBefore(node);
     });
   }
@@ -234,7 +246,7 @@ class Collection {
    * @return {Collection}
    */
   get(index) {
-    return Collection.create(this.__paths[index], this);
+    return Collection.fromPaths(this.__paths.slice(index, index+1), this);
   }
 }
 

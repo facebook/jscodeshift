@@ -1,10 +1,10 @@
 "use strict";
 
 var Collection = require('./Collection');
-var at = require('ast-types');
+var recast = require('recast');
 var _ = require('lodash');
 
-var types = at.namedTypes;
+var types = recast.types.namedTypes;
 var XJSElement = types.XJSElement;
 var XJSAttribute = types.XJSAttribute;
 var XJSExpressionContainer = types.XJSExpressionContainer;
@@ -95,7 +95,7 @@ class JSXElementCollection extends Collection {
         paths.push(children.get(i));
       }
     });
-    return Collection.create(paths, this);
+    return Collection.fromPaths(paths, this);
   }
 
   /**
@@ -114,7 +114,7 @@ class JSXElementCollection extends Collection {
         }
       }
     });
-    return Collection.create(paths, this);
+    return Collection.fromPaths(paths, this);
   }
 
 }

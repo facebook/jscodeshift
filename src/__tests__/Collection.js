@@ -3,10 +3,11 @@
 jest.autoMockOff();
 
 var Collection = require('../Collection');
-var at = require('ast-types');
 var recast = require('recast');
-var types = at.namedTypes;
-var b = at.builders;
+
+var NodePath = recast.types.NodePath;
+var types = recast.types.namedTypes;
+var b = recast.types.builders;
 
 describe('Collection API', function() {
   var ast;
@@ -38,6 +39,38 @@ describe('Collection API', function() {
     ]);
   });
 
+  describe('Instation', function() {
+
+    it('should create a collection from an array of nodes', function() {
+      var nodes = [b.identifier('foo'), b.identifier('bar')];
+      expect(Collection.fromNodes(nodes) instanceof Collection).toBe(true);
+    });
+
+    it('should create a collection from an array of paths', function() {
+      var paths = [
+        new NodePath(b.identifier('foo')),
+        new NodePath(b.identifier('bar')),
+      ];
+      expect(Collection.fromPaths(paths) instanceof Collection).toBe(true);
+    });
+
+    it('accepts an empty array as input', function() {
+      var values = [];
+      expect(Collection.fromPaths(values) instanceof Collection).toBe(true);
+      expect(Collection.fromNodes(values) instanceof Collection).toBe(true);
+    });
+
+    it('throws if it is passed an array of mixed values', function() {
+      var values = [
+        new NodePath(b.identifier('foo')),
+        b.identifier('bar'),
+      ];
+      expect(_ => Collection.fromPaths(values)).toThrow();
+      expect(_ => Collection.fromNodes(values)).toThrow();
+    });
+
+  });
+
   describe('Traversal', function() {
 
     describe('find', function() {
@@ -48,18 +81,18 @@ describe('Collection API', function() {
           b.literal("asd"),
           b.identifier('bar'),
         ]);
-        var vars = Collection.create(ast).find(types.Identifier);
+        var vars = Collection.fromNodes([ast]).find(types.Identifier);
 
         expect(vars.size()).toBe(2);
       });
 
       it('doesn\'t find the nodes in the collection itself', function() {
-        var ast = [
+        var nodes = [
           b.identifier('foo'),
           b.literal("asd"),
           b.identifier('bar'),
         ];
-        var vars = Collection.create(ast).find(types.Identifier);
+        var vars = Collection.fromNodes(nodes).find(types.Identifier);
 
         expect(vars.size()).toBe(0);
       });
@@ -70,7 +103,7 @@ describe('Collection API', function() {
           b.literal("asd"),
           b.identifier('bar'),
         ]);
-        var vars = Collection.create(ast)
+        var vars = Collection.fromNodes([ast])
           .find(types.Identifier, {name: 'bar'});
 
         expect(vars.size()).toBe(1);
@@ -78,7 +111,7 @@ describe('Collection API', function() {
       });
 
       it('handles chained find calls properly', function() {
-        var vars = Collection.create(ast)
+        var vars = Collection.fromNodes([ast])
           .find(types.FunctionDeclaration)
           .find(types.VariableDeclarator, {id: {name: 'baz'}});
 
@@ -89,7 +122,7 @@ describe('Collection API', function() {
       });
 
       it('handles multi chain find calls properly', function() {
-        var functionDeclarations = Collection.create(ast)
+        var functionDeclarations = Collection.fromNodes([ast])
           .find(types.FunctionDeclaration);
 
         var bazDeclarations = functionDeclarations
@@ -115,7 +148,7 @@ describe('Collection API', function() {
         var filter = jest.genMockFunction().mockImplementation(function(path) {
           return path.value.id.name[0] === 'f';
         });
-        var fVariables = Collection.create(ast)
+        var fVariables = Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
           .filter(filter);
 
@@ -129,7 +162,7 @@ describe('Collection API', function() {
 
       it('lets you iterate over each element of an collection', function() {
         var each = jest.genMockFunction();
-        var fVariables = Collection.create(ast)
+        var fVariables = Collection.fromNodes([ast])
           .find(types.VariableDeclarator);
         var result = fVariables.forEach(each);
 
@@ -153,7 +186,7 @@ describe('Collection API', function() {
         ]);
         var newNode = b.identifier('xyz');
 
-        var S = Collection.create(ast);
+        var S = Collection.fromNodes([ast]);
         S.find(types.Identifier, {name: 'bar'})
           .replaceWith(newNode);
 
@@ -178,7 +211,7 @@ describe('Collection API', function() {
           });
 
         var newNode = b.variableDeclarator(b.identifier('xyz'), null);
-        var S = Collection.create(ast);
+        var S = Collection.fromNodes([ast]);
         S.find(types.Identifier)
          .replaceWith(replaceFunction);
 
@@ -201,7 +234,7 @@ describe('Collection API', function() {
         );
         var one = b.variableDeclarator(b.identifier('one'), null);
 
-        var S = Collection.create(ast)
+        var S = Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
           .insertBefore(one);
 
@@ -215,7 +248,7 @@ describe('Collection API', function() {
         var bar = b.identifier('bar');
         var ast = b.sequenceExpression([foo, bar]);
 
-        var S = Collection.create(ast)
+        var S = Collection.fromNodes([ast])
           .find(types.Identifier)
           .insertBefore(function() {
             return x;
