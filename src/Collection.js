@@ -104,7 +104,7 @@ class Collection {
     return this.__paths.map(p => p.value);
   }
 
-  getPaths() {
+  paths() {
     return this.__paths;
   }
 
@@ -201,7 +201,7 @@ function fromNodes(nodes, parent, type) {
  * @param {Type=} type Optional type to add the methods to
  */
 function registerMethods(methods, type) {
-  var constructor = type ? _getCollectionForType(type) : Collection;
+  var constructor = type ? _getCollectionForType(type) : _defaultCollection;
   _.assign(constructor.prototype, methods);
 }
 

@@ -4,6 +4,8 @@ var Collection = require('./Collection');
 var assert = require('assert');
 var esprima = require('esprima-fb');
 var recast = require('recast');
+var _ = require('lodash');
+
 var Node = recast.types.namedTypes.Node;
 var NodePath = recast.types.NodePath;
 
@@ -58,5 +60,10 @@ function fromSource(source) {
   return fromAST(recast.parse(source, {esprima: esprima}).program);
 }
 
+// add builders and types to the function for simple access
+_.assign(core, recast.types.namedTypes);
+_.assign(core, recast.builders);
+core.registerMethods = Collection.resigerMethods;
+core.types = recast.types;
 
 module.exports = core;
