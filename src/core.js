@@ -1,9 +1,5 @@
 "use strict";
-var TypedCollections = require('./TypedCollections');
 var Collection = require('./Collection');
-var collections = [
-  require('./JSXElementCollection'),
-];
 
 var assert = require('assert');
 var esprima = require('esprima-fb');
@@ -11,7 +7,8 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var NodePath = recast.types.NodePath;
 
-collections.forEach(TypedCollections.register);
+// Register all built-in collections
+require('./collections').forEach(c => c.register());
 
 /**
  * Main entry point to the tool. The function accepts multiple different kinds

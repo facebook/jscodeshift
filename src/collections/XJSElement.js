@@ -1,6 +1,7 @@
 "use strict";
 
-var Collection = require('./Collection');
+var Collection = require('../Collection');
+var NodeCollection = require('./Node');
 var recast = require('recast');
 var _ = require('lodash');
 
@@ -11,21 +12,18 @@ var XJSExpressionContainer = types.XJSExpressionContainer;
 var Literal = types.Literal;
 
 /**
- * Contains filter methods and mutation methods for processing JSXElements.
+ * Contains filter methods and mutation methods for processing XJSElements.
  */
-class JSXElementCollection extends Collection {
 
-  /**
-   * Extend core
-   */
-  static setup() {
-    _.extend(Collection.prototype, {
-      findJSXElements: function(name) {
-        var nameFilter = name && {openingElement: {name: {name: name}}};
-        return this.find(types.XJSElement, nameFilter);
-      }
-    });
+
+var globalMethods = {
+  findXJSElements: function(name) {
+    var nameFilter = name && {openingElement: {name: {name: name}}};
+    return this.find(XJSElement, nameFilter);
   }
+};
+
+var filterMethods = {
 
   /**
    * Filter method for attributes.
@@ -33,7 +31,7 @@ class JSXElementCollection extends Collection {
    * @param {Object} attributeFilter
    * @return {function}
    */
-  static filterByAttributes(attributeFilter) {
+  filterByAttributes: function(attributeFilter) {
     var attributeNames = Object.keys(attributeFilter);
     return function filter(path) {
       if (!XJSElement.check(path.value)) {
@@ -63,15 +61,15 @@ class JSXElementCollection extends Collection {
         }
       });
     };
-  }
+  },
 
   /**
    * Filter elements which contain a specific child type
    *
    * @param {string} name
-   * @return {function} 
+   * @return {function}
    */
-  static filterByHasChildren(name) {
+  filterByHasChildren: function(name) {
     return function filter(path) {
       return XJSElement.check(path.value) &&
         path.value.children.some(
@@ -80,13 +78,16 @@ class JSXElementCollection extends Collection {
         );
     };
   }
+};
+
+var traversalMethods = {
 
   /**
    * Returns all child nodes, including literals and expressions.
    *
    * @return {Collection}
    */
-  childNodes() {
+  childNodes: function() {
     var paths = [];
     this.forEach(function(path) {
       var children = path.get('children');
@@ -96,14 +97,14 @@ class JSXElementCollection extends Collection {
       }
     });
     return Collection.fromPaths(paths, this);
-  }
+  },
 
   /**
    * Returns all children that are XJSElements.
    *
-   * @return {JSXElementCollection}
+   * @return {XJSElementCollection}
    */
-  childElements() {
+  childElements: function() {
     var paths = [];
     this.forEach(function(path) {
       var children = path.get('children');
@@ -114,11 +115,15 @@ class JSXElementCollection extends Collection {
         }
       }
     });
-    return Collection.fromPaths(paths, this);
+    return Collection.fromPaths(paths, this, XJSElement);
   }
+};
 
+function register() {
+  NodeCollection.register();
+  Collection.registerMethods(globalMethods, types.Node);
+  Collection.registerMethods(traversalMethods, XJSElement);
 }
 
-JSXElementCollection.type = types.XJSElement;
-
-module.exports = JSXElementCollection;
+exports.register = register;
+_.assign(exports, filterMethods);
