@@ -1,7 +1,6 @@
 "use strict";
 var Collection = require('./Collection');
 
-var assert = require('assert');
 var esprima = require('esprima-fb');
 var recast = require('recast');
 var _ = require('lodash');

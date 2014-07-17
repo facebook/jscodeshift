@@ -108,6 +108,24 @@ class Collection {
     return this.__paths;
   }
 
+  getAST() {
+    if (this._parent) {
+      return this._parent.getAST();
+    }
+    return this.__paths;
+  }
+
+  toSource(options) {
+    if (this._parent) {
+      return this._parent.toSource();
+    }
+    if (this.__paths.length === 1) {
+      return recast.print(this.__paths[0], options).code;
+    } else {
+      return this.__paths.map(p => recast.print(p, options).code);
+    }
+  }
+
   /**
    * Returns a new collection containing only the element at position index.
    *

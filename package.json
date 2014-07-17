@@ -1,11 +1,14 @@
 {
-  "name": "jscodeshift",
+  "name": "jscs-cli",
   "version": "0.1.0",
   "description": "An AST based code modding tool for JS",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "prepublish": "gulp transform"
+  },
+  "bin": {
+    "jscs": "./bin/jscs.js"
   },
   "keywords": [
     "codemod",
@@ -14,9 +17,12 @@
   "author": "Felix Kling",
   "license": "BSD",
   "dependencies": {
+    "async": "^0.9.0",
+    "cli-color": "^0.3.2",
     "esprima-fb": "^4001.1001.0-dev-harmony-fb",
     "lodash": "^2.4.1",
-    "recast": "^0.6.3"
+    "recast": "^0.6.3",
+    "yargs": "^1.2.6"
   },
   "devDependencies": {
     "gulp": "^3.8.6",

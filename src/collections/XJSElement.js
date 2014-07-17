@@ -8,7 +8,6 @@ var _ = require('lodash');
 var types = recast.types.namedTypes;
 var XJSElement = types.XJSElement;
 var XJSAttribute = types.XJSAttribute;
-var XJSExpressionContainer = types.XJSExpressionContainer;
 var Literal = types.Literal;
 
 /**

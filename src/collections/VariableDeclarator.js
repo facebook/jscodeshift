@@ -55,7 +55,6 @@ var transformMethods = {
             path.get('name').replace(newName);
           }
         });
-      path.get('init', 'name').replace(newName);
     });
   }
 };
