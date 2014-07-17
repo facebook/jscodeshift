@@ -64,7 +64,7 @@ function fromSource(source) {
 
 // add builders and types to the function for simple access
 _.assign(core, recast.types.namedTypes);
-_.assign(core, recast.builders);
+_.assign(core, recast.types.builders);
 core.registerMethods = Collection.registerMethods;
 core.types = recast.types;
 
