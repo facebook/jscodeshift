@@ -67,4 +67,4 @@ function register() {
 }
 
 exports.register = register;
-_.assign(exports, filterMethods);
+exports.filters = filterMethods;

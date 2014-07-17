@@ -3,8 +3,8 @@
 var async = require('async');
 var clc = require('cli-color');
 var fs = require('fs');
-var transform = require(process.argv[2]);
 global.jscs = require('./core');
+var transform = require(process.argv[2]);
 
 function ok(msg) {
   console.log(clc.white.bgGreen(' OKK '), msg);

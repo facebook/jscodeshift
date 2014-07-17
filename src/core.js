@@ -1,6 +1,7 @@
 "use strict";
 var Collection = require('./Collection');
 
+var collections = require('./collections');
 var esprima = require('esprima-fb');
 var recast = require('recast');
 var _ = require('lodash');
@@ -9,7 +10,9 @@ var Node = recast.types.namedTypes.Node;
 var NodePath = recast.types.NodePath;
 
 // Register all built-in collections
-require('./collections').forEach(c => c.register());
+for (var name in collections) {
+  collections[name].register();
+}
 
 /**
  * Main entry point to the tool. The function accepts multiple different kinds
@@ -62,7 +65,15 @@ function fromSource(source) {
 // add builders and types to the function for simple access
 _.assign(core, recast.types.namedTypes);
 _.assign(core, recast.builders);
-core.registerMethods = Collection.resigerMethods;
+core.registerMethods = Collection.registerMethods;
 core.types = recast.types;
+
+// add filters to function
+core.filters = {};
+for (var name in collections) {
+  if (collections[name].filters) {
+    core.filters[name] = collections[name].filters;
+  }
+}
 
 module.exports = core;

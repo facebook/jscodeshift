@@ -1,5 +1,5 @@
-module.exports = [
-  require('./Node'),
-  require('./XJSElement'),
-  require('./VariableDeclarator'),
-];
+module.exports = {
+  Node: require('./Node'),
+  XJSElement: require('./XJSElement'),
+  VariableDeclarator: require('./VariableDeclarator'),
+};

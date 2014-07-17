@@ -3,7 +3,6 @@
 var Collection = require('../Collection');
 var NodeCollection = require('./Node');
 var recast = require('recast');
-var _ = require('lodash');
 
 var types = recast.types.namedTypes;
 var XJSElement = types.XJSElement;
@@ -125,4 +124,4 @@ function register() {
 }
 
 exports.register = register;
-_.assign(exports, filterMethods);
+exports.filters = filterMethods;
