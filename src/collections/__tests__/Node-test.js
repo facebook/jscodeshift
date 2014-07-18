@@ -2,20 +2,26 @@
 
 jest.autoMockOff();
 
-var Collection = require('../../Collection');
-var NodeCollection = require('../Node');
-var recast = require('recast');
-
-var NodePath = recast.types.NodePath;
-var types = recast.types.namedTypes;
-var b = recast.types.builders;
-
-NodeCollection.register();
-
 describe('Collection API', function() {
   var ast;
+  var Collection;
+  var NodeCollection;
+  var recast;
+  var NodePath;
+  var types;
+  var b;
 
   beforeEach(function() {
+    Collection = require('../../Collection');
+    NodeCollection = require('../Node');
+    recast = require('recast');
+
+    NodePath = recast.types.NodePath;
+    types = recast.types.namedTypes;
+    b = recast.types.builders;
+
+    NodeCollection.register();
+
     ast = b.program([
       b.variableDeclaration(
         'var',
@@ -39,9 +45,7 @@ describe('Collection API', function() {
   });
 
   describe('Traversal', function() {
-
     describe('find', function() {
-
       it('finds nodes by type', function() {
         var ast = b.sequenceExpression([
           b.identifier('foo'),
@@ -103,15 +107,22 @@ describe('Collection API', function() {
         expect(baz.size()).toBe(1);
         expect(baz.nodes()[0]).toBe(functionBody[1].declarations[0]);
       });
-
     });
 
+    it('gets the closest scope', function() {
+      var program = ast;
+      var functionDeclaration = ast.body[1];
+      var scopes = Collection.fromNodes([ast])
+        .find(types.Identifier)
+        .closestScope();
+
+      expect(scopes.nodes()[0]).toBe(ast);
+      expect(scopes.nodes()[1]).toBe(functionDeclaration);
+    });
   });
 
   describe('Mutation', function() {
-
     describe('replaceWith', function() {
-
       it('handles simple AST node replacement', function() {
         var ast = b.sequenceExpression([
           b.identifier('foo'),
@@ -156,11 +167,9 @@ describe('Collection API', function() {
         // baz1 is properly replaced
         expect(S.nodes()[0].expressions[2]).toEqual(b.identifier('bar1'));
       });
-
     });
 
     describe('insertBefore', function() {
-
       it('inserts a new node before the current one', function() {
         var ast = b.variableDeclaration(
           'var',
@@ -193,9 +202,6 @@ describe('Collection API', function() {
         expect(ast.expressions[0]).toBe(x);
         expect(ast.expressions[2]).toBe(x);
       });
-
     });
-
   });
-
 });

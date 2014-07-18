@@ -75,6 +75,23 @@ var methods = {
   },
 
   /**
+   * Returns a collection containing the paths that create the scope of the
+   * currently selected paths. Dedupes the paths.
+   *
+   * @return {Collection}
+   */
+  closestScope: function() {
+    var scopes = [];
+    this.forEach(function(path) {
+      var scope = path.scope;
+      if (scopes.indexOf(scope.path) === -1) {
+        scopes.push(scope.path);
+      }
+    });
+    return Collection.fromPaths(scopes);
+  },
+
+  /**
    * Simply replaces the selected nodes with the provided node. If a function
    * is provided it is executed for every node and the node is replaced with the
    * functions return value.
