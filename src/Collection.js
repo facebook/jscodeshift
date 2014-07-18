@@ -132,9 +132,19 @@ class Collection {
    * @param {number} index
    * @return {Collection}
    */
-  get(index) {
+  at(index) {
     return fromPaths(this.__paths.slice(index, index+1), this);
   }
+
+  /**
+   * Proxies to NodePath#get of the first path.
+   *
+   * @param {string|number} ...fields
+   */
+   get() {
+     var path = this.__paths[0];
+      return path.get.apply(path, arguments);
+   }
 }
 
 

@@ -101,7 +101,7 @@ describe('XJSCollection API', function() {
       );
 
       var children = Collection.fromNodes([ast])
-        .childElements().get(1).insertBefore(newChildElement);
+        .childElements().at(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);
       expect(ast.children[3]).toBe(newChildElement);
