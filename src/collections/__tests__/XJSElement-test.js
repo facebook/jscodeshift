@@ -73,14 +73,14 @@ describe('XJSCollection API', function() {
     it('filters elements by attribute', function() {
       var jsx = Collection.fromNodes(nodes)
         .findXJSElements()
-        .filter(XJSElementCollection.filterByAttributes({foo: "bar"}));
+        .filter(XJSElementCollection.filters.filterByAttributes({foo: "bar"}));
       expect(jsx.size()).toBe(2);
     });
 
     it('filters elements by children', function() {
       var jsx = Collection.fromNodes(nodes)
         .findXJSElements()
-        .filter(XJSElementCollection.filterByHasChildren('Child'));
+        .filter(XJSElementCollection.filters.filterByHasChildren('Child'));
       expect(jsx.size()).toBe(2);
     });
   });
