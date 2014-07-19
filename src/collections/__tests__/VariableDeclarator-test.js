@@ -50,7 +50,7 @@ describe('VariableDeclarators', function() {
       expect(declarators.size()).toBe(2);
     });
   });
-  
+
   describe('Filters', function() {
     it('finds module imports (require)', function() {
       var declarators = Collection.fromNodes(nodes)
@@ -66,6 +66,16 @@ describe('VariableDeclarators', function() {
         .filter(VariableDeclaratorCollection.filters.filterByRequire('module'));
 
       expect(declarators.size()).toBe(1);
+    });
+
+    it('accepts multiple module names', function() {
+      var declarators = Collection.fromNodes(nodes)
+        .findVariableDeclarators()
+        .filter(VariableDeclaratorCollection.filters.filterByRequire(
+          ['module', 'module2']
+        ));
+
+      expect(declarators.size()).toBe(2);
     });
   });
 

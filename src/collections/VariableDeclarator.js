@@ -2,7 +2,6 @@
 var Collection = require('../Collection');
 var NodeCollection = require('./Node');
 var recast = require('recast');
-var _ = require('lodash');
 
 var astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
 var b = recast.types.builders;
@@ -19,17 +18,22 @@ var globalMethods = {
 
 
 var filterMethods = {
-  filterByRequire: function(name) {
-    var args = name ? [b.literal(name)] : [];
-    var requireCall = b.callExpression(b.identifier('require'), args);
+  filterByRequire: function(names) {
+    if (names && !Array.isArray(names)) {
+      names = [names];
+    }
+    var requireIdentifier = b.identifier('require');
     return function(path) {
       var node = path.value;
-      if (!VariableDeclarator.check(node)) {
+      if (!VariableDeclarator.check(node) ||
+          !types.CallExpression.check(node.init) ||
+          !astNodesAreEquivalent(node.init.callee, requireIdentifier)) {
         return false;
       }
-      return name ?
-        astNodesAreEquivalent(requireCall, node.init) :
-        astNodesAreEquivalent(requireCall.callee, node.init.callee);
+      return !names ||
+        names.some(
+          n => astNodesAreEquivalent(node.init.arguments[0], b.literal(n))
+        );
     };
   }
 };
