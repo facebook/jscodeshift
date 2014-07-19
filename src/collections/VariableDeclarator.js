@@ -18,7 +18,7 @@ var globalMethods = {
 
 
 var filterMethods = {
-  filterByRequire: function(names) {
+  requiresModule: function(names) {
     if (names && !Array.isArray(names)) {
       names = [names];
     }

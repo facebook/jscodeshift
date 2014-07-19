@@ -55,7 +55,7 @@ describe('VariableDeclarators', function() {
     it('finds module imports (require)', function() {
       var declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
-        .filter(VariableDeclaratorCollection.filters.filterByRequire());
+        .filter(VariableDeclaratorCollection.filters.requiresModule());
 
       expect(declarators.size()).toBe(2);
     });
@@ -63,7 +63,7 @@ describe('VariableDeclarators', function() {
     it('finds module imports (require) by module name', function() {
       var declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
-        .filter(VariableDeclaratorCollection.filters.filterByRequire('module'));
+        .filter(VariableDeclaratorCollection.filters.requiresModule('module'));
 
       expect(declarators.size()).toBe(1);
     });
@@ -71,7 +71,7 @@ describe('VariableDeclarators', function() {
     it('accepts multiple module names', function() {
       var declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
-        .filter(VariableDeclaratorCollection.filters.filterByRequire(
+        .filter(VariableDeclaratorCollection.filters.requiresModule(
           ['module', 'module2']
         ));
 

@@ -68,11 +68,15 @@ _.assign(core, recast.types.builders);
 core.registerMethods = Collection.registerMethods;
 core.types = recast.types;
 
-// add filters to function
+// add mappings and filters to function
 core.filters = {};
+core.mappings = {};
 for (var name in collections) {
   if (collections[name].filters) {
     core.filters[name] = collections[name].filters;
+  }
+  if (collections[name].mappings) {
+    core.mappings[name] = collections[name].mappings;
   }
 }
 

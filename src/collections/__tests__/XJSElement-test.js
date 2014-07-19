@@ -2,23 +2,31 @@
 
 jest.autoMockOff();
 
-var Collection = require('../../Collection');
-var XJSElementCollection = require('../XJSElement');
 var esprima = require('esprima-fb');
-var recast = require('recast');
-var types = recast.types.namedTypes;
-var b = recast.types.builders;
-
-XJSElementCollection.register();
 
 describe('XJSCollection API', function() {
   var nodes;
+  var Collection;
+  var XJSElementCollection;
+  var recast;
+  var types;
+  var b;
 
   beforeEach(function() {
+    Collection = require('../../Collection');
+    XJSElementCollection = require('../XJSElement');
+    recast = require('recast');
+    types = recast.types.namedTypes;
+    b = recast.types.builders;
+
+    XJSElementCollection.register();
+
     nodes = [recast.parse([
+      'var FooBar = require("XYZ");',
       '<FooBar foo="bar" bar="foo">',
       '  <Child id="1" foo="bar">',
       '     <Child />',
+      '     <Baz.Bar />',
       '  </Child>',
       '  <Child id="2" foo="baz"/>',
       '</FooBar>'
@@ -26,7 +34,6 @@ describe('XJSCollection API', function() {
   });
 
   describe('Traversal', function() {
-
     it('returns a non empty XJSCollection', function() {
       var jsx = Collection.fromNodes(nodes).find(types.XJSElement);
       expect(jsx.constructor.name).toContain('XJSElementCollection');
@@ -37,6 +44,12 @@ describe('XJSCollection API', function() {
       var jsx = Collection.fromNodes(nodes).findXJSElements('Child');
 
       expect(jsx.size()).toBe(3);
+    });
+
+    it('finds XJSElements by module name', function() {
+      var jsx = Collection.fromNodes(nodes).findXJSElementsByModuleName('XYZ');
+
+      expect(jsx.size()).toBe(1);
     });
 
     it('returns the child nodes of an XJSElement', function() {
@@ -70,18 +83,39 @@ describe('XJSCollection API', function() {
   });
 
   describe('Filtering', function() {
-    it('filters elements by attribute', function() {
+    it('filters elements by attributes', function() {
       var jsx = Collection.fromNodes(nodes)
         .findXJSElements()
-        .filter(XJSElementCollection.filters.filterByAttributes({foo: "bar"}));
+        .filter(XJSElementCollection.filters.hasAttributes({foo: "bar"}));
       expect(jsx.size()).toBe(2);
+    });
+
+    it('accepts callback functions as attribute filters', function() {
+      var jsx = Collection.fromNodes(nodes)
+        .findXJSElements()
+        .filter(XJSElementCollection.filters.hasAttributes(
+            {foo: v => ['bar', 'baz'].indexOf(v) > -1}
+        ));
+      expect(jsx.size()).toBe(3);
     });
 
     it('filters elements by children', function() {
       var jsx = Collection.fromNodes(nodes)
         .findXJSElements()
-        .filter(XJSElementCollection.filters.filterByHasChildren('Child'));
+        .filter(XJSElementCollection.filters.hasChildren('Child'));
       expect(jsx.size()).toBe(2);
+    });
+  });
+
+  describe('Mappings', function() {
+    it('gets the root names of XJSElements', function() {
+      var names = Collection.fromNodes(nodes)
+        .findXJSElements()
+        .paths().map(XJSElementCollection.mappings.getRootName);
+
+      expect(names.indexOf('FooBar') > -1).toBe(true);
+      expect(names.indexOf('Child') > -1).toBe(true);
+      expect(names.indexOf('Baz') > -1).toBe(true);
     });
   });
 

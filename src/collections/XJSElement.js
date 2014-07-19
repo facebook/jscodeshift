@@ -2,7 +2,10 @@
 
 var Collection = require('../Collection');
 var NodeCollection = require('./Node');
+
+var assert = require('assert');
 var recast = require('recast');
+var requiresModule = require('./VariableDeclarator').filters.requiresModule;
 
 var types = recast.types.namedTypes;
 var XJSElement = types.XJSElement;
@@ -15,9 +18,43 @@ var Literal = types.Literal;
 
 
 var globalMethods = {
+  /**
+   * Finds all XJSElements optionally filtered by name
+   *
+   * @param {string} name
+   * @return {Collection}
+   */
   findXJSElements: function(name) {
     var nameFilter = name && {openingElement: {name: {name: name}}};
     return this.find(XJSElement, nameFilter);
+  },
+
+  /**
+   * Finds all XJSElements by module name. Given
+   *
+   *     var Bar = require('Foo');
+   *     <Bar />
+   *
+   * findXJSElementsByModuleName('Foo') will find <Bar />, without having to
+   * know the variable name.
+   */
+  findXJSElementsByModuleName: function(moduleName) {
+    assert.ok(
+      moduleName && typeof moduleName === 'string',
+      'findXJSElementsByModuleName(...) needs a name to look for'
+    );
+
+    return this.find(types.VariableDeclarator)
+      .filter(requiresModule(moduleName))
+      .map(function(path) {
+        var id = path.value.id.name;
+        if (id) {
+          return Collection.fromPaths([path])
+            .closestScope()
+            .findXJSElements(id)
+            .paths();
+        }
+      });
   }
 };
 
@@ -29,7 +66,7 @@ var filterMethods = {
    * @param {Object} attributeFilter
    * @return {function}
    */
-  filterByAttributes: function(attributeFilter) {
+  hasAttributes: function(attributeFilter) {
     var attributeNames = Object.keys(attributeFilter);
     return function filter(path) {
       if (!XJSElement.check(path.value)) {
@@ -67,7 +104,7 @@ var filterMethods = {
    * @param {string} name
    * @return {function}
    */
-  filterByHasChildren: function(name) {
+  hasChildren: function(name) {
     return function filter(path) {
       return XJSElement.check(path.value) &&
         path.value.children.some(
@@ -114,6 +151,24 @@ var traversalMethods = {
       }
     });
     return Collection.fromPaths(paths, this, XJSElement);
+  },
+};
+
+var mappingMethods = {
+  /**
+   * Given a XJSElement, returns its "root" name. E.g. it would return "Foo" for
+   * both <Foo /> and <Foo.Bar />.
+   *
+   * @param {NodePath} path
+   * @return {string}
+   */
+  getRootName: function(path) {
+    var name = path.value.openingElement.name;
+    while (types.XJSMemberExpression.check(name)) {
+      name = name.object;
+    }
+
+    return name && name.name || null;
   }
 };
 
@@ -125,3 +180,4 @@ function register() {
 
 exports.register = register;
 exports.filters = filterMethods;
+exports.mappings = mappingMethods;
