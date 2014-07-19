@@ -109,15 +109,47 @@ describe('Collection API', function() {
       });
     });
 
-    it('gets the closest scope', function() {
-      var program = ast;
-      var functionDeclaration = ast.body[1];
-      var scopes = Collection.fromNodes([ast])
-        .find(types.Identifier)
-        .closestScope();
+    describe('closestScope', function() {
+      it('gets the closest scope', function() {
+        var program = ast;
+        var functionDeclaration = ast.body[1];
+        var scopes = Collection.fromNodes([ast])
+          .find(types.Identifier)
+          .closestScope();
 
-      expect(scopes.nodes()[0]).toBe(ast);
-      expect(scopes.nodes()[1]).toBe(functionDeclaration);
+        expect(scopes.nodes()[0]).toBe(ast);
+        expect(scopes.nodes()[1]).toBe(functionDeclaration);
+      });
+    });
+
+    describe('closest', function() {
+      it('finds closest node (up the tree) of the given type', function() {
+        var functionDeclaration = ast.body[1];
+        var decl = Collection.fromNodes([ast])
+          .find(types.Identifier)
+          .closest(types.FunctionDeclaration);
+
+        expect(decl.size()).toBe(1);
+        expect(decl.nodes()[0]).toBe(functionDeclaration);
+      });
+    });
+
+    describe('getVariableDeclarators', function() {
+      it('gets the variable declarators for each selected path', function() {
+        var variableDeclarator =
+          b.variableDeclarator(b.identifier('foo'), null);
+        var program = b.program([
+          b.variableDeclaration('var', [variableDeclarator]),
+          b.expressionStatement(b.identifier('foo')),
+          b.expressionStatement(b.identifier('bar'))
+        ]);
+
+        var decl = Collection.fromNodes([program])
+          .find(types.Identifier)
+          .getVariableDeclarators(p => p.value.name);
+        expect(decl.size()).toBe(1);
+        expect(decl.nodes()[0]).toBe(variableDeclarator);
+      });
     });
   });
 

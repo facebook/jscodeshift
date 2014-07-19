@@ -8,6 +8,7 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var hasOwn =
   Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
+var types = recast.types.namedTypes;
 
 /**
  * Checks whether needle is a strict subset of haystack.
@@ -22,7 +23,9 @@ function isPartialEqual(haystack, needle) {
     if (!hasOwn(haystack, prop)) {
       return false;
     }
-    if (haystack[prop] && typeof haystack[prop] === 'object') {
+    if (haystack[prop] &&
+      typeof haystack[prop] === 'object' &&
+      typeof needle[prop] === 'object') {
       return isPartialEqual(haystack[prop], needle[prop]);
     }
     return haystack[prop] === needle[prop];
@@ -39,7 +42,7 @@ function functionify(value) {
   };
 }
 
-var methods = {
+var traversalMethods = {
 
   /**
    * Find nodes of a specific type within the nodes of this collection.
@@ -81,16 +84,56 @@ var methods = {
    * @return {Collection}
    */
   closestScope: function() {
-    var scopes = [];
-    this.forEach(function(path) {
-      var scope = path.scope;
-      if (scopes.indexOf(scope.path) === -1) {
-        scopes.push(scope.path);
-      }
-    });
-    return Collection.fromPaths(scopes);
+    return this.map(path => path.scope && path.scope.path);
   },
 
+  /**
+   * Traverse the AST up and finds the closest node of the provided type.
+   *
+   * @param {Collection}
+   */
+  closest: function(type) {
+    return this.map(function(path) {
+      var parent = path.parent;
+      while (parent && !type.check(parent.value)) {
+        parent = parent.parent;
+      }
+      return parent || null;
+    });
+  },
+
+  /**
+   * Finds the declaration for each selected path. Useful for member expressions
+   * or XJSElements. Expects a callback function that maps each path to the name
+   * to look for.
+   *
+   * If the callback returns a falsey value, the element is skipped.
+   *
+   * @param {function} nameGetter
+   *
+   * @return {Collection}
+   */
+  getVariableDeclarators: function(nameGetter) {
+    return this.map(function(path) {
+      /*jshint curly:false*/
+      var scope = path.scope;
+      if (!scope) return;
+      var name = nameGetter.apply(path, arguments);
+      if (!name) return;
+      scope = scope.lookup(name);
+      if (!scope) return;
+      var bindings = scope.getBindings()[name];
+      if (!bindings) return;
+      var decl = Collection.fromPaths(bindings)
+        .closest(types.VariableDeclarator);
+      if (decl.size() === 1) {
+        return decl.paths()[0];
+      }
+    }, types.VariableDeclarator);
+  },
+};
+
+var mutationMethods = {
   /**
    * Simply replaces the selected nodes with the provided node. If a function
    * is provided it is executed for every node and the node is replaced with the
@@ -124,11 +167,11 @@ var methods = {
       path.insertBefore(node);
     });
   }
-
 };
 
 function register() {
-  Collection.registerMethods(methods, Node);
+  Collection.registerMethods(traversalMethods, Node);
+  Collection.registerMethods(mutationMethods, Node);
   Collection.setDefaultCollectionType(Node);
 }
 
