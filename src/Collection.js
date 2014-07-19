@@ -87,6 +87,37 @@ class Collection {
   }
 
   /**
+   * Executes the callback for every path in the collection and returns a new
+   * collection from the return values (which must be paths).
+   *
+   * The callback can return null to indicate to exclude the element from the
+   * new collection.
+   *
+   * If an array is returned, the array will be flattened into the result
+   * collection.
+   *
+   * @param {function} callback
+   * @param {Type} type Force the new collection to be of a specific type
+   */
+  map(callback, type) {
+    var paths = [];
+    this.forEach(function(path) {
+      /*jshint eqnull:true*/
+      var result = callback.apply(path, arguments);
+      if (result == null) return;
+      if (!Array.isArray(result)) {
+        result = [result];
+      }
+      for (var i = 0; i < result.length; i++) {
+        if (paths.indexOf(result[i]) === -1) {
+          paths.push(result[i]);
+        }
+      }
+    });
+    return fromPaths(paths, this, type);
+  }
+
+  /**
    * Returns the number of elements in this collection.
    *
    * @return {number}

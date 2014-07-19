@@ -147,5 +147,27 @@ describe('Collection API', function() {
         expect(result).toBe(fVariables);
       });
     });
+
+    describe('map', function() {
+      it('returns a new collection with mapped values', function() {
+        var root = Collection.fromNodes(nodes);
+        var mapped = root.map((_, i) => new NodePath(nodes[+!i]));
+
+        expect(root).not.toBe(mapped);
+        expect(mapped.size()).toBe(2);
+        expect(mapped.nodes()[0]).toBe(nodes[1]);
+        expect(mapped.nodes()[1]).toBe(nodes[0]);
+      });
+
+      it('dedupes elements', function() {
+        var path = new NodePath(nodes[0]);
+        var root = Collection.fromNodes(nodes);
+        var mapped = root.map(_ => path);
+
+        expect(root).not.toBe(mapped);
+        expect(mapped.size()).toBe(1);
+        expect(mapped.paths()[0]).toBe(path);
+      });
+    });
   });
 });
