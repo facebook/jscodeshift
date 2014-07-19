@@ -17,6 +17,11 @@ var yargs = require('yargs')
   )
   .describe('t', 'Path to the transform file')
   .default('t', './transform.js')
+  .alias('c', 'cpus')
+  .count('verbose')
+  .alias('v', 'verbose')
+  .boolean('d')
+  .alias('d', 'dry')
   .boolean('h')
   .alias('h', 'help');
 
@@ -24,6 +29,11 @@ var argv = yargs.argv;
 
 if (argv.help) {
   console.log(yargs.help());
+  return;
 }
 
-Runner.run(path.resolve(argv.t), argv._);
+Runner.run(
+  path.resolve(argv.t),
+  argv._,
+  {verbosity: argv.verbose, dry: argv.dry, cpus: argv.cpus}
+);
