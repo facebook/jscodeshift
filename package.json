@@ -19,16 +19,16 @@
   "dependencies": {
     "async": "^0.9.0",
     "cli-color": "^0.3.2",
-    "esprima-fb": "^4001.1001.0-dev-harmony-fb",
+    "esprima-fb": "^11001.1.0-dev-harmony-fb",
     "lodash": "^2.4.1",
     "recast": "^0.6.3",
     "yargs": "^1.2.6"
   },
   "devDependencies": {
     "gulp": "^3.8.6",
-    "gulp-jstransform": "^0.1.0",
+    "gulp-jstransform": "^1.0.0",
     "jest-cli": "^0.1.17",
-    "jstransform": "^6.0.0"
+    "jstransform": "^8.2.0"
   },
   "jest": {
     "scriptPreprocessor": "jest/transform.js"
