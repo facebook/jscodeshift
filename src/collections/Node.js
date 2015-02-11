@@ -166,7 +166,24 @@ var mutationMethods = {
       assert(Node.check(node), 'Insert function returns a node');
       path.insertBefore(node);
     });
+  },
+
+  /**
+   * Inserts a new node after the current one.
+   *
+   * @param {Node|function} insert
+   * @return {Collection}
+   */
+  insertAfter: function(insert) {
+    insert = functionify(insert);
+
+    return this.forEach(function(path, i) {
+      var node = insert.call(path, path, i);
+      assert(Node.check(node), 'Insert function returns a node');
+      path.insertAfter(node);
+    });
   }
+
 };
 
 function register() {
