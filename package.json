@@ -21,7 +21,7 @@
     "cli-color": "^0.3.2",
     "esprima-fb": "^11001.1.0-dev-harmony-fb",
     "lodash": "^2.4.1",
-    "recast": "^0.6.3",
+    "recast": "^0.9.18",
     "yargs": "^1.2.6"
   },
   "devDependencies": {
