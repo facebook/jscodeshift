@@ -19,9 +19,9 @@
   "dependencies": {
     "async": "^0.9.0",
     "cli-color": "^0.3.2",
-    "esprima-fb": "^11001.1.0-dev-harmony-fb",
+    "esprima-fb": "^13001.1.0-dev-harmony-fb",
     "lodash": "^2.4.1",
-    "recast": "^0.9.18",
+    "recast": "^0.10.5",
     "yargs": "^1.2.6"
   },
   "devDependencies": {
