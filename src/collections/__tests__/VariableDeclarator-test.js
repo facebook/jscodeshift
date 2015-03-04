@@ -83,7 +83,7 @@ describe('VariableDeclarators', function() {
     it('renames variable declarations considering scope', function() {
       var declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
-        .filter(VariableDeclaratorCollection.filters.filterByRequire('module'))
+        .filter(VariableDeclaratorCollection.filters.requiresModule('module'))
         .renameTo('xyz');
 
       var identifiers =
