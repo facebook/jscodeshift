@@ -102,7 +102,7 @@ function run(transformFile, files, options) {
     switch (message.action) {
       case 'status':
         fileCounters[message.status] += 1;
-        log[message.status](message.msg, options.verbosity);
+        log[message.status](message.msg, options.verbose);
         break;
       case 'update':
         if (!statsCounter[message.name]) {
@@ -119,7 +119,7 @@ function run(transformFile, files, options) {
       require.resolve('./Worker'),
       [transformFile]
     );
-    child.send({files: files, dry: options.dry});
+    child.send({files: files, options: options});
     child.on('message', onMessage);
     child.on('disconnect', onEnd);
   });

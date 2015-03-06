@@ -18,8 +18,8 @@ function updateStats(name, quantity) {
 
 process.on('message', function(data) {
   var files = data.files;
-  var dry = data.dry;
-  if (!dry) {
+  var options = data.options;
+  if (!options.dry) {
     global.stat = function() {};
   }
   async.each(
@@ -33,13 +33,13 @@ process.on('message', function(data) {
         }
         source = source.toString();
         try {
-          var out = transform(file, source);
+          var out = transform(file, source, options);
           if (!out || out === source) {
             updateStatus(out ? 'nochange' : 'skip', file);
             callback();
             return;
           }
-          if (!dry) {
+          if (!options.dry) {
             fs.writeFile(file, out, function(err) {
               if (err) {
                 updateStatus('error', file, 'File writer error: ' + err);

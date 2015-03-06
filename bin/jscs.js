@@ -26,7 +26,6 @@ var yargs = require('yargs')
   .alias('h', 'help');
 
 var argv = yargs.argv;
-
 if (argv.help) {
   console.log(yargs.help());
   return;
@@ -35,5 +34,5 @@ if (argv.help) {
 Runner.run(
   path.resolve(argv.t),
   argv._,
-  {verbosity: argv.verbose, dry: argv.dry, cpus: argv.cpus}
+  argv
 );
