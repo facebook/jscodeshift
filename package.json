@@ -1,5 +1,5 @@
 {
-  "name": "jscs-cli",
+  "name": "jscodeshift",
   "version": "0.1.0",
   "description": "An AST based code modding tool for JS",
   "main": "index.js",
