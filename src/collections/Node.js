@@ -104,7 +104,7 @@ var traversalMethods = {
 
   /**
    * Finds the declaration for each selected path. Useful for member expressions
-   * or XJSElements. Expects a callback function that maps each path to the name
+   * or JSXElements. Expects a callback function that maps each path to the name
    * to look for.
    *
    * If the callback returns a falsey value, the element is skipped.
