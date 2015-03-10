@@ -20,21 +20,21 @@ First we have to define / explain a couple of terms from Recast:
 	name: 'foo'
     }
     ```
- 
-     It only holds data about the syntax construct it represents and has no additional API.
-     
-- **NodePath**: A node path is a wrapper around an AST node. It contains context information for node. These can be AST related (e.g. the parent of the node) or code related (e.g. a static version of the scope the node is in). It also provides an API to mutate the node (or replace it completely).
 
-On top of this, jscs adds **collections**. A collection is a set of node paths. These paths can be processed (e.g. traversed or mutated) by the methods the collection has.  
-By default a collection has only a very simply API to access the elements of the collection. The power of collections comes from **typed collections**. If a collection contains a set of node paths, then the type of the collection is the node type that all of the node paths have in common.  
+     It only holds data about the syntax construct it represents and has no additional API.
+
+- **NodePath**: A node path is a wrapper around an AST node. It contains context information for the node. These can be AST related (e.g. the parent of the node) or code related (e.g. a static version of the scope the node is in). It also provides an API to mutate the node (or replace it completely).
+
+On top of this, jscodeshift adds **collections**. A collection is a set of node paths. These paths can be processed (e.g. traversed or mutated) by the methods the collection has.
+By default a collection has only a very simple API to access the elements of the collection. The power of collections comes from **typed collections**. If a collection contains a set of node paths, then the type of the collection is the node type that all of the node paths have in common.
 Typed collections follow the type hierarchy defined by Recast. For example, an `IdentifierCollection` is an `ExpressionCollection` is a `NodeCollection`. That means that an `IdentifierCollection` has methods that have been registered for Identifiers, Expressions and Nodes.
 
-jscs provides a set of common methods for various types, such as finding all nodes of a given type or replacing a node with a new node.
+jscodeshift provides a set of common methods for various types, such as finding all nodes of a given type or replacing a node with a new node.
 
 
 ### API examples
 
-#### Finding elements and do stuff
+#### Finding elements and performing actions
 
 ```js
 // Logs the value of every identifier in ast
