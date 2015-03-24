@@ -1,0 +1,47 @@
+{
+  "name": "jscodeshift",
+  "version": "0.1.0",
+  "description": "A toolkit for AST-to-AST JavaScript codemods",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/jscodeshift.git"
+  },
+  "bugs": "https://github.com/facebook/jscodeshift/issues",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist; jsx --harmony src/ dist/",
+    "watch": "jsx --harmony src/ dist/ -w",
+    "test": "npm run build && jest",
+    "prepublish": "npm run build"
+  },
+  "bin": {
+    "jscodeshift": "./bin/jscodeshift.sh"
+  },
+  "keywords": [
+    "codemod",
+    "recast"
+  ],
+  "author": "Felix Kling",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "async": "^0.9.0",
+    "cli-color": "^0.3.2",
+    "esprima-fb": "^13001.1001.0-dev-harmony-fb",
+    "lodash": "^3.5.0",
+    "nomnom": "^1.8.1",
+    "recast": "^0.10.5"
+  },
+  "devDependencies": {
+    "es6-promise": "^2.0.1",
+    "jest-cli": "^0.4.0",
+    "react-tools": "^0.13.1",
+    "temp": "^0.8.1"
+  },
+  "jest": {
+    "scriptPreprocessor": "./scripts/test-preprocess.js",
+    "testPathDirs": [
+      "src",
+      "bin"
+    ]
+  }
+}
