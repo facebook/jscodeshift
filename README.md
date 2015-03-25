@@ -181,7 +181,7 @@ For example, the child-parent relationship between two nodes is not explicitly
 defined. Given a plain AST node, it is not possible to traverse the tree *up*.
 Given a path object however, the parent can be traversed to via `path.parent`.
 
-For more information about the path object API, please have a look at 
+For more information about the path object API, please have a look at
 [ast-types][].
 
 #### Builders
@@ -253,7 +253,7 @@ transform can be made more readable.
 There are two types of extensions: generic extensions and type-specific
 extensions. Generic extensions are applicable to all collections. As such, they
 typically don't access specific node data, but rather traverse the AST from the
-nodes in the collection.  
+nodes in the collection.
 Type-specific extensions work only on specific node types and are not callable
 on differently typed collections.
 
