@@ -1,7 +1,7 @@
 {
   "name": "jscodeshift",
   "version": "0.1.0",
-  "description": "A toolkit for AST-to-AST JavaScript codemods",
+  "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/jscodeshift.git"

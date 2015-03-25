@@ -1,6 +1,6 @@
 # jscodeshift
 
-jscodeshift is a toolkit for running AST-to-AST codemods over multiple JS files.
+jscodeshift is a toolkit for running codemods over multiple JS files.
 It provides:
 
 - A runner, which executes the provided transform for each file passed to it.
@@ -233,7 +233,7 @@ jscodeshift(src)
   });
 ```
 
-To learn about the provided method, have a look at the
+To learn about the provided methods, have a look at the
 [Collection.js](src/Collection.js) and its [extensions](src/collections/).
 
 ### Extensibility
