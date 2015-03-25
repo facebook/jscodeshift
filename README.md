@@ -46,7 +46,16 @@ directory). The next section explains the structure of the transform module.
 
 The transform is simply a module that exports a function of the form:
 
-    transform(fileInfo, api, options);
+```js
+module.exports = function(fileInfo, api, options) {
+  // transform `fileInfo.source` here
+  // ...
+  // return changed source
+  return source;
+};
+```
+
+### Arguments
 
 #### `fileInfo`
 
@@ -75,15 +84,18 @@ a more detailed description can be found below.
 /**
  * This replaces every occurence of variable "foo".
  */
-module.exports = function(path, source) {
-  return jscodeshift(source)
+module.exports = function(fileInfo, api) {
+  return api.jscodeshift(fileInfo.source)
     .findVariableDeclarators('foo')
     .renameTo('bar')
-    .print();
+    .toSource();
 }
 ```
 
-`stat` is a function that only works when the `--dry` options is set. It accepts
+**Note:** This api is exposed for convenience, but you don't have to use it.
+You can use any tool to modify the source.
+
+`stats` is a function that only works when the `--dry` options is set. It accepts
 a string, and will simply count how often it was called with that value.
 
 At the end, the CLI will report those values. This can be useful while
@@ -102,16 +114,7 @@ $ jscodeshift -t myTransforms fileA fileB --foo=bar
 `options` would contain `{foo: 'bar'}`. jscodeshift uses [nomnom][] to parse
 command line options.
 
-### Example
-
-```js
-module.exports = function(fileInfo, api, options) {
-  // transform `fileInfo.source` here
-  // ...
-  // return changed source
-  return source;
-};
-```
+#### Return value
 
 The return value of the function determines the status of the transformation:
 
@@ -123,9 +126,9 @@ The return value of the function determines the status of the transformation:
   ok).
 
 The CLI provides a summary of the transformation at the end. You can get more
-detailed information by setting the `-v` option to `1`, `2` or `3`.
+detailed information by setting the `-v` option to `1` or `2`.
 
-You can collect even more stats as explained below.
+You can collect even more stats via the `stats` function as explained above.
 
 ### Example
 
