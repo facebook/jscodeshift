@@ -38,7 +38,7 @@ var opts = require('nomnom')
       abbr: 'v',
       choices: [0, 1, 2],
       default: 0,
-      help: 'Repeate to show more information about the transform process'
+      help: 'Show more information about the transform process'
     },
     dry: {
       abbr: 'd',

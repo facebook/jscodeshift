@@ -33,7 +33,7 @@ path     Files to transform
 Options:
    -t FILE, --transform FILE   Path to the transform file  [./transform.js]
    -c, --cpus                  (all by default) Determines the number of processes started.
-   -v, --verbosity             Repeate to show more information about the transform process  [0]
+   -v, --verbosity             Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
    -p, --print                 Print output, useful for development
 ```
