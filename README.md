@@ -172,15 +172,17 @@ for a given piece of JS code.
 
 #### Path objects
 
-Recast itself relies heavily on [ast-types][] which defines methods to traverse the AST, access node fields and build new nodes. ast-types
-wraps every AST node into a *path object*. Paths contain meta-information and
-helper methods to process AST nodes.
+Recast itself relies heavily on [ast-types][] which defines methods to traverse
+the AST, access node fields and build new nodes. ast-types wraps every AST node
+into a *path object*. Paths contain meta-information and helper methods to
+process AST nodes.
 
 For example, the child-parent relationship between two nodes is not explicitly
 defined. Given a plain AST node, it is not possible to traverse the tree *up*.
 Given a path object however, the parent can be traversed to via `path.parent`.
 
-For more information about the path object API, please [ast-types][].
+For more information about the path object API, please have a look at 
+[ast-types][].
 
 #### Builders
 
@@ -213,7 +215,10 @@ A collection has methods to process the nodes inside a collection, often
 resulting in a new collection. This results in a fluent interface, which can
 make the transform more readable.
 
-Collections are "typed" which means that the type of a collection is the "lowest" type all AST nodes in the collection have in common. That means you cannot call a method for a `FunctionExpression` collection on a `Identifier` collection.
+Collections are "typed" which means that the type of a collection is the
+"lowest" type all AST nodes in the collection have in common. That means you
+cannot call a method for a `FunctionExpression` collection on a `Identifier`
+collection.
 
 Here is an example of how one would find/traverse all `Identifier` nodes with
 jscodeshift and with recast:
