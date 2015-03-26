@@ -251,11 +251,10 @@ into helper functions (which can be stored separately in other modules), a
 transform can be made more readable.
 
 There are two types of extensions: generic extensions and type-specific
-extensions. Generic extensions are applicable to all collections. As such, they
-typically don't access specific node data, but rather traverse the AST from the
-nodes in the collection.
-Type-specific extensions work only on specific node types and are not callable
-on differently typed collections.
+extensions. **Generic extensions** are applicable to all collections. As such,
+they typically don't access specific node data, but rather traverse the AST from
+the nodes in the collection. **Type-specific** extensions work only on specific
+node types and are not callable on differently typed collections.
 
 #### Examples
 
