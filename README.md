@@ -33,7 +33,7 @@ path     Files to transform
 Options:
    -t FILE, --transform FILE   Path to the transform file  [./transform.js]
    -c, --cpus                  (all by default) Determines the number of processes started.
-   -v, --verbosity             Repeate to show more information about the transform process  [0]
+   -v, --verbosity             Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
    -p, --print                 Print output, useful for development
 ```
@@ -181,7 +181,7 @@ For example, the child-parent relationship between two nodes is not explicitly
 defined. Given a plain AST node, it is not possible to traverse the tree *up*.
 Given a path object however, the parent can be traversed to via `path.parent`.
 
-For more information about the path object API, please have a look at 
+For more information about the path object API, please have a look at
 [ast-types][].
 
 #### Builders
@@ -251,11 +251,10 @@ into helper functions (which can be stored separately in other modules), a
 transform can be made more readable.
 
 There are two types of extensions: generic extensions and type-specific
-extensions. Generic extensions are applicable to all collections. As such, they
-typically don't access specific node data, but rather traverse the AST from the
-nodes in the collection.  
-Type-specific extensions work only on specific node types and are not callable
-on differently typed collections.
+extensions. **Generic extensions** are applicable to all collections. As such,
+they typically don't access specific node data, but rather traverse the AST from
+the nodes in the collection. **Type-specific** extensions work only on specific
+node types and are not callable on differently typed collections.
 
 #### Examples
 
