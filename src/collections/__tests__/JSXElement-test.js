@@ -46,7 +46,7 @@ describe('JSXCollection API', function() {
   describe('Traversal', function() {
     it('returns a non empty JSXCollection', function() {
       var jsx = Collection.fromNodes(nodes).find(types.JSXElement);
-      expect(jsx.constructor.name).toContain('JSXElementCollection');
+      expect(jsx.getTypes()).toContain('JSXElement');
       expect(jsx.size()).toBeGreaterThan(0);
     });
 
@@ -68,7 +68,7 @@ describe('JSXCollection API', function() {
         .findJSXElements('FooBar')
         .childNodes();
       expect(children.size()).toBe(5);
-      expect(children.constructor.name).toContain('ExpressionCollection');
+      expect(children.getTypes()).toContain('Expression');
     });
 
     it('returns the child JSXElements of an JSXElement', function() {
@@ -78,7 +78,7 @@ describe('JSXCollection API', function() {
         .childElements();
 
       expect(children.size()).toBe(2);
-      expect(children.constructor.name).toContain('JSXElementCollection');
+      expect(children.getTypes()).toContain('JSXElement');
     });
 
     it('returns a properly typed collection even if empty', function() {
@@ -88,7 +88,7 @@ describe('JSXCollection API', function() {
         .childElements();
 
       expect(children.size()).toBe(0);
-      expect(children.constructor.name).toContain('JSXElementCollection');
+      expect(children.getTypes()).toContain('JSXElement');
     });
   });
 

@@ -10,6 +10,7 @@
 
 "use strict";
 
+var _ = require('lodash');
 var Collection = require('../Collection');
 
 var assert = require('assert');
@@ -187,4 +188,4 @@ function register() {
   Collection.setDefaultCollectionType(Node);
 }
 
-exports.register = register;
+exports.register = _.once(register);

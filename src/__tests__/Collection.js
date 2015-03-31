@@ -27,8 +27,9 @@ describe('Collection API', function() {
   });
 
   describe('Instantiation', function() {
+
     it('should create a collection from an array of nodes', function() {
-      expect(Collection.fromNodes(nodes).constructor.name).toBe('IdentifierCollection');
+      expect(Collection.fromNodes(nodes).getTypes()).toContain('Identifier');
     });
 
     it('should create a collection from an array of paths', function() {
@@ -36,13 +37,13 @@ describe('Collection API', function() {
         new NodePath(b.identifier('foo')),
         new NodePath(b.identifier('bar')),
       ];
-      expect(Collection.fromPaths(paths).constructor.name).toBe('IdentifierCollection');
+      expect(Collection.fromPaths(paths).getTypes()).toContain('Identifier');
     });
 
     it('accepts an empty array as input', function() {
       var values = [];
-      expect(Collection.fromPaths(values).constructor.name).toBe('Collection');
-      expect(Collection.fromNodes(values).constructor.name).toBe('Collection');
+      expect(() => Collection.fromPaths(values)).not.toThrow();
+      expect(() => Collection.fromNodes(values)).not.toThrow();
     });
 
     it('throws if it is passed an array of mixed values', function() {
@@ -50,8 +51,8 @@ describe('Collection API', function() {
         new NodePath(b.identifier('foo')),
         b.identifier('bar'),
       ];
-      expect(_ => Collection.fromPaths(values)).toThrow();
-      expect(_ => Collection.fromNodes(values)).toThrow();
+      expect(() => Collection.fromPaths(values)).toThrow();
+      expect(() => Collection.fromNodes(values)).toThrow();
     });
 
     it('returns a collection of the closest common type', function() {
@@ -59,15 +60,15 @@ describe('Collection API', function() {
         b.identifier('foo'),
         b.sequenceExpression([]),
       ];
-      expect(Collection.fromNodes(nodes).constructor.name)
-        .toBe('ExpressionCollection');
+      expect(Collection.fromNodes(nodes).getTypes())
+        .toContain('Expression');
 
       nodes = [
         b.identifier('foo'),
         b.blockStatement([]),
       ];
-      expect(Collection.fromNodes(nodes).constructor.name)
-        .toBe('NodeCollection');
+      expect(Collection.fromNodes(nodes).getTypes())
+        .toContain('Node');
     });
   });
 
@@ -82,12 +83,11 @@ describe('Collection API', function() {
       var collection = Collection.fromNodes(nodes);
 
       expect(collection.getNames).toBeDefined();
-      expect(collection.getNames).toBe(getNames);
       collection.getNames();
-      expect(collection.getNames).toBeCalled();
+      expect(getNames).toBeCalled();
     });
 
-    it('doesn\'t add specific type methods to other types', function() {
+    it('throws if a method is called for the wrong node type', function() {
       var Collection = require('../Collection');
       var getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames}, types.Identifier);
@@ -96,7 +96,7 @@ describe('Collection API', function() {
         b.blockStatement([])
       ]);
 
-      expect(collection.getNames).toBeUndefined();
+      expect(() => collection.getNames()).toThrow();
     });
 
     it('ads "global" methods to all types', function() {
@@ -121,8 +121,19 @@ describe('Collection API', function() {
 
       var collection = Collection.fromNodes([b.identifier('foo')]);
 
-      expect(collection.identifierMethod).toBeDefined();
-      expect(collection.nodeMethod).toBeDefined();
+      expect(() => collection.identifierMethod()).not.toThrow();
+      expect(() => collection.nodeMethod()).not.toThrow();
+    });
+
+    it('handles type inheritance with multiple parents', function() {
+      Collection.registerMethods(
+        {expressionMethod: function() {}},
+        types.Expression
+      );
+      var collection = Collection.fromNodes([
+        b.functionExpression(null, [], b.blockStatement([]))
+      ]);
+      expect(() => collection.expressionMethod()).not.toThrow();
     });
   });
 

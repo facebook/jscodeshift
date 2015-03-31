@@ -14,43 +14,10 @@ var assert = require('assert');
 var recast = require('recast');
 var _ = require('lodash');
 
-var types = recast.types;
-var NodePath = types.NodePath;
-var Node = types.namedTypes.Node;
-
-
-var _typedCollectionCache = Object.create(null);
-
-function _createCollectionForType(type) {
-  /*jshint evil:true*/
-  // Yeah this is ugly, but I want to give the function a proper name to make
-  // debugging easier. Maybe can omit the name at some point.
-  var Constr = eval(
-    '(function ' + type + 'Collection() { Collection.apply(this, arguments);})'
-  );
-
-  // TODO: Try to find a solution for types having multiple supertypes.
-  // E.g. a FunctionExpression has the supertypes Function and Expression.
-  // Not sure if this is an issue so far.
-  var supertypes = types.getSupertypeNames(type.toString());
-  var superTypePrototype = supertypes[0] ?
-    _getCollectionForType(supertypes[0]).prototype :
-    Collection.prototype;
-
-  Constr.prototype = Object.create(
-    superTypePrototype,
-    {constructor: {value: Constr, writeable: true, configurable: true}}
-  );
-
-  return Constr;
-}
-
-function _getCollectionForType(type) {
-  if (!(type in _typedCollectionCache)) {
-    _typedCollectionCache[type] = _createCollectionForType(type);
-  }
-  return _typedCollectionCache[type];
-}
+var astTypes = recast.types;
+var types = astTypes.namedTypes;
+var NodePath = astTypes.NodePath;
+var Node = types.Node;
 
 /**
  * This represents a generic collection of node paths. It only has a generic
@@ -62,9 +29,11 @@ class Collection {
   /**
    * @param {Array} paths An array of AST paths
    * @param {Collection} parent A parent collection
+   * @param {Array} types An array of types all the paths in the collection
+   *  have in common. If not passed, it will be inferred from the paths.
    * @return {Collection}
    */
-  constructor(paths, parent) {
+  constructor(paths, parent, types) {
     assert.ok(Array.isArray(paths), 'Collection is passed an array');
     assert.ok(
       paths.every(p => p instanceof NodePath),
@@ -72,6 +41,12 @@ class Collection {
     );
     this._parent = parent;
     this.__paths = paths;
+    if (types && !Array.isArray(types)) {
+      types = _toTypeArray(types);
+    } else if (!types || Array.isArray(types) && types.length === 0) {
+      types = _inferTypes(paths);
+    }
+    this._types = types.length === 0 ? _defaultType : types;
   }
 
   /**
@@ -182,12 +157,70 @@ class Collection {
    *
    * @param {string|number} ...fields
    */
-   get() {
-     var path = this.__paths[0];
-      return path.get.apply(path, arguments);
-   }
+  get() {
+    var path = this.__paths[0];
+    return path.get.apply(path, arguments);
+  }
+
+  /**
+   * Returns the type(s) of the collection. This is only used for unit tests,
+   * I don't think other consumers would need it.
+   *
+   * @return {Array<string>}
+   */
+  getTypes() {
+    return this._types;
+  }
+
+  /**
+   * Returns true if this collection has the type 'type'.
+   *
+   * @param {Type} type
+   * @return {boolean}
+   */
+  isOfType(type) {
+    return !!type && this._types.indexOf(type.toString()) > -1;
+  }
 }
 
+/**
+ * Given a set of paths, this infers the common types of all paths.
+ *
+ * @param {Array} paths An array of paths.
+ * @return {Type} type An AST type
+ */
+function _inferTypes(paths) {
+  var _types = [];
+
+  if (paths.length > 0 && Node.check(paths[0].node)) {
+    var nodeType = types[paths[0].node.type];
+    var sameType = paths.length === 1 ||
+      paths.every(path => nodeType.check(path.node));
+
+    if (sameType) {
+      _types = [nodeType.toString()].concat(
+        astTypes.getSupertypeNames(nodeType.toString())
+      );
+    } else {
+      // try to find a common type
+      _types = _.intersection.apply(
+        null,
+        paths.map(path => astTypes.getSupertypeNames(path.node.type))
+      );
+    }
+  }
+
+  return _types;
+}
+
+function _toTypeArray(value) {
+  value = !Array.isArray(value) ? [value] : value;
+  value = value.map(v => v.toString());
+  return _.union(value, _.intersection.apply(
+    null,
+    value.map(type => astTypes.getSupertypeNames(type))
+  ));
+}
 
 /**
  * Creates a new collection from an array of node paths.
@@ -210,32 +243,7 @@ function fromPaths(paths, parent, type) {
     'Every element in the array is a NodePath'
   );
 
-  var collection;
-
-  if (!type && paths.length > 0 && Node.check(paths[0].value)) {
-    var nodeType = types.namedTypes[paths[0].value.type];
-    var sameType = paths.length === 1 ||
-      paths.every(path => nodeType.check(path.value));
-
-    if (sameType) {
-      type = nodeType;
-    } else {
-      // try to find a common type
-      type = _.intersection.apply(
-        null,
-        paths.map(path => types.getSupertypeNames(path.value.type))
-      )[0];
-    }
-  }
-  if (type) {
-    collection = new (_getCollectionForType(type))(paths, parent);
-  }
-
-  if (!collection) {
-    /*jshint newcap:false*/
-    collection = new _defaultCollection(paths, parent);
-  }
-  return collection;
+  return new Collection(paths, parent, type);
 }
 
 /**
@@ -261,6 +269,8 @@ function fromNodes(nodes, parent, type) {
   );
 }
 
+var CPt = Collection.prototype;
+
 /**
  * This function adds the provided methods to the prototype of the corresponding
  * typed collection. If no type is passed, the methods are added to
@@ -270,11 +280,30 @@ function fromNodes(nodes, parent, type) {
  * @param {Type=} type Optional type to add the methods to
  */
 function registerMethods(methods, type) {
-  var constructor = type ? _getCollectionForType(type) : _defaultCollection;
-  _.assign(constructor.prototype, methods);
+  for (var methodName in methods) {
+    if (CPt.hasOwnProperty(methodName)) {
+      throw Error(`A method with name "${methodName}" already exists.`);
+    }
+    if (!type) {
+      CPt[methodName] = methods[methodName];
+    } else {
+      type = type.toString();
+      (function(methodName, method) {
+        CPt[methodName] = function() {
+          if (!this.isOfType(type)) {
+            throw Error(
+              `You have a collection of type [${this.getTypes()}]. ` +
+              `"${methodName}" is is only defined for "${type}".`
+            );
+          }
+          return method.apply(this, arguments);
+        };
+      }(methodName, methods[methodName]));
+    }
+  }
 }
 
-var _defaultCollection = Collection;
+var _defaultType = [];
 
 /**
  * Sets the default collection type. In case a collection is created form an
@@ -284,7 +313,7 @@ var _defaultCollection = Collection;
  * @param {Type} type
  */
 function setDefaultCollectionType(type) {
-  _defaultCollection = _getCollectionForType(type);
+  _defaultType = _toTypeArray(type);
 }
 
 exports.fromPaths = fromPaths;

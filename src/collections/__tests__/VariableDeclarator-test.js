@@ -53,8 +53,7 @@ describe('VariableDeclarators', function() {
 
     it('finds all variable declarators', function() {
       var declarators = Collection.fromNodes(nodes).findVariableDeclarators();
-      expect(declarators.constructor.name)
-        .toContain('VariableDeclaratorCollection');
+      expect(declarators.getTypes()).toContain('VariableDeclarator');
       expect(declarators.size()).toBe(5);
     });
 

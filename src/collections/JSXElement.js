@@ -10,6 +10,7 @@
 
 "use strict";
 
+var _ = require('lodash');
 var Collection = require('../Collection');
 var NodeCollection = require('./Node');
 
@@ -186,6 +187,6 @@ function register() {
   Collection.registerMethods(traversalMethods, JSXElement);
 }
 
-exports.register = register;
+exports.register = _.once(register);
 exports.filters = filterMethods;
 exports.mappings = mappingMethods;

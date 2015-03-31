@@ -9,6 +9,8 @@
  */
 
 "use strict";
+
+var _ = require('lodash');
 var Collection = require('../Collection');
 var NodeCollection = require('./Node');
 var matchNode = require('../matchNode');
@@ -107,5 +109,5 @@ function register() {
   Collection.registerMethods(transformMethods, VariableDeclarator);
 }
 
-exports.register = register;
+exports.register = _.once(register);
 exports.filters = filterMethods;
