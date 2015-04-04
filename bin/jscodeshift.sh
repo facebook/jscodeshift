@@ -34,7 +34,7 @@ var opts = require('nomnom')
       abbr: 'c',
       help: '(all by default) Determines the number of processes started.'
     },
-    verbosity: {
+    verbose: {
       abbr: 'v',
       choices: [0, 1, 2],
       default: 0,
