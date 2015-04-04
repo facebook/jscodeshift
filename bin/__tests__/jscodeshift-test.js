@@ -38,7 +38,7 @@ function run(args, stdin) {
   });
 }
 
-describe('jscodeshit CLI', () => {
+describe('jscodeshift CLI', () => {
   function createTempFileWith(content) {
     var info = temp.openSync();
     fs.writeSync(info.fd, content);
