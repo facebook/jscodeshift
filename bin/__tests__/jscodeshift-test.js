@@ -22,19 +22,19 @@ require('es6-promise').polyfill();
 
 function run(args, stdin) {
   return new Promise(resolve => {
-    var docgen = child_process.spawn(
+    var jscodeshift = child_process.spawn(
       path.join(__dirname, '../jscodeshift.sh'),
       args
     );
     var stdout = '';
     var stderr = '';
-    docgen.stdout.on('data', data => stdout += data);
-    docgen.stderr.on('data', data => stderr += data);
-    docgen.on('close', () => resolve([stdout, stderr]));
+    jscodeshift.stdout.on('data', data => stdout += data);
+    jscodeshift.stderr.on('data', data => stderr += data);
+    jscodeshift.on('close', () => resolve([stdout, stderr]));
     if (stdin) {
-      docgen.stdin.write(stdin);
+      jscodeshift.stdin.write(stdin);
     }
-    docgen.stdin.end();
+    jscodeshift.stdin.end();
   });
 }
 
