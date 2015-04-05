@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 var Collection = require('./Collection');
 
 var collections = require('./collections');

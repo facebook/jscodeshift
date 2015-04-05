@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 jest.autoMockOff();
 var core = require('../core');
 var Collection = require('../Collection');

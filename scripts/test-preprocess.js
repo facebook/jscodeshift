@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 var reactTools = require('react-tools');
 

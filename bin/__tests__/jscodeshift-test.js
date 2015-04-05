@@ -10,7 +10,7 @@
 
 /*global jest, describe, pit, expect*/
 
-"use strict";
+'use strict';
 
 jest.autoMockOff();
 

@@ -9,7 +9,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 var Runner = require('../dist/Runner.js');
 

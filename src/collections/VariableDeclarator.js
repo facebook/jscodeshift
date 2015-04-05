@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 var _ = require('lodash');
 var Collection = require('../Collection');
