@@ -15,17 +15,17 @@ var clc = require('cli-color');
 var cpus = require('os').cpus().length - 1;
 var fs = require('fs');
 
-function ok(msg, verbosity) {
-  verbosity >= 2 && console.log(clc.white.bgGreen(' OKK '), msg);
+function ok(msg, verbose) {
+  verbose >= 2 && console.log(clc.white.bgGreen(' OKK '), msg);
 }
-function nochange(msg, verbosity) {
-  verbosity >= 1 && console.log(clc.white.bgYellow(' NOC '), msg);
+function nochange(msg, verbose) {
+  verbose >= 1 && console.log(clc.white.bgYellow(' NOC '), msg);
 }
-function skip(msg, verbosity) {
-  verbosity >= 1 && console.log(clc.white.bgYellow(' SKIP'), msg);
+function skip(msg, verbose) {
+  verbose >= 1 && console.log(clc.white.bgYellow(' SKIP'), msg);
 }
-function error(msg, verbosity) {
-  verbosity >= 0 && console.log(clc.white.bgRedBright(' ERR '), msg);
+function error(msg, verbose) {
+  verbose >= 0 && console.log(clc.white.bgRedBright(' ERR '), msg);
 }
 
 function showFileStats(fileStats) {
@@ -112,7 +112,7 @@ function run(transformFile, files, options) {
     switch (message.action) {
       case 'status':
         fileCounters[message.status] += 1;
-        log[message.status](message.msg, options.verbosity);
+        log[message.status](message.msg, options.verbose);
         break;
       case 'update':
         if (!statsCounter[message.name]) {
