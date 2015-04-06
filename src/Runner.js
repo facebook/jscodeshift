@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 var child_process = require('child_process');
 var clc = require('cli-color');

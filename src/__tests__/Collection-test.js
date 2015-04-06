@@ -8,7 +8,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 jest.autoMockOff();
 

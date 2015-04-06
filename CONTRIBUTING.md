@@ -34,7 +34,7 @@ outlined on that page and do not file a public issue.
 * Commas last,
 * 2 spaces for indentation (no tabs)
 * Prefer `'` over `"`
-* `"use strict";`
+* `'use strict';`
 * 80 character line length
 * "Attractive"
 
