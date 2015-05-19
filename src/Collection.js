@@ -216,10 +216,14 @@ function _inferTypes(paths) {
 function _toTypeArray(value) {
   value = !Array.isArray(value) ? [value] : value;
   value = value.map(v => v.toString());
-  return _.union(value, _.intersection.apply(
-    null,
-    value.map(type => astTypes.getSupertypeNames(type))
-  ));
+  if (value.length > 1) {
+    return _.union(value, _.intersection.apply(
+      null,
+      value.map(type => astTypes.getSupertypeNames(type))
+    ));
+  } else {
+    return value.concat(astTypes.getSupertypeNames(value[0]));
+  }
 }
 
 /**
