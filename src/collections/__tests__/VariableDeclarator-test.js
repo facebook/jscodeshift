@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var esprima = require('esprima-fb');
+var babel = require('babel-core');
 var recast = require('recast');
 var types = recast.types.namedTypes;
 var b = recast.types.builders;
@@ -43,7 +43,7 @@ describe('VariableDeclarators', function() {
       'foo.bar();',
       'foo[bar]();',
       'bar.foo();'
-    ].join('\n'), {esprima: esprima}).program];
+    ].join('\n'), {esprima: babel}).program];
   });
 
   describe('Traversal', function() {

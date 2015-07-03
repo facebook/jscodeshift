@@ -10,10 +10,10 @@
 
 'use strict';
 
-var reactTools = require('react-tools');
+var babel = require('babel-core');
 
 function process(source) {
-  return reactTools.transform(source, {harmony: true, stripTypes: true});
+  return babel.transform(source);
 }
 
 exports.process = process;

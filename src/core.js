@@ -12,7 +12,7 @@
 var Collection = require('./Collection');
 
 var collections = require('./collections');
-var esprima = require('esprima-fb');
+var babel = require('babel-core');
 var matchNode = require('./matchNode');
 var recast = require('recast');
 var _ = require('lodash');
@@ -70,7 +70,7 @@ function fromAST(ast) {
 }
 
 function fromSource(source) {
-  return fromAST(recast.parse(source, {esprima: esprima}).program);
+  return fromAST(recast.parse(source, {esprima: babel}).program);
 }
 
 /**
