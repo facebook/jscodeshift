@@ -347,5 +347,36 @@ describe('Collection API', function() {
         expect(ast.expressions[3]).toBe(x);
       });
     });
+
+    describe('removes', function() {
+      it('removes a node if it is part of the body of a statement', function() {
+        var x = b.expressionStatement(b.identifier('x'));
+        var y = b.expressionStatement(b.identifier('y'));
+        var ast = b.program([x, y]);
+
+        var S = Collection.fromNodes([ast])
+          .find(types.Identifier, {name: 'x'})
+          .remove();
+
+        expect(ast.body.length).toBe(1);
+        expect(ast.body[0]).toBe(y);
+      });
+
+      it('removes a node if it is a function param', function() {
+        var x = b.identifier('x');
+        var y = b.identifier('y');
+        var ast = b.arrowFunctionExpression(
+          [x, b.identifier('z')],
+          y
+        );
+
+        var S = Collection.fromNodes([ast])
+          .find(types.Identifier, {name: 'z'})
+          .remove();
+        expect(ast.params.length).toBe(1);
+        expect(ast.params[0]).toBe(x);
+        expect(ast.body).toBe(y);
+      });
+    });
   });
 });
