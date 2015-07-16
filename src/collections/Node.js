@@ -20,17 +20,6 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
 
-
-function methodNameFromType(type) {
-  return 'visit' + type;
-}
-
-function functionify(value) {
-  return typeof value === 'function' ? value : function() {
-    return value;
-  };
-}
-
 var traversalMethods = {
 
   /**
@@ -42,7 +31,7 @@ var traversalMethods = {
    */
   find: function(type, filter) {
     var paths = [];
-    var visitorMethodName = methodNameFromType(type);
+    var visitorMethodName = 'visit' + type;
 
     var visitor = {};
     function visit(path) {
@@ -129,57 +118,52 @@ var traversalMethods = {
   },
 };
 
+function toArray(value) {
+  return Array.isArray(value) ? value : [value];
+}
+
 var mutationMethods = {
   /**
    * Simply replaces the selected nodes with the provided node. If a function
    * is provided it is executed for every node and the node is replaced with the
    * functions return value.
    *
-   * @param {Node|function} replacement
+   * @param {Node|Array<Node>|function} nodes
    * @return {Collection}
    */
-  replaceWith: function(replacement) {
-    replacement = functionify(replacement);
-
+  replaceWith: function(nodes) {
     return this.forEach(function(path, i) {
-      var newNode = replacement.call(path, path, i);
-      if (Array.isArray(newNode)) {
-        path.replace(...newNode);
-      } else {
-        path.replace(newNode);
-      }
+      var newNodes =
+        (typeof nodes === 'function') ? nodes.call(path, path, i) : nodes;
+      path.replace(...toArray(newNodes));
     });
   },
 
   /**
    * Inserts a new node before the current one.
    *
-   * @param {Node|function} insert
+   * @param {Node|Array<Node>|function} insert
    * @return {Collection}
    */
   insertBefore: function(insert) {
-    insert = functionify(insert);
-
     return this.forEach(function(path, i) {
-      var node = insert.call(path, path, i);
-      assert(Node.check(node), 'Insert function returns a node');
-      path.insertBefore(node);
+      var newNodes =
+        (typeof insert === 'function') ? insert.call(path, path, i) : insert;
+      path.insertBefore(...toArray(newNodes));
     });
   },
 
   /**
    * Inserts a new node after the current one.
    *
-   * @param {Node|function} insert
+   * @param {Node|Array<Node>|function} insert
    * @return {Collection}
    */
   insertAfter: function(insert) {
-    insert = functionify(insert);
-
     return this.forEach(function(path, i) {
-      var node = insert.call(path, path, i);
-      assert(Node.check(node), 'Insert function returns a node');
-      path.insertAfter(node);
+      var newNodes =
+        (typeof insert === 'function') ? insert.call(path, path, i) : insert;
+      path.insertAfter(...toArray(newNodes));
     });
   }
 

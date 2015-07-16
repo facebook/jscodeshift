@@ -196,6 +196,23 @@ describe('Collection API', function() {
         expect(S.nodes()[0].expressions[2]).toBe(newNode);
       });
 
+      it('accepts an array as replacement', function() {
+        var ast = b.sequenceExpression([
+          b.identifier('foo'),
+          b.literal("asd"),
+          b.identifier('bar'),
+        ]);
+        var newNode1 = b.identifier('xyz');
+        var newNode2 = b.identifier('jkl');
+
+        var S = Collection.fromNodes([ast]);
+        S.find(types.Identifier, {name: 'bar'})
+          .replaceWith([newNode1, newNode2]);
+
+        expect(S.nodes()[0].expressions[2]).toBe(newNode1);
+        expect(S.nodes()[0].expressions[3]).toBe(newNode2);
+      });
+
       it('accepts a function as replacement ', function() {
         var ast = b.sequenceExpression([
           b.identifier('foo'),
@@ -243,7 +260,24 @@ describe('Collection API', function() {
         expect(ast.declarations[0]).toBe(one);
       });
 
-      it('accepts a function as replacement', function() {
+      it('accepts an array of nodes', function() {
+        var ast = b.variableDeclaration(
+          'var',
+          [b.variableDeclarator(b.identifier('foo'), null)]
+        );
+        var one = b.variableDeclarator(b.identifier('one'), null);
+        var two = b.variableDeclarator(b.identifier('two'), null);
+
+        var S = Collection.fromNodes([ast])
+          .find(types.VariableDeclarator)
+          .insertBefore([one, two]);
+
+        expect(ast.declarations.length).toBe(3);
+        expect(ast.declarations[0]).toBe(one);
+        expect(ast.declarations[1]).toBe(two);
+      });
+
+      it('accepts a function', function() {
         var x = b.identifier('x');
         var foo = b.identifier('foo');
         var bar = b.identifier('bar');
@@ -259,6 +293,58 @@ describe('Collection API', function() {
         expect(ast.expressions).toEqual([x, foo, x, bar]);
         expect(ast.expressions[0]).toBe(x);
         expect(ast.expressions[2]).toBe(x);
+      });
+    });
+
+    describe('insertAfter', function() {
+      it('inserts a new node after the current one', function() {
+        var ast = b.variableDeclaration(
+          'var',
+          [b.variableDeclarator(b.identifier('foo'), null)]
+        );
+        var one = b.variableDeclarator(b.identifier('one'), null);
+
+        var S = Collection.fromNodes([ast])
+          .find(types.VariableDeclarator)
+          .insertAfter(one);
+
+        expect(ast.declarations.length).toBe(2);
+        expect(ast.declarations[1]).toBe(one);
+      });
+
+      it('accepts an array of nodes', function() {
+        var ast = b.variableDeclaration(
+          'var',
+          [b.variableDeclarator(b.identifier('foo'), null)]
+        );
+        var one = b.variableDeclarator(b.identifier('one'), null);
+        var two = b.variableDeclarator(b.identifier('two'), null);
+
+        var S = Collection.fromNodes([ast])
+          .find(types.VariableDeclarator)
+          .insertAfter([one, two]);
+
+        expect(ast.declarations.length).toBe(3);
+        expect(ast.declarations[1]).toBe(one);
+        expect(ast.declarations[2]).toBe(two);
+      });
+
+      it('accepts a function', function() {
+        var x = b.identifier('x');
+        var foo = b.identifier('foo');
+        var bar = b.identifier('bar');
+        var ast = b.sequenceExpression([foo, bar]);
+
+        var S = Collection.fromNodes([ast])
+          .find(types.Identifier)
+          .insertAfter(function() {
+            return x;
+          });
+
+        expect(ast.expressions.length).toBe(4);
+        expect(ast.expressions).toEqual([foo, x, bar, x]);
+        expect(ast.expressions[1]).toBe(x);
+        expect(ast.expressions[3]).toBe(x);
       });
     });
   });
