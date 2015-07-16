@@ -15,6 +15,7 @@ var collections = require('./collections');
 var esprima = require('esprima-fb');
 var matchNode = require('./matchNode');
 var recast = require('recast');
+var template = require('./template');
 var _ = require('lodash');
 
 var Node = recast.types.namedTypes.Node;
@@ -97,6 +98,7 @@ _.assign(core, recast.types.builders);
 core.registerMethods = Collection.registerMethods;
 core.types = recast.types;
 core.match = match;
+core.template = template;
 
 // add mappings and filters to function
 core.filters = {};

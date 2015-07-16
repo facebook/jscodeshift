@@ -143,8 +143,11 @@ var mutationMethods = {
 
     return this.forEach(function(path, i) {
       var newNode = replacement.call(path, path, i);
-      assert(Node.check(newNode), 'Replacement function returns a node');
-      path.replace(newNode);
+      if (Array.isArray(newNode)) {
+        path.replace(...newNode);
+      } else {
+        path.replace(newNode);
+      }
     });
   },
 

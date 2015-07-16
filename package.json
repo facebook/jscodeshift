@@ -9,9 +9,9 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist; jsx --harmony src/ dist/",
-    "watch": "jsx --harmony src/ dist/ -w",
-    "test": "npm run build && jest",
+    "build": "rm -rf dist; babel src/ --out-dir dist/",
+    "watch": "babel src/ --out-dir dist/ --watch",
+    "test": "jest",
     "prepublish": "npm run build"
   },
   "bin": {
@@ -25,6 +25,8 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "async": "^0.9.0",
+    "babel": "^5.6.14",
+    "babel-runtime": "^5.6.18",
     "cli-color": "^0.3.2",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "lodash": "^3.5.0",
@@ -32,16 +34,21 @@
     "recast": "^0.10.10"
   },
   "devDependencies": {
+    "babel-jest": "^5.3.0",
     "es6-promise": "^2.0.1",
     "jest-cli": "^0.4.0",
-    "react-tools": "^0.13.1",
     "temp": "^0.8.1"
   },
   "jest": {
-    "scriptPreprocessor": "./scripts/test-preprocess.js",
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
+    "preprocessCachingDisabled": true,
     "testPathDirs": [
       "src",
       "bin"
+    ],
+    "unmockedModulePathPatterns": [
+      "babel-runtime",
+      "babel"
     ]
   }
 }

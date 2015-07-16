@@ -67,7 +67,9 @@ class Collection {
    * @return {Collection} The collection itself
    */
   forEach(callback) {
-    this.__paths.forEach(path => callback.apply(path, arguments));
+    this.__paths.forEach(
+      (path, i, paths) => callback.call(path, path, i, paths)
+    );
     return this;
   }
 
