@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var esprima = require('esprima-fb');
+var babel = require('babel');
 
 describe('JSXCollection API', function() {
   var nodes;
@@ -40,7 +40,7 @@ describe('JSXCollection API', function() {
       '  </Child>',
       '  <Child id="2" foo="baz"/>',
       '</FooBar>'
-    ].join('\n'), {esprima: esprima}).program];
+    ].join('\n'), {esprima: babel}).program];
   });
 
   describe('Traversal', function() {
