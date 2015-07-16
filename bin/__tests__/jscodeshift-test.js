@@ -14,6 +14,9 @@
 
 jest.autoMockOff();
 
+// Increase default timeout (5000ms) for Travis
+jasmine.getEnv().defaultTimeoutInterval = 10000;
+
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
