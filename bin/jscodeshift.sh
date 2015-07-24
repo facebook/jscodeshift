@@ -49,6 +49,11 @@ var opts = require('nomnom')
       abbr: 'p',
       flag: true,
       help: 'Print output, useful for development'
+    },
+    babel: {
+      flag: true,
+      default: true,
+      help: 'Do not apply babel for transform files'
     }
   })
   .parse();
