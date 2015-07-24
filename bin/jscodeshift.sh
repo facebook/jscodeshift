@@ -19,7 +19,7 @@ var opts = require('nomnom')
   .options({
     path: {
       position: 0,
-      help: 'Files to transform',
+      help: 'Files or directory to transform',
       list: true,
       metavar: 'FILE',
       required: true
@@ -54,6 +54,10 @@ var opts = require('nomnom')
       flag: true,
       default: true,
       help: 'Do not apply babel for transform files'
+    },
+    extensions: {
+      default: 'js',
+      help: 'File extensions the transform file should be applied to'
     }
   })
   .parse();
