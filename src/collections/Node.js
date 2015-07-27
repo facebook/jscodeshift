@@ -165,6 +165,10 @@ var mutationMethods = {
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
       path.insertAfter(...toArray(newNodes));
     });
+  },
+
+  remove: function() {
+    this.forEach(path => path.prune());
   }
 
 };
