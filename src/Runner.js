@@ -127,7 +127,7 @@ function run(transformFile, files, options) {
   file_chunks.forEach(function(files) {
     var child = child_process.fork(
       require.resolve('./Worker'),
-      [transformFile]
+      [transformFile, options.babel ? 'babel' : 'no-babel']
     );
     child.send({files: files, options: options});
     child.on('message', onMessage);
