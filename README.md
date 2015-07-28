@@ -28,7 +28,7 @@ $ jscodeshift --help
 
 Usage: jscodeshift <path>... [options]
 
-path     Files to transform
+path     Files or directory to transform
 
 Options:
    -t FILE, --transform FILE   Path to the transform file  [./transform.js]
@@ -36,6 +36,8 @@ Options:
    -v, --verbose               Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
    -p, --print                 Print output, useful for development
+   --babel                     Do not apply babel for transform files  [true]
+   --extensions                File extensions the transform file should be applied to  [js]
 ```
 
 This passes the source of all passed through the transform module specified
@@ -133,7 +135,7 @@ You can collect even more stats via the `stats` function as explained above.
 ### Example
 
 ```text
-$ jscodeshift -t myTransform.js src/**/*.js
+$ jscodeshift -t myTransform.js src
 Processing 10 files...
 Spawning 2 workers with 5 files each...
 All workers done.

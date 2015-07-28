@@ -10,23 +10,30 @@
 
 'use strict';
 
-var child_process = require('child_process');
-var clc = require('cli-color');
-var cpus = require('os').cpus().length - 1;
-var fs = require('fs');
+require('es6-promise').polyfill();
 
-function ok(msg, verbose) {
-  verbose >= 2 && console.log(clc.white.bgGreen(' OKK '), msg);
-}
-function nochange(msg, verbose) {
-  verbose >= 1 && console.log(clc.white.bgYellow(' NOC '), msg);
-}
-function skip(msg, verbose) {
-  verbose >= 1 && console.log(clc.white.bgYellow(' SKIP'), msg);
-}
-function error(msg, verbose) {
-  verbose >= 0 && console.log(clc.white.bgRedBright(' ERR '), msg);
-}
+const child_process = require('child_process');
+const clc = require('cli-color');
+const dir = require('node-dir');
+const fs = require('fs');
+const path = require('path');
+
+const availableCpus = require('os').cpus().length - 1;
+
+const log = {
+  ok(msg, verbose) {
+    verbose >= 2 && console.log(clc.white.bgGreen(' OKK '), msg);
+  },
+  nochange(msg, verbose) {
+    verbose >= 1 && console.log(clc.white.bgYellow(' NOC '), msg);
+  },
+  skip(msg, verbose) {
+    verbose >= 1 && console.log(clc.white.bgYellow(' SKIP'), msg);
+  },
+  error(msg, verbose) {
+    verbose >= 0 && console.log(clc.white.bgRedBright(' ERR '), msg);
+  },
+};
 
 function showFileStats(fileStats) {
   console.log(
@@ -39,23 +46,42 @@ function showFileStats(fileStats) {
 }
 
 function showStats(stats) {
-  var names = Object.keys(stats).sort();
+  const names = Object.keys(stats).sort();
   if (names.length) {
     console.log(clc.blue('Stats:'));
   }
-  names.forEach(function(name) {
-    console.log(name + ':', stats[name]);
-  });
+  names.forEach(name => console.log(name + ':', stats[name]));
 }
 
-var log = {
-  'ok': ok,
-  'nochange': nochange,
-  'skip': skip,
-  'error': error
-};
+function getAllFiles(paths) {
+  return Promise.all(
+    paths.map(file => new Promise((resolve, reject) => {
+      fs.lstat(file, (err, stat) => {
+        if (err) {
+          console.log('Skipping path "%s" which does not exist.', file);
+          resolve();
+          return;
+        }
 
-function run(transformFile, files, options) {
+        if (stat.isDirectory()) {
+          dir.files(file, (err, list) => resolve(list));
+        } else {
+          resolve([file]);
+        }
+      })
+    }))
+  ).then(files => [].concat(...files));
+}
+
+function run(transformFile, paths, options) {
+  const cpus = options.cpus ? Math.min(cpus, options.cpus) : availableCpus;
+  const extensions =
+    options.extensions && options.extensions.split(',').map(ext => '.' + ext);
+  const fileChunks = [];
+  const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
+  const statsCounter = {};
+  const startTime = process.hrtime();
+
   if (!fs.existsSync(transformFile)) {
     console.log(
       clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist',
@@ -64,75 +90,71 @@ function run(transformFile, files, options) {
     return;
   }
 
-  if (files.length === 0) {
-    console.log('No files selected, nothing to do.');
-    return;
-  }
+  getAllFiles(paths)
+    .then(files => files.filter(
+      name => !extensions || extensions.indexOf(path.extname(name)) != -1
+    ))
+    .then(files => {
+      if (files.length === 0) {
+        console.log('No files selected, nothing to do.');
+        return;
+      }
 
-  if (options.cpus) {
-    cpus = Math.min(cpus, options.cpus);
-  }
-  var processes = Math.min(files.length, cpus);
-  var chunk_size = Math.ceil(files.length / processes);
-  var file_chunks = [];
-  for (var i = 0, l = files.length; i < l; i += chunk_size) {
-    file_chunks.push(files.slice(i, i + chunk_size));
-  }
+      const processes = Math.min(files.length, cpus);
+      const chunkSize = Math.ceil(files.length / processes);
+      for (let i = 0, l = files.length; i < l; i += chunkSize) {
+        fileChunks.push(files.slice(i, i + chunkSize));
+      }
 
-  console.log('Processing %d files...', files.length);
-  console.log(
-    'Spawning %d workers with %d files each...',
-    file_chunks.length,
-    file_chunks[0].length
-  );
-  if (options.dry) {
-    console.log(clc.green('Running in dry mode, no files be written!'));
-  }
-
-  var fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
-  var statsCounter = {};
-  var doneCounter = 0;
-
-  function onEnd() {
-    doneCounter += 1;
-    if (doneCounter === file_chunks.length) {
-      var endTime = process.hrtime(startTime);
-      console.log('All workers done.');
-      showFileStats(fileCounters);
-      showStats(statsCounter);
+      console.log('Processing %d files...', files.length);
       console.log(
-        'Time elapsed: %d.%d seconds',
-        endTime[0],
-        (endTime[1]/1000000).toFixed(0)
+        'Spawning %d workers with %d files each...',
+        fileChunks.length,
+        fileChunks[0].length
       );
-    }
-  }
+      if (options.dry) {
+        console.log(
+          clc.green('Running in dry mode, no files will be written!')
+        );
+      }
 
-  function onMessage(message) {
-    switch (message.action) {
-      case 'status':
-        fileCounters[message.status] += 1;
-        log[message.status](message.msg, options.verbose);
-        break;
-      case 'update':
-        if (!statsCounter[message.name]) {
-          statsCounter[message.name] = 0;
-        }
-        statsCounter[message.name] += message.quantity;
-        break;
-    }
-  }
-
-  var startTime = process.hrtime();
-  file_chunks.forEach(function(files) {
-    var child = child_process.fork(
-      require.resolve('./Worker'),
-      [transformFile, options.babel ? 'babel' : 'no-babel']
+      return fileChunks.map(files => {
+        const child = child_process.fork(
+          require.resolve('./Worker'),
+          [transformFile, options.babel ? 'babel' : 'no-babel']
+        );
+        child.send({files, options});
+        child.on('message', message => {
+          switch (message.action) {
+            case 'status':
+              fileCounters[message.status] += 1;
+              log[message.status](message.msg, options.verbose);
+              break;
+            case 'update':
+              if (!statsCounter[message.name]) {
+                statsCounter[message.name] = 0;
+              }
+              statsCounter[message.name] += message.quantity;
+              break;
+          }
+        });
+        return new Promise(resolve => child.on('disconnect', resolve));
+      });
+    })
+    .then(pendingWorkers =>
+      Promise.all(pendingWorkers).then(resolve => {
+        const endTime = process.hrtime(startTime);
+        console.log('All workers done.');
+        showFileStats(fileCounters);
+        showStats(statsCounter);
+        console.log(
+          'Time elapsed: %d.%d seconds',
+          endTime[0],
+          (endTime[1]/1000000).toFixed(0)
+        );
+        resolve();
+      })
     );
-    child.send({files: files, options: options});
-    child.on('message', onMessage);
-    child.on('disconnect', onEnd);
-  });
 }
 
 exports.run = run;
