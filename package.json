@@ -31,13 +31,13 @@
     "es6-promise": "^2.0.1",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "lodash": "^3.5.0",
+    "node-dir": "0.1.8",
     "nomnom": "^1.8.1",
     "recast": "^0.10.10"
   },
   "devDependencies": {
     "babel-jest": "^5.3.0",
     "jest-cli": "^0.4.0",
-    "node-dir": "0.1.8",
     "temp": "^0.8.1"
   },
   "jest": {
