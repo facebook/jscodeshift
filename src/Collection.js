@@ -135,7 +135,7 @@ class Collection {
 
   toSource(options) {
     if (this._parent) {
-      return this._parent.toSource();
+      return this._parent.toSource(options);
     }
     if (this.__paths.length === 1) {
       return recast.print(this.__paths[0], options).code;
