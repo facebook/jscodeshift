@@ -57,7 +57,7 @@ describe('jscodeshift CLI', () => {
 
   pit('calls the transform and file information', () => {
     var sourceA = createTempFileWith('a');
-    var sourceB = createTempFileWith('b');
+    var sourceB = createTempFileWith('b\n');
     var sourceC = createTempFileWith('c');
     var transformA = createTransformWith(
       'return "transform" + fileInfo.source;'
@@ -70,7 +70,7 @@ describe('jscodeshift CLI', () => {
       run(['--no-extensions', '-t', transformA, sourceA, sourceB]).then(
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
-          expect(fs.readFileSync(sourceB).toString()).toBe('transformb');
+          expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
         }
       ),
       run(['--no-extensions', '-t', transformB, sourceC]).then(

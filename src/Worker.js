@@ -79,6 +79,9 @@ process.on('message', function(data) {
             console.log(out);
           }
           if (!options.dry) {
+            if (/\n$/.test(source) && !/\n$/.test(out)) {
+              out += '\n';
+            }
             fs.writeFile(file, out, function(err) {
               if (err) {
                 updateStatus('error', file, 'File writer error: ' + err);
