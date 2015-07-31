@@ -8,10 +8,10 @@
  *
  */
 
-'use strict';
+/*global jest, describe, it, expect*/
+
 jest.autoMockOff();
 var core = require('../core');
-var Collection = require('../Collection');
 var recast = require('recast');
 var b = recast.types.builders;
 var NodePath = recast.types.NodePath;
@@ -46,8 +46,13 @@ describe('core API', function() {
   });
 
   it('throws if it gets an invalid value', function() {
-    expect(_ => core(42)).toThrow();
-    expect(_ => core({})).toThrow();
+    expect(() => core(42)).toThrow();
+    expect(() => core({})).toThrow();
+  });
+
+  it('returns the source as is if nothing was modified', function () {
+    var source = '\nvar foo;\n';
+    expect(core(source).toSource()).toEqual(source);
   });
 
 });

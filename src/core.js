@@ -71,7 +71,7 @@ function fromAST(ast) {
 }
 
 function fromSource(source) {
-  return fromAST(recast.parse(source, {esprima: babel}).program);
+  return fromAST(recast.parse(source, {esprima: babel}));
 }
 
 /**
