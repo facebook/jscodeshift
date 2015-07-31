@@ -8,14 +8,13 @@
  *
  */
 
-/*global jest, describe, pit, expect*/
-
-'use strict';
+/*global jest, jasmine, describe, pit, expect*/
+/*eslint camelcase: 0, no-unused-vars: 0*/
 
 jest.autoMockOff();
 
 // Increase default timeout (5000ms) for Travis
-jasmine.getEnv().defaultTimeoutInterval = 15000;
+jasmine.getEnv().defaultTimeoutInterval = 30000;
 
 var child_process = require('child_process');
 var fs = require('fs');
@@ -57,7 +56,7 @@ describe('jscodeshift CLI', () => {
 
   pit('calls the transform and file information', () => {
     var sourceA = createTempFileWith('a');
-    var sourceB = createTempFileWith('b');
+    var sourceB = createTempFileWith('b\n');
     var sourceC = createTempFileWith('c');
     var transformA = createTransformWith(
       'return "transform" + fileInfo.source;'
@@ -70,7 +69,7 @@ describe('jscodeshift CLI', () => {
       run(['--no-extensions', '-t', transformA, sourceA, sourceB]).then(
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
-          expect(fs.readFileSync(sourceB).toString()).toBe('transformb');
+          expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
         }
       ),
       run(['--no-extensions', '-t', transformB, sourceC]).then(
