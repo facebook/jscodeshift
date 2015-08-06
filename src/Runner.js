@@ -74,7 +74,7 @@ function getAllFiles(paths) {
 }
 
 function run(transformFile, paths, options) {
-  const cpus = options.cpus ? Math.min(cpus, options.cpus) : availableCpus;
+  const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
   const fileChunks = [];
