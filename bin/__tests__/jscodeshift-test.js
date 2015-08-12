@@ -66,13 +66,13 @@ describe('jscodeshift CLI', () => {
     );
 
     return Promise.all([
-      run(['--no-extensions', '-t', transformA, sourceA, sourceB]).then(
+      run(['-t', transformA, sourceA, sourceB]).then(
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
           expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
         }
       ),
-      run(['--no-extensions', '-t', transformB, sourceC]).then(
+      run(['-t', transformB, sourceC]).then(
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sourceC).toString()).toBe(sourceC);
         }
@@ -100,7 +100,7 @@ describe('jscodeshift CLI', () => {
       '    typeof api.stats === "function"',
       '  );',
     ].join('\n'));
-    return run(['--no-extensions', '-t', transform, source]).then(
+    return run(['-t', transform, source]).then(
       ([stdout, stderr]) => {
         expect(fs.readFileSync(source).toString()).toBe('true');
       }
@@ -110,7 +110,7 @@ describe('jscodeshift CLI', () => {
   pit('passes options along to the transform', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith('return options.foo;');
-    return run(['--no-extensions', '-t', transform, '--foo=42', source]).then(
+    return run(['-t', transform, '--foo=42', source]).then(
       ([stdout, stderr]) => {
         expect(fs.readFileSync(source).toString()).toBe('42');
       }

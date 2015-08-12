@@ -53,7 +53,7 @@ function showStats(stats) {
   names.forEach(name => console.log(name + ':', stats[name]));
 }
 
-function getAllFiles(paths) {
+function getAllFiles(paths, filter) {
   return Promise.all(
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
@@ -64,7 +64,10 @@ function getAllFiles(paths) {
         }
 
         if (stat.isDirectory()) {
-          dir.files(file, (err, list) => resolve(list));
+          dir.files(
+            file,
+            (err, list) => resolve(list ? list.filter(filter) : [])
+          );
         } else {
           resolve([file]);
         }
@@ -90,11 +93,10 @@ function run(transformFile, paths, options) {
     return;
   }
 
-  getAllFiles(paths)
-    .then(files => files.filter(
-      name => !extensions || extensions.indexOf(path.extname(name)) != -1
-    ))
-    .then(files => {
+  getAllFiles(
+    paths,
+    name => !extensions || extensions.indexOf(path.extname(name)) != -1
+  ).then(files => {
       if (files.length === 0) {
         console.log('No files selected, nothing to do.');
         return;
