@@ -36,7 +36,7 @@ Options:
    -v, --verbose               Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
    -p, --print                 Print output, useful for development
-   --babel                     Do not apply babel for transform files  [true]
+   --babel                     Apply Babel to transform files  [true]
    --extensions                File extensions the transform file should be applied to  [js]
 ```
 

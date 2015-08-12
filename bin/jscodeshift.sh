@@ -53,7 +53,7 @@ var opts = require('nomnom')
     babel: {
       flag: true,
       default: true,
-      help: 'Do not apply babel for transform files'
+      help: 'Apply Babel to transform files'
     },
     extensions: {
       default: 'js',
