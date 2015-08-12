@@ -1,4 +1,4 @@
-let babel = require('babel');
+let babel = require('babel-core');
 
 function splice(arr, element, replacement) {
   arr.splice(arr.indexOf(element), 1, ...replacement);
@@ -57,7 +57,7 @@ function getPlugin(varName, nodes) {
         }
       }
     });
-  }
+  };
 }
 
 function replaceNodes(src, varName, nodes) {

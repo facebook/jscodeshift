@@ -11,7 +11,7 @@
 'use strict';
 
 if (process.argv[3] === 'babel') {
-  require('babel/register')();
+  require('babel-core/register')();
 }
 
 var async = require('async');

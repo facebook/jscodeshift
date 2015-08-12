@@ -12,7 +12,7 @@
 var Collection = require('./Collection');
 
 var collections = require('./collections');
-var babel = require('babel');
+var babel = require('babel-core');
 var matchNode = require('./matchNode');
 var recast = require('recast');
 var template = require('./template');
