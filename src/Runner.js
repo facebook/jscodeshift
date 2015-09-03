@@ -93,7 +93,7 @@ function run(transformFile, paths, options) {
     return;
   }
 
-  getAllFiles(
+  return getAllFiles(
     paths,
     name => !extensions || extensions.indexOf(path.extname(name)) != -1
   ).then(files => {
