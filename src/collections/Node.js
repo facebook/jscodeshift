@@ -13,7 +13,6 @@
 var _ = require('lodash');
 var Collection = require('../Collection');
 
-var assert = require('assert');
 var matchNode = require('../matchNode');
 var recast = require('recast');
 
@@ -168,7 +167,7 @@ var mutationMethods = {
   },
 
   remove: function() {
-    this.forEach(path => path.prune());
+    return this.forEach(path => path.prune());
   }
 
 };
