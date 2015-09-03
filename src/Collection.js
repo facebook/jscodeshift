@@ -147,11 +147,22 @@ class Collection {
   /**
    * Returns a new collection containing only the element at position index.
    *
+   * In case of a negative index, the element is taken from the end:
+   *
+   *   .at(0)  - first element
+   *   .at(-1) - last element
+   *
    * @param {number} index
    * @return {Collection}
    */
   at(index) {
-    return fromPaths(this.__paths.slice(index, index+1), this);
+    return fromPaths(
+      this.__paths.slice(
+        index,
+        index === -1 ? undefined : index + 1
+      ),
+      this
+    );
   }
 
   /**
