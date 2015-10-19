@@ -281,6 +281,17 @@ jscodeshift(ast).findIdentifiers().logNames();
 jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier nodes
 ```
 
+### Passing options to [recast]
+
+You may want to change some of the output settings (like setting `'` instead of `"`).
+This can be done by passing config options to [recast].
+
+```js
+.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
+```
+
+More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61)
+
 [npm]: https://www.npmjs.com/
 [Mozilla Parser API]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API
 [recast]: https://github.com/benjamn/recast
