@@ -16,23 +16,27 @@ var hasOwn =
 /**
  * Checks whether needle is a strict subset of haystack.
  *
- * @param {Object} haystack The object to test
- * @param {Object} needle The properties to look for in test
+ * @param {*} haystack Value to test.
+ * @param {*} needle Test function or value to look for in `haystack`.
  * @return {bool}
  */
 function matchNode(haystack, needle) {
-  var props = Object.keys(needle);
-  return props.every(function(prop) {
-    if (!hasOwn(haystack, prop)) {
-      return false;
-    }
-    if (haystack[prop] &&
-      typeof haystack[prop] === 'object' &&
-      typeof needle[prop] === 'object') {
-      return matchNode(haystack[prop], needle[prop]);
-    }
-    return haystack[prop] === needle[prop];
-  });
+  if (typeof needle === 'function') {
+    return needle(haystack);
+  }
+  if (isNode(needle) && isNode(haystack)) {
+    return Object.keys(needle).every(function(property) {
+      return (
+        hasOwn(haystack, property) &&
+        matchNode(haystack[property], needle[property])
+      );
+    });
+  }
+  return haystack === needle;
+}
+
+function isNode(value) {
+  return typeof value === 'object' && value;
 }
 
 module.exports = matchNode;
