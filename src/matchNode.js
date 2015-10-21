@@ -17,10 +17,13 @@ var hasOwn =
  * Checks whether needle is a strict subset of haystack.
  *
  * @param {Object} haystack The object to test
- * @param {Object} needle The properties to look for in test
+ * @param {Object|Function} needle The properties to look for in test
  * @return {bool}
  */
 function matchNode(haystack, needle) {
+  if (typeof needle === 'function') {
+    return needle(haystack);
+  }
   var props = Object.keys(needle);
   return props.every(function(prop) {
     if (!hasOwn(haystack, prop)) {
