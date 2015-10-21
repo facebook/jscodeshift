@@ -30,8 +30,9 @@ function matchNode(haystack, needle) {
       return false;
     }
     if (haystack[prop] &&
-      typeof haystack[prop] === 'object' &&
-      typeof needle[prop] === 'object') {
+        needle[prop] &&
+        typeof haystack[prop] === 'object' &&
+        typeof needle[prop] === 'object') {
       return matchNode(haystack[prop], needle[prop]);
     }
     return haystack[prop] === needle[prop];
