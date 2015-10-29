@@ -292,6 +292,16 @@ This can be done by passing config options to [recast].
 
 More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61)
 
+### Example Codemods
+
+- [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
+- [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
+- [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
+
+### Support
+
+* Discord - [#codemod](https://discordapp.com/channels/102860784329052160/103748721107292160) on [Reactiflux](http://www.reactiflux.com/)
+
 [npm]: https://www.npmjs.com/
 [Mozilla Parser API]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API
 [recast]: https://github.com/benjamn/recast
