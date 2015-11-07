@@ -154,7 +154,7 @@ function run(transformFile, paths, options) {
           endTime[0],
           (endTime[1]/1000000).toFixed(0)
         );
-        resolve();
+        return fileCounters;
       })
     );
 }
