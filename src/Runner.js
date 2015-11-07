@@ -144,7 +144,7 @@ function run(transformFile, paths, options) {
       });
     })
     .then(pendingWorkers =>
-      Promise.all(pendingWorkers).then(resolve => {
+      Promise.all(pendingWorkers).then(() => {
         const endTime = process.hrtime(startTime);
         console.log('All workers done.');
         showFileStats(fileCounters);
@@ -154,7 +154,7 @@ function run(transformFile, paths, options) {
           endTime[0],
           (endTime[1]/1000000).toFixed(0)
         );
-        resolve();
+        return fileCounters;
       })
     );
 }
