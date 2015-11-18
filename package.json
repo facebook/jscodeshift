@@ -24,11 +24,11 @@
   "author": "Felix Kling",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^1.5.0",
     "babel-core": "^5.8.21",
     "babel-runtime": "^5.6.18",
-    "cli-color": "^0.3.2",
-    "es6-promise": "^2.0.1",
+    "cli-color": "^1.0.0",
+    "es6-promise": "^3.0.0",
     "lodash": "^3.5.0",
     "node-dir": "0.1.8",
     "nomnom": "^1.8.1",
@@ -37,7 +37,7 @@
   "devDependencies": {
     "babel": "^5.6.14",
     "babel-jest": "^5.3.0",
-    "jest-cli": "^0.5.10",
+    "jest-cli": "^0.7.1",
     "temp": "^0.8.1"
   },
   "jest": {
@@ -48,8 +48,7 @@
       "bin"
     ],
     "unmockedModulePathPatterns": [
-      "babel-runtime",
-      "babel"
+      "node_modules/"
     ]
   }
 }
