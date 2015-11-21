@@ -10,26 +10,51 @@
 
 'use strict';
 
-if (process.argv[3] === 'babel') {
-  require('babel-core/register')();
+const EventEmitter = require('events').EventEmitter;
+
+const async = require('async');
+const fs = require('fs');
+
+const jscodeshift = require('./core');
+
+let emitter;
+let finish;
+let notify;
+let transform;
+
+if (module.parent) {
+  emitter = new EventEmitter();
+  emitter.send = (data) => { run(data); };
+  finish = () => { emitter.emit('disconnect'); };
+  notify = (data) => { emitter.emit('message', data); };
+  module.exports = (args) => {
+    setup(args[0], args[1]);
+    return emitter;
+  };
+} else {
+  finish = () => { process.disconnect(); };
+  notify = (data) => { process.send(data); };
+  process.on('message', (data) => { run(data); });
+  setup(process.argv[2], process.argv[3]);
 }
 
-var async = require('async');
-var fs = require('fs');
-
-var jscodeshift = require('./core');
-var transform = require(process.argv[2]);
+function setup(tr, babel) {
+  if (babel === 'babel') {
+    require('babel-core/register')();
+  }
+  transform = require(tr);
+}
 
 function updateStatus(status, file, msg) {
   msg = msg  ?  file + ' ' + msg : file;
-  process.send({action: 'status', status: status, msg: msg});
+  notify({action: 'status', status: status, msg: msg});
 }
 
 function empty() {}
 
 function stats(name, quantity) {
   quantity = typeof quantity !== 'number' ? 1 : quantity;
-  process.send({action: 'update', name: name, quantity: quantity});
+  notify({action: 'update', name: name, quantity: quantity});
 }
 
 function trimStackTrace(trace) {
@@ -45,7 +70,7 @@ function trimStackTrace(trace) {
   return result.join('\n');
 }
 
-process.on('message', function(data) {
+function run(data) {
   var files = data.files;
   var options = data.options;
   async.each(
@@ -105,7 +130,7 @@ process.on('message', function(data) {
       if (err) {
         updateStatus('error', '', 'This should never be shown!');
       }
-      process.disconnect();
+      finish();
     }
   );
-});
+}
