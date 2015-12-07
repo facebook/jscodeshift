@@ -58,6 +58,12 @@ var opts = require('nomnom')
     extensions: {
       default: 'js',
       help: 'File extensions the transform file should be applied to'
+    },
+    runInBand: {
+      flag: true,
+      default: false,
+      full: 'run-in-band',
+      help: 'Run serially in the current process'
     }
   })
   .parse();

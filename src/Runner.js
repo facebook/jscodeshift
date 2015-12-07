@@ -109,11 +109,13 @@ function run(transformFile, paths, options) {
       }
 
       console.log('Processing %d files...', files.length);
-      console.log(
-        'Spawning %d workers with %d files each...',
-        fileChunks.length,
-        fileChunks[0].length
-      );
+      if (!options.runInBand) {
+        console.log(
+          'Spawning %d workers with %d files each...',
+          fileChunks.length,
+          fileChunks[0].length
+        );
+      }
       if (options.dry) {
         console.log(
           clc.green('Running in dry mode, no files will be written!')
@@ -121,10 +123,10 @@ function run(transformFile, paths, options) {
       }
 
       return fileChunks.map(files => {
-        const child = child_process.fork(
-          require.resolve('./Worker'),
-          [transformFile, options.babel ? 'babel' : 'no-babel']
-        );
+        const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
+        const child = options.runInBand ?
+          require('./Worker')(args) :
+          child_process.fork(require.resolve('./Worker'), args);
         child.send({files, options});
         child.on('message', message => {
           switch (message.action) {
@@ -146,7 +148,7 @@ function run(transformFile, paths, options) {
     .then(pendingWorkers =>
       Promise.all(pendingWorkers).then(() => {
         const endTime = process.hrtime(startTime);
-        console.log('All workers done.');
+        console.log('All done.');
         showFileStats(fileCounters);
         showStats(statsCounter);
         console.log(
