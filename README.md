@@ -306,5 +306,5 @@ More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa
 [Mozilla Parser API]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API
 [recast]: https://github.com/benjamn/recast
 [ast-types]: https://github.com/benjamn/ast-types
-[ast-explorer]: http://felix-kling.de/esprima_ast_explorer/
+[ast-explorer]: http://astexplorer.net/
 [nomnom]: https://www.npmjs.com/package/nomnom
