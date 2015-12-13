@@ -39,7 +39,7 @@ function showFileStats(fileStats) {
   console.log(
     'Results:',
     clc.red(fileStats.error + ' errors'),
-    clc.yellow(fileStats.nochange + ' unmodifed'),
+    clc.yellow(fileStats.nochange + ' unmodified'),
     clc.yellow(fileStats.skip + ' skipped'),
     clc.green(fileStats.ok + ' ok')
   );
