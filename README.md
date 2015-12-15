@@ -139,7 +139,7 @@ $ jscodeshift -t myTransform.js src
 Processing 10 files...
 Spawning 2 workers with 5 files each...
 All workers done.
-Results: 0 errors 2 unmodifed 3 skipped 5 ok
+Results: 0 errors 2 unmodified 3 skipped 5 ok
 ```
 
 ## The jscodeshift API
