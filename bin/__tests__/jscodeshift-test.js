@@ -117,4 +117,29 @@ describe('jscodeshift CLI', () => {
     );
   });
 
+  describe('output', () => {
+    pit('shows workers info and stats at the end by default', () => {
+      var source = createTempFileWith('a');
+      var transform = createTransformWith('return null;');
+      return run(['-t', transform, source]).then(
+        ([stdout, stderr]) => {
+          expect(stdout).toContain('Processing 1 files...');
+          expect(stdout).toContain('Spawning 1 workers with 1 files each...');
+          expect(stdout).toContain('All done.');
+          expect(stdout).toContain('Results: ');
+          expect(stdout).toContain('Time elapsed: ');
+        }
+      );
+    });
+
+    pit('does not ouput anything in silent mode', () => {
+      var source = createTempFileWith('a');
+      var transform = createTransformWith('return null;');
+      return run(['-t', transform, '-s', source]).then(
+        ([stdout, stderr]) => {
+          expect(stdout).toEqual('');
+        }
+      );
+    });
+  })
 });

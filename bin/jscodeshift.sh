@@ -64,6 +64,13 @@ var opts = require('nomnom')
       default: false,
       full: 'run-in-band',
       help: 'Run serially in the current process'
+    },
+    silent: {
+      abbr: 's',
+      flag: true,
+      default: false,
+      full: 'silent',
+      help: 'No output'
     }
   })
   .parse();
