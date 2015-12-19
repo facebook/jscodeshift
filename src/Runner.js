@@ -108,18 +108,20 @@ function run(transformFile, paths, options) {
         fileChunks.push(files.slice(i, i + chunkSize));
       }
 
-      console.log('Processing %d files...', files.length);
-      if (!options.runInBand) {
-        console.log(
-          'Spawning %d workers with %d files each...',
-          fileChunks.length,
-          fileChunks[0].length
-        );
-      }
-      if (options.dry) {
-        console.log(
-          clc.green('Running in dry mode, no files will be written!')
-        );
+      if (!options.silent) {
+        console.log('Processing %d files...', files.length);
+        if (!options.runInBand) {
+          console.log(
+            'Spawning %d workers with %d files each...',
+            fileChunks.length,
+            fileChunks[0].length
+          );
+        }
+        if (options.dry) {
+          console.log(
+            clc.green('Running in dry mode, no files will be written!')
+          );
+        }
       }
 
       return fileChunks.map(files => {
@@ -147,15 +149,17 @@ function run(transformFile, paths, options) {
     })
     .then(pendingWorkers =>
       Promise.all(pendingWorkers).then(() => {
-        const endTime = process.hrtime(startTime);
-        console.log('All done.');
-        showFileStats(fileCounters);
-        showStats(statsCounter);
-        console.log(
-          'Time elapsed: %d.%d seconds',
-          endTime[0],
-          (endTime[1]/1000000).toFixed(0)
-        );
+        if (!options.silent) {
+          const endTime = process.hrtime(startTime);
+          console.log('All done.');
+          showFileStats(fileCounters);
+          showStats(statsCounter);
+          console.log(
+            'Time elapsed: %d.%d seconds',
+            endTime[0],
+            (endTime[1]/1000000).toFixed(0)
+          );
+        }
         return fileCounters;
       })
     );
