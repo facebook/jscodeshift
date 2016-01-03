@@ -22,12 +22,18 @@ var types = recast.types.namedTypes;
 const findParent = (path, type, filter) => {
   var parent = path.parent;
   if (!parent) {
+    // Return null if we've reached the upper bound of
+    // the AST
     return null;
   } else if (
+    // return the node if we haven't specified a filter
+    // and the type check returns true.
     parent && 
     type.check(parent.value) && !filter) {
     return parent;
   } else if(
+    // return the node if both type check and filter
+    // return true
     parent && type.check(parent.value) &&
     filter && matchNode(parent.value, filter)
   ) {
