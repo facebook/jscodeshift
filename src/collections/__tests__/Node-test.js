@@ -130,18 +130,9 @@ describe('Collection API', function() {
     });
 
     describe('closest', function() {
-      it('finds closest node (up the tree) of the given type', function() {
-        var functionDeclaration = ast.body[1];
-        var decl = Collection.fromNodes([ast])
-          .find(types.Identifier)
-          .closest(types.FunctionDeclaration);
-
-        expect(decl.size()).toBe(1);
-        expect(decl.nodes()[0]).toBe(functionDeclaration);
-      });
-
-      it('allows to filter nodes by pattern', function() {
-        var decl = b.functionDeclaration(
+      var decl;
+      beforeEach(()=> {
+        decl = b.functionDeclaration(
           b.identifier('foo'),
           [],
           b.blockStatement([
@@ -156,6 +147,19 @@ describe('Collection API', function() {
             ),
           ])
         );
+      });
+
+      it('finds closest node (up the tree) of the given type', function() {
+        var functionDeclaration = ast.body[1];
+        decl = Collection.fromNodes([ast])
+          .find(types.Identifier)
+          .closest(types.FunctionDeclaration);
+
+        expect(decl.size()).toBe(1);
+        expect(decl.nodes()[0]).toBe(functionDeclaration);
+      });
+
+      it('allows to filter nodes by pattern', function() {
         var literals = Collection.fromNodes([decl])
           .find(types.Literal);
         expect(literals.get(0).node.value).toBe(3);
@@ -164,6 +168,28 @@ describe('Collection API', function() {
           {id: {name: 'foo'}}
         );
         expect(closest.get(0).node.id.name).toBe('foo');
+      });
+
+      it('allows to filter nodes with a filter function', function() {
+        var literals = Collection.fromNodes([decl])
+          .find(types.Literal);
+        expect(literals.get(0).node.value).toBe(3);
+        var closest = literals.closest(
+          types.FunctionDeclaration,
+          (node) => node.id && node.id.name === 'foo'
+        );
+        expect(closest.get(0).node.id.name).toBe('foo');
+      });
+
+      it('fails when filter evaluates as false', function() {
+        var literals = Collection.fromNodes([decl])
+          .find(types.Literal);
+        expect(literals.get(0).node.value).toBe(3);
+        var closest = literals.closest(
+          types.FunctionDeclaration,
+          (node) => node.id && node.id.name === 'blue'
+        );
+        expect(closest.nodes().length).toBe(0);
       });
     });
 
