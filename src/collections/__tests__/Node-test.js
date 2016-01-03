@@ -146,7 +146,7 @@ describe('Collection API', function() {
           [],
           b.blockStatement([
             b.functionDeclaration(
-              b.identifier('foo'),
+              b.identifier('bar'),
               [],
               b.blockStatement([
                 b.returnStatement(
