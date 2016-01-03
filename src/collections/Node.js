@@ -77,8 +77,10 @@ var traversalMethods = {
       var parent = path.parent;
       while (
         parent &&
-        !type.check(parent.value) &&
-        !(filter && matchNode(parent.value, filter))
+        !(
+          type.check(parent.value) &&
+          (!filter || matchNode(parent.value, filter))
+        )
       ) {
         parent = parent.parent;
       }
