@@ -19,6 +19,24 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
 
+const findParent = (path, type, filter) => {
+  var parent = path.parent;
+  if (!parent) {
+    return null;
+  } else if (
+    parent && 
+    type.check(parent.value) && !filter) {
+    return parent;
+  } else if(
+    parent && type.check(parent.value) &&
+    filter && matchNode(parent.value, filter)
+  ) {
+    return parent;
+  } else {
+    return findParent(parent, type, filter);
+  }
+};
+
 var traversalMethods = {
 
   /**
@@ -74,15 +92,7 @@ var traversalMethods = {
    */
   closest: function(type, filter) {
     return this.map(function(path) {
-      var parent = path.parent;
-      while (
-        parent &&
-        !type.check(parent.value) &&
-        !(filter && matchNode(parent.value, filter))
-      ) {
-        parent = parent.parent;
-      }
-      return parent || null;
+      return findParent(path, type, filter)
     });
   },
 
