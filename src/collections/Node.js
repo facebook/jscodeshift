@@ -19,30 +19,6 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
 
-const findParent = (path, type, filter) => {
-  var parent = path.parent;
-  if (!parent) {
-    // Return null if we've reached the upper bound of
-    // the AST
-    return null;
-  } else if (
-    // return the node if we haven't specified a filter
-    // and the type check returns true.
-    parent && 
-    type.check(parent.value) && !filter) {
-    return parent;
-  } else if(
-    // return the node if both type check and filter
-    // return true
-    parent && type.check(parent.value) &&
-    filter && matchNode(parent.value, filter)
-  ) {
-    return parent;
-  } else {
-    return findParent(parent, type, filter);
-  }
-};
-
 var traversalMethods = {
 
   /**
@@ -98,7 +74,17 @@ var traversalMethods = {
    */
   closest: function(type, filter) {
     return this.map(function(path) {
-      return findParent(path, type, filter)
+      var parent = path.parent;
+      while (
+        parent &&
+        !(
+          type.check(parent.value) &&
+          (!filter || matchNode(parent.value, filter))
+        )
+      ) {
+        parent = parent.parent;
+      }
+      return parent || null;
     });
   },
 
