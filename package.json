@@ -15,7 +15,7 @@
     "prepublish": "npm run build"
   },
   "bin": {
-    "jscodeshift": "./bin/jscodeshift.sh"
+    "jscodeshift": "./bin/jscodeshift.js"
   },
   "keywords": [
     "codemod",
