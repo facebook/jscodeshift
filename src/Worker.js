@@ -40,7 +40,8 @@ if (module.parent) {
 
 function setup(tr, babel) {
   if (babel === 'babel') {
-    require('babel-core/register')();
+    // FIXME: use { babelrc: false } after migration to Babel 6
+    require('babel-core/register')({ breakConfig: true });
   }
   transform = require(tr);
 }
