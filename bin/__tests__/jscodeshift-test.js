@@ -22,11 +22,14 @@ var path = require('path');
 var temp = require('temp');
 require('es6-promise').polyfill();
 
-function run(args, stdin) {
+function run(args, stdin, cwd) {
   return new Promise(resolve => {
     var jscodeshift = child_process.spawn(
       path.join(__dirname, '../jscodeshift.sh'),
-      args
+      args,
+      {
+        cwd,
+      }
     );
     var stdout = '';
     var stderr = '';
@@ -88,6 +91,47 @@ describe('jscodeshift CLI', () => {
     return run(['-t', transform, '-d', source]).then(
       ([stdout, stderr]) => {
         expect(fs.readFileSync(source).toString()).toBe('a');
+      }
+    );
+  });
+
+  pit('loads transform files with Babel if not disabled', () => {
+    var source = createTempFileWith('a');
+    var transform = createTransformWith(
+      'return (function() { "use strict"; const a = 42; }).toString();'
+    );
+    return Promise.all([
+      run(['-t', transform, source]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(source).toString())
+            .toMatch(/var\s*a\s*=\s*42/);
+        }
+      ),
+      run(['-t', transform, '--no-babel', source]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(source).toString())
+            .toMatch(/const\s*a\s*=\s*42/);
+        }
+      ),
+    ]);
+  });
+
+  pit('ignores .babelrc files in the directories of the source files', () => {
+    var transform = createTransformWith(
+      'return (function() { "use strict"; const a = 42; }).toString();'
+    );
+    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`);
+    //var babelrc = createTempFileWith('{}');
+    var projectPath = path.dirname(babelrc);
+    fs.renameSync(babelrc, path.join(projectPath, '.babelrc'));
+    var source = createTempFileWith('a');
+    fs.renameSync(source, path.join(projectPath, 'source.js'));
+    source = path.join(projectPath, 'source.js');
+
+    return run(['-t', transform, source]).then(
+      ([stdout, stderr]) => {
+        expect(fs.readFileSync(source).toString())
+          .toMatch(/var\s*a\s*=\s*42/);
       }
     );
   });

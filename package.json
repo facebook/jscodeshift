@@ -11,8 +11,8 @@
   "scripts": {
     "build": "rm -rf dist; babel src/ --out-dir dist/",
     "watch": "babel src/ --out-dir dist/ --watch",
-    "test": "jest",
-    "prepublish": "npm run build"
+    "test": " npm run build && jest",
+    "prepublish": "npm run test && npm run build"
   },
   "bin": {
     "jscodeshift": "./bin/jscodeshift.sh"
