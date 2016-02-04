@@ -257,7 +257,7 @@ function _toTypeArray(value) {
 function fromPaths(paths, parent, type) {
   assert.ok(
     paths.every(n => n instanceof NodePath),
-    'Every element in the array is a NodePath'
+    'Every element in the array should be a NodePath'
   );
 
   return new Collection(paths, parent, type);
@@ -277,7 +277,7 @@ function fromPaths(paths, parent, type) {
 function fromNodes(nodes, parent, type) {
   assert.ok(
     nodes.every(n => Node.check(n)),
-    'Every element in the array is a Node'
+    'Every element in the array should be a Node'
   );
   return fromPaths(
     nodes.map(n => new NodePath(n)),
