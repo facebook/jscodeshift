@@ -155,9 +155,8 @@ function run(transformFile, paths, options) {
           showFileStats(fileCounters);
           showStats(statsCounter);
           console.log(
-            'Time elapsed: %d.%d seconds',
-            endTime[0],
-            (endTime[1]/1000000).toFixed(0)
+            'Time elapsed: %s seconds',
+            (endTime[0] + endTime[1]/1e9).toFixed(3)
           );
         }
         return fileCounters;
