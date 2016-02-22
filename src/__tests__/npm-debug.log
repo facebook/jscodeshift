@@ -1,0 +1,19 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'run', 'tests' ]
+2 info using npm@3.6.0
+3 info using node@v5.6.0
+4 verbose stack Error: missing script: tests
+4 verbose stack     at run (/usr/local/lib/node_modules/npm/lib/run-script.js:147:19)
+4 verbose stack     at /usr/local/lib/node_modules/npm/lib/run-script.js:57:5
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:345:5
+4 verbose stack     at handleExists (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:318:20)
+4 verbose stack     at FSReqWrap.cb [as oncomplete] (fs.js:216:19)
+5 verbose cwd /Users/austin/vagrant-dev/jscodeshift/src/__tests__
+6 error Darwin 14.1.0
+7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "tests"
+8 error node v5.6.0
+9 error npm  v3.6.0
+10 error missing script: tests
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]
