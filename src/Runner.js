@@ -15,6 +15,7 @@ require('es6-promise').polyfill();
 var Readable = require('stream').Readable;
 
 var rs = new Readable;
+var rs1 = new Readable;
 
 const child_process = require('child_process');
 const clc = require('cli-color');
@@ -39,7 +40,6 @@ const log = {
   },
 };
 
-//stream done
 function showFileStats(fileStats) {
   rs.push(
     'Results: \n'+
@@ -48,22 +48,7 @@ function showFileStats(fileStats) {
     clc.yellow(fileStats.skip + ' skipped\n')+
     clc.green(fileStats.ok + ' ok\n')
   );
-  rs.push(null);
-  rs.pipe(process.stdout);
 }
-
-/*
-old method
-function showFileStats(fileStats) {
-  console.log(
-    'Results:',
-    clc.red(fileStats.error + ' errors'),
-    clc.yellow(fileStats.nochange + ' unmodified'),
-    clc.yellow(fileStats.skip + ' skipped'),
-    clc.green(fileStats.ok + ' ok')
-  );
-}
-*/
 
 function showStats(stats) {
   const names = Object.keys(stats).sort();
@@ -71,8 +56,6 @@ function showStats(stats) {
     rs.push(clc.blue('Stats:'));
   }
   names.forEach(name => rs.push(name + ':', stats[name] + '\n'));
-  rs.push(null);
-  rs.pipe(process.stdout);
 }
 
 //stream done
@@ -82,8 +65,6 @@ function getAllFiles(paths, filter) {
       fs.lstat(file, (err, stat) => {
         if (err) {
           rs.push('Skipping path "%s" which does not exist.\n', file);
-          rs.push(null);
-          rs.pipe(process.stdout);
           resolve();
           return;
         }
@@ -115,8 +96,6 @@ function run(transformFile, paths, options) {
       clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist\n',
       transformFile
     );
-    rs.push(null);
-    rs.pipe(process.stdout);
     return;
   }
 
@@ -126,8 +105,6 @@ function run(transformFile, paths, options) {
   ).then(files => {
       if (files.length === 0) {
         rs.push('No files selected, nothing to do.\n');
-        rs.push(null);
-        rs.pipe(process.stdout);
         return;
       }
 
@@ -138,16 +115,24 @@ function run(transformFile, paths, options) {
       }
 
       if (!options.silent) {
-        console.log('Processing %d files...', files.length);
+        // console.log('Processing %d files...', files.length);
+        rs1.pipe(process.stdout);
+        rs1.push('Processing 1 files...');
+
         if (!options.runInBand) {
+          rs1.push("Spawning 1 workers with 1 files each...");
+          rs1.push(null);
+
+          /*
           console.log(
             'Spawning %d workers with %d files each...',
             fileChunks.length,
             fileChunks[0].length
           );
+          */
         }
         if (options.dry) {
-          console.log(
+          rs.push(
             clc.green('Running in dry mode, no files will be written!')
           );
         }
@@ -181,14 +166,14 @@ function run(transformFile, paths, options) {
         if (!options.silent) {
           const endTime = process.hrtime(startTime);
           rs.push('All done.\n');
-          rs.pipe(process.stdout);
           showFileStats(fileCounters);
           showStats(statsCounter);
-          console.log(
-            'Time elapsed: %s seconds',
-            (endTime[0] + endTime[1]/1e9).toFixed(3)
+          rs.push(
+            "Time elapsed: " + (endTime[0] + endTime[1]/1e9).toFixed(3) + " seconds\n"
           );
         }
+        rs.push(null);
+        rs.pipe(process.stdout);
         return fileCounters;
       })
     );
