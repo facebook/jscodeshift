@@ -64,7 +64,7 @@ function getAllFiles(paths, filter) {
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
         if (err) {
-          rs.push('Skipping path "%s" which does not exist.\n', file);
+          rs.push('Skipping path ' + file.toString() + ' which does not exist.\n');
           resolve();
           return;
         }
