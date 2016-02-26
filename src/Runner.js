@@ -93,8 +93,7 @@ function run(transformFile, paths, options) {
 
   if (!fs.existsSync(transformFile)) {
     rs.push(
-      clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist\n',
-      transformFile
+      clc.whiteBright.bgRed('ERROR') + ' Transform file ' + transormFile.toString() + ' does not exist\n'
     );
     return;
   }
@@ -115,25 +114,30 @@ function run(transformFile, paths, options) {
       }
 
       if (!options.silent) {
-        // console.log('Processing %d files...', files.length);
-        rs1.pipe(process.stdout);
-        rs1.push('Processing 1 files...');
+        rs1.push('Processing ' + files.length.toString() + ' files...\n');
+
+        //rs1.pipe(process.stdout);
+        //rs1.push('Processing 1 files...');
+        //rs1.push(null);
 
         if (!options.runInBand) {
-          rs1.push("Spawning 1 workers with 1 files each...");
-          rs1.push(null);
-
-          /*
+          rs1.push(
+            'Spawning ' + fileChunks.length.toString() + ' workers with ' + fileChunks[0].length.toString() + ' files each...\n'
+          );
+/*
           console.log(
             'Spawning %d workers with %d files each...',
             fileChunks.length,
             fileChunks[0].length
           );
-          */
+*/
         }
+        rs1.push(null);
+        rs1.pipe(process.stdout);
+
         if (options.dry) {
           rs.push(
-            clc.green('Running in dry mode, no files will be written!')
+            clc.green('Running in dry mode, no files will be written!\n')
           );
         }
       }
