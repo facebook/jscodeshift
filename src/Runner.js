@@ -13,9 +13,8 @@
 require('es6-promise').polyfill();
 
 var Readable = require('stream').Readable;
-
 var rs = new Readable;
-var rs1 = new Readable;
+var silentOptionRS = new Readable;
 
 const child_process = require('child_process');
 const clc = require('cli-color');
@@ -58,13 +57,12 @@ function showStats(stats) {
   names.forEach(name => rs.push(name + ':', stats[name] + '\n'));
 }
 
-//stream done
 function getAllFiles(paths, filter) {
   return Promise.all(
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
         if (err) {
-          rs.push('Skipping path "%s" which does not exist.\n', file);
+          rs.push('Skipping path ' + file + ' which does not exist.\n');
           resolve();
           return;
         }
@@ -97,7 +95,6 @@ function run(transformFile, paths, options) {
     );
     return;
   }
-
   return getAllFiles(
     paths,
     name => !extensions || extensions.indexOf(path.extname(name)) != -1
@@ -106,40 +103,26 @@ function run(transformFile, paths, options) {
         rs.push('No files selected, nothing to do.\n');
         return;
       }
-
       const processes = Math.min(files.length, cpus);
       const chunkSize = Math.ceil(files.length / processes);
       for (let i = 0, l = files.length; i < l; i += chunkSize) {
         fileChunks.push(files.slice(i, i + chunkSize));
       }
-
       if (!options.silent) {
-        rs1.push('Processing ' + files.length.toString() + ' files...\n');
-
-        //rs1.pipe(process.stdout);
-        //rs1.push('Processing 1 files...');
-        //rs1.push(null);
-
+        silentOptionRS.push('Processing ' + files.length.toString() + ' files...\n');
         if (!options.runInBand) {
-          rs1.push(
-            'Spawning ' + fileChunks.length.toString() + ' workers with ' + fileChunks[0].length.toString() + ' files each...\n'
+          silentOptionRS.push(
+            'Spawning ' + fileChunks.length.toString() + ' workers with ' +
+            fileChunks[0].length.toString() + ' files each...\n'
           );
-/*
-          console.log(
-            'Spawning %d workers with %d files each...',
-            fileChunks.length,
-            fileChunks[0].length
-          );
-*/
         }
-        rs1.push(null);
-        rs1.pipe(process.stdout);
-
         if (options.dry) {
-          rs.push(
+          silentOptionRS.push(
             clc.green('Running in dry mode, no files will be written!\n')
           );
         }
+        silentOptionRS.push(null);
+        silentOptionRS.pipe(process.stdout);
       }
 
       return fileChunks.map(files => {
