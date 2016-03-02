@@ -58,8 +58,7 @@ function getAllFiles(paths, filter) {
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
         if (err) {
-          //flag
-          process.stdout.error('Skipping path "%s" which does not exist. \n', file);
+          process.stdout.error('Skipping path ' + file + ' which does not exist. \n');
           resolve();
           return;
         }
@@ -88,9 +87,7 @@ function run(transformFile, paths, options) {
 
   if (!fs.existsSync(transformFile)) {
     process.stdout.error(
-      //flag
-      clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist \n',
-      transformFile
+      clc.whiteBright.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
   }
