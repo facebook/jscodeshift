@@ -64,19 +64,23 @@ function dirFiles (dir, callback, acc) {
   }
 
   fs.readdir(dir, (err, files) => {
+    // if dir does not exist or is not a directory, bail
+    // (this should not happen as long as calls do the necessary checks)
     if (err) throw err;
+
     acc.remaining += files.length;
     files.forEach(file => {
       let name = dir + file;
       fs.stat(name, (err, stats) => {
         if (err) {
+          // probably a symlink issue
           console.log('Skipping path "%s" which does not exist.', name);
           done();
         } else if (stats.isDirectory()) {
-            dirFiles(name + "/", callback, acc);
+          dirFiles(name + "/", callback, acc);
         } else {
-            acc.files.push(name);
-            done();
+          acc.files.push(name);
+          done();
         }
       });
     });
