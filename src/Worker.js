@@ -80,7 +80,8 @@ function run(data) {
   var options = data.options;
   if (!files.length) {
     finish();
-  } else
+    return;
+  }
   async.each(
     files,
     function(file, callback) {
