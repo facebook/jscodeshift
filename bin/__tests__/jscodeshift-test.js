@@ -168,7 +168,8 @@ describe('jscodeshift CLI', () => {
       return run(['-t', transform, source]).then(
         ([stdout, stderr]) => {
           expect(stdout).toContain('Processing 1 files...');
-          expect(stdout).toContain('Spawning 1 workers with 1 files each...');
+          expect(stdout).toContain('Spawning 1 workers...');
+          expect(stdout).toContain('Sending 1 files to free worker...');
           expect(stdout).toContain('All done.');
           expect(stdout).toContain('Results: ');
           expect(stdout).toContain('Time elapsed: ');

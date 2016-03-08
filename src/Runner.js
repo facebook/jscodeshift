@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 
 const availableCpus = require('os').cpus().length - 1;
+const CHUNK_SIZE = 50;
 
 const log = {
   ok(msg, verbose) {
@@ -80,7 +81,6 @@ function run(transformFile, paths, options) {
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
-  const fileChunks = [];
   const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
   const statsCounter = {};
   const startTime = process.hrtime();
@@ -97,24 +97,34 @@ function run(transformFile, paths, options) {
     paths,
     name => !extensions || extensions.indexOf(path.extname(name)) != -1
   ).then(files => {
-      if (files.length === 0) {
+      const numFiles = files.length;
+
+      if (numFiles === 0) {
         console.log('No files selected, nothing to do.');
         return;
       }
 
-      const processes = Math.min(files.length, cpus);
-      const chunkSize = Math.ceil(files.length / processes);
-      for (let i = 0, l = files.length; i < l; i += chunkSize) {
-        fileChunks.push(files.slice(i, i + chunkSize));
+      const processes = Math.min(numFiles, cpus);
+      const chunkSize = Math.min(Math.ceil(numFiles / processes), CHUNK_SIZE);
+
+      let index = 0;
+      // return the next chunk of work for a free worker
+      function next() {
+        if (!options.silent && !options.runInBand && index < numFiles) {
+          console.log(
+            'Sending %d files to free worker...',
+            Math.min(chunkSize, numFiles-index)
+          );
+        }
+        return files.slice(index, index += chunkSize);
       }
 
       if (!options.silent) {
-        console.log('Processing %d files...', files.length);
+        console.log('Processing %d files...', numFiles);
         if (!options.runInBand) {
           console.log(
-            'Spawning %d workers with %d files each...',
-            fileChunks.length,
-            fileChunks[0].length
+            'Spawning %d workers...',
+            processes,
           );
         }
         if (options.dry) {
@@ -124,12 +134,18 @@ function run(transformFile, paths, options) {
         }
       }
 
-      return fileChunks.map(files => {
-        const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
-        const child = options.runInBand ?
+      const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
+
+      const workers = [];
+      for (let i = 0; i < processes; i++) {
+        workers.push(options.runInBand ?
           require('./Worker')(args) :
-          child_process.fork(require.resolve('./Worker'), args);
-        child.send({files, options});
+          child_process.fork(require.resolve('./Worker'), args)
+        );
+      }
+
+      return workers.map(child => {
+        child.send({files: next(), options});
         child.on('message', message => {
           switch (message.action) {
             case 'status':
@@ -141,6 +157,9 @@ function run(transformFile, paths, options) {
                 statsCounter[message.name] = 0;
               }
               statsCounter[message.name] += message.quantity;
+              break;
+            case 'free':
+              child.send({files: next(), options});
               break;
           }
         });
