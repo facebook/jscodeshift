@@ -46,6 +46,10 @@ function setup(tr, babel) {
   transform = require(tr);
 }
 
+function free() {
+  notify({action: 'free'});
+}
+
 function updateStatus(status, file, msg) {
   msg = msg  ?  file + ' ' + msg : file;
   notify({action: 'status', status: status, msg: msg});
@@ -74,6 +78,10 @@ function trimStackTrace(trace) {
 function run(data) {
   var files = data.files;
   var options = data.options;
+  if (!files.length) {
+    finish();
+    return;
+  }
   async.each(
     files,
     function(file, callback) {
@@ -131,7 +139,7 @@ function run(data) {
       if (err) {
         updateStatus('error', '', 'This should never be shown!');
       }
-      finish();
+      free();
     }
   );
 }
