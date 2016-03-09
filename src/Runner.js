@@ -14,7 +14,6 @@ require('es6-promise').polyfill();
 
 const child_process = require('child_process');
 const clc = require('cli-color');
-const dir = require('node-dir');
 const fs = require('fs');
 const path = require('path');
 
@@ -53,6 +52,42 @@ function showStats(stats) {
   names.forEach(name => console.log(name + ':', stats[name]));
 }
 
+function dirFiles (dir, callback, acc) {
+  // acc stores files found so far and counts remaining paths to be processed
+  acc = acc || { files: [], remaining: 1 };
+
+  function done() {
+    // decrement count and return if there are no more paths left to process
+    if (!--acc.remaining) {
+      callback(acc.files);
+    }
+  }
+
+  fs.readdir(dir, (err, files) => {
+    // if dir does not exist or is not a directory, bail
+    // (this should not happen as long as calls do the necessary checks)
+    if (err) throw err;
+
+    acc.remaining += files.length;
+    files.forEach(file => {
+      let name = dir + file;
+      fs.stat(name, (err, stats) => {
+        if (err) {
+          // probably a symlink issue
+          console.log('Skipping path "%s" which does not exist.', name);
+          done();
+        } else if (stats.isDirectory()) {
+          dirFiles(name + "/", callback, acc);
+        } else {
+          acc.files.push(name);
+          done();
+        }
+      });
+    });
+    done();
+  });
+}
+
 function getAllFiles(paths, filter) {
   return Promise.all(
     paths.map(file => new Promise((resolve, reject) => {
@@ -64,9 +99,9 @@ function getAllFiles(paths, filter) {
         }
 
         if (stat.isDirectory()) {
-          dir.files(
+          dirFiles(
             file,
-            (err, list) => resolve(list ? list.filter(filter) : [])
+            list => resolve(list.filter(filter))
           );
         } else {
           resolve([file]);
