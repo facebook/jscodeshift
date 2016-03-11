@@ -16,6 +16,7 @@ const child_process = require('child_process');
 const clc = require('cli-color');
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const https = require('https');
 const temp = require('temp');
 
@@ -124,17 +125,10 @@ function run(transformFile, paths, options) {
   const startTime = process.hrtime();
 
   if (/^http/.test(transformFile)) {
-    if (transformFile.indexOf('https') !== 0) {
-      console.log(
-        clc.whiteBright.bgRed('ERROR') + ' Remote transforms only support https. %s',
-        transformFile
-     );
-      return;
-    }
-
     usedRemoteScript = true;
     return new Promise((resolve, reject) => {
-      https.get(transformFile, (res) => {
+      // call the correct `http` or `https` implementation
+      (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
         let contents = '';
         res
           .on('data', (d) => {
