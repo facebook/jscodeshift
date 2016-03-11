@@ -16,6 +16,8 @@ const child_process = require('child_process');
 const clc = require('cli-color');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const temp = require('temp');
 
 const availableCpus = require('os').cpus().length - 1;
 const CHUNK_SIZE = 50;
@@ -113,6 +115,7 @@ function getAllFiles(paths, filter) {
 }
 
 function run(transformFile, paths, options) {
+  let usedRemoteScript = false;
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
@@ -120,102 +123,141 @@ function run(transformFile, paths, options) {
   const statsCounter = {};
   const startTime = process.hrtime();
 
-  if (!fs.existsSync(transformFile)) {
+  if (/^http/.test(transformFile)) {
+    if (transformFile.indexOf('https') !== 0) {
+      console.log(
+        clc.whiteBright.bgRed('ERROR') + ' Remote transforms only support https. %s',
+        transformFile
+     );
+      return;
+    }
+
+    usedRemoteScript = true;
+    return new Promise((resolve, reject) => {
+      https.get(transformFile, (res) => {
+        let contents = '';
+        res
+          .on('data', (d) => {
+            contents += d.toString();
+          })
+          .on('end', () => {
+            temp.open('jscodeshift', (err, info) => {
+              reject(err);
+              fs.write(info.fd, contents);
+              fs.close(info.fd, function(err) {
+                reject(err);
+                transform(info.path).then(resolve, reject);
+              });
+            });
+        })
+      })
+      .on('error', (e) => {
+        reject(e.message);
+      });
+    });
+  } else if (!fs.existsSync(transformFile)) {
     console.log(
       clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist',
       transformFile
     );
     return;
+  } else {
+    return transform(transformFile);
   }
 
-  return getAllFiles(
-    paths,
-    name => !extensions || extensions.indexOf(path.extname(name)) != -1
-  ).then(files => {
-      const numFiles = files.length;
+  function transform(transformFile) {
+    return getAllFiles(
+      paths,
+      name => !extensions || extensions.indexOf(path.extname(name)) != -1
+    ).then(files => {
+        const numFiles = files.length;
 
-      if (numFiles === 0) {
-        console.log('No files selected, nothing to do.');
-        return;
-      }
-
-      const processes = Math.min(numFiles, cpus);
-      const chunkSize = Math.min(Math.ceil(numFiles / processes), CHUNK_SIZE);
-
-      let index = 0;
-      // return the next chunk of work for a free worker
-      function next() {
-        if (!options.silent && !options.runInBand && index < numFiles) {
-          console.log(
-            'Sending %d files to free worker...',
-            Math.min(chunkSize, numFiles-index)
-          );
+        if (numFiles === 0) {
+          console.log('No files selected, nothing to do.');
+          return;
         }
-        return files.slice(index, index += chunkSize);
-      }
 
-      if (!options.silent) {
-        console.log('Processing %d files...', numFiles);
-        if (!options.runInBand) {
-          console.log(
-            'Spawning %d workers...',
-            processes,
-          );
-        }
-        if (options.dry) {
-          console.log(
-            clc.green('Running in dry mode, no files will be written!')
-          );
-        }
-      }
+        const processes = Math.min(numFiles, cpus);
+        const chunkSize = Math.min(Math.ceil(numFiles / processes), CHUNK_SIZE);
 
-      const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
-
-      const workers = [];
-      for (let i = 0; i < processes; i++) {
-        workers.push(options.runInBand ?
-          require('./Worker')(args) :
-          child_process.fork(require.resolve('./Worker'), args)
-        );
-      }
-
-      return workers.map(child => {
-        child.send({files: next(), options});
-        child.on('message', message => {
-          switch (message.action) {
-            case 'status':
-              fileCounters[message.status] += 1;
-              log[message.status](message.msg, options.verbose);
-              break;
-            case 'update':
-              if (!statsCounter[message.name]) {
-                statsCounter[message.name] = 0;
-              }
-              statsCounter[message.name] += message.quantity;
-              break;
-            case 'free':
-              child.send({files: next(), options});
-              break;
+        let index = 0;
+        // return the next chunk of work for a free worker
+        function next() {
+          if (!options.silent && !options.runInBand && index < numFiles) {
+            console.log(
+              'Sending %d files to free worker...',
+              Math.min(chunkSize, numFiles-index)
+            );
           }
-        });
-        return new Promise(resolve => child.on('disconnect', resolve));
-      });
-    })
-    .then(pendingWorkers =>
-      Promise.all(pendingWorkers).then(() => {
+          return files.slice(index, index += chunkSize);
+        }
+
         if (!options.silent) {
-          const endTime = process.hrtime(startTime);
-          console.log('All done.');
-          showFileStats(fileCounters);
-          showStats(statsCounter);
-          console.log(
-            'Time elapsed: %s seconds',
-            (endTime[0] + endTime[1]/1e9).toFixed(3)
+          console.log('Processing %d files...', numFiles);
+          if (!options.runInBand) {
+            console.log(
+              'Spawning %d workers...',
+              processes,
+            );
+          }
+          if (options.dry) {
+            console.log(
+              clc.green('Running in dry mode, no files will be written!')
+            );
+          }
+        }
+
+        const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
+
+        const workers = [];
+        for (let i = 0; i < processes; i++) {
+          workers.push(options.runInBand ?
+            require('./Worker')(args) :
+            child_process.fork(require.resolve('./Worker'), args)
           );
         }
-        return fileCounters;
+
+        return workers.map(child => {
+          child.send({files: next(), options});
+          child.on('message', message => {
+            switch (message.action) {
+              case 'status':
+                fileCounters[message.status] += 1;
+                log[message.status](message.msg, options.verbose);
+                break;
+              case 'update':
+                if (!statsCounter[message.name]) {
+                  statsCounter[message.name] = 0;
+                }
+                statsCounter[message.name] += message.quantity;
+                break;
+              case 'free':
+                child.send({files: next(), options});
+                break;
+            }
+          });
+          return new Promise(resolve => child.on('disconnect', resolve));
+        });
       })
-    );
+      .then(pendingWorkers =>
+        Promise.all(pendingWorkers).then(() => {
+          if (!options.silent) {
+            const endTime = process.hrtime(startTime);
+            console.log('All done.');
+            showFileStats(fileCounters);
+            showStats(statsCounter);
+            console.log(
+              'Time elapsed: %s seconds',
+              (endTime[0] + endTime[1]/1e9).toFixed(3)
+            );
+          }
+          if (usedRemoteScript) {
+            temp.cleanupSync();
+          }
+          return fileCounters;
+        })
+      );
+  }
 }
 
 exports.run = run;
