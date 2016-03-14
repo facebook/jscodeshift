@@ -140,8 +140,10 @@ function run(transformFile, paths, options) {
         return;
       }
 
-      const processes = Math.min(numFiles, cpus);
-      const chunkSize = Math.min(Math.ceil(numFiles / processes), CHUNK_SIZE);
+      const processes = options.runInBand ? 1 : Math.min(numFiles, cpus);
+      const chunkSize = processes > 1 ?
+        Math.min(Math.ceil(numFiles / processes), CHUNK_SIZE) :
+        numFiles;
 
       let index = 0;
       // return the next chunk of work for a free worker
