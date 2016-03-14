@@ -22,35 +22,35 @@ const CHUNK_SIZE = 50;
 
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && console.log(clc.white.bgGreen(' OKK '), msg);
+    verbose >= 2 && process.stdout.write(clc.white.bgGreen(' OKK '), msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && console.log(clc.white.bgYellow(' NOC '), msg);
+    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' NOC '), msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && console.log(clc.white.bgYellow(' SKIP'), msg);
+    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' SKIP'), msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && console.log(clc.white.bgRedBright(' ERR '), msg);
+    verbose >= 0 && process.stdout.write(clc.white.bgRedBright(' ERR '), msg);
   },
 };
 
 function showFileStats(fileStats) {
-  console.log(
-    'Results:',
-    clc.red(fileStats.error + ' errors'),
-    clc.yellow(fileStats.nochange + ' unmodified'),
-    clc.yellow(fileStats.skip + ' skipped'),
-    clc.green(fileStats.ok + ' ok')
+  process.stdout.write(
+    'Results: \n'+
+    clc.red(fileStats.error + ' errors\n')+
+    clc.yellow(fileStats.nochange + ' unmodified\n')+
+    clc.yellow(fileStats.skip + ' skipped\n')+
+    clc.green(fileStats.ok + ' ok\n')
   );
 }
 
 function showStats(stats) {
   const names = Object.keys(stats).sort();
   if (names.length) {
-    console.log(clc.blue('Stats:'));
+    process.stdout.write(clc.blue('Stats: \n'));
   }
-  names.forEach(name => console.log(name + ':', stats[name]));
+  names.forEach(name => process.stdout.write(name + ': \n', stats[name]));
 }
 
 function dirFiles (dir, callback, acc) {
@@ -75,10 +75,12 @@ function dirFiles (dir, callback, acc) {
       fs.stat(name, (err, stats) => {
         if (err) {
           // probably a symlink issue
-          console.log('Skipping path "%s" which does not exist.', name);
+          process.std.write(
+            'Skipping path "' + name + '" which does not exist.\n'
+          );
           done();
         } else if (stats.isDirectory()) {
-          dirFiles(name + "/", callback, acc);
+          dirFiles(name + '/', callback, acc);
         } else {
           acc.files.push(name);
           done();
@@ -94,7 +96,7 @@ function getAllFiles(paths, filter) {
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
         if (err) {
-          console.log('Skipping path "%s" which does not exist.', file);
+          process.stdout.error('Skipping path ' + file + ' which does not exist. \n');
           resolve();
           return;
         }
@@ -121,9 +123,8 @@ function run(transformFile, paths, options) {
   const startTime = process.hrtime();
 
   if (!fs.existsSync(transformFile)) {
-    console.log(
-      clc.whiteBright.bgRed('ERROR') + ' Transform file %s does not exist',
-      transformFile
+    process.stdout.error(
+      clc.whiteBright.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
   }
@@ -135,7 +136,7 @@ function run(transformFile, paths, options) {
       const numFiles = files.length;
 
       if (numFiles === 0) {
-        console.log('No files selected, nothing to do.');
+        process.stdout.write('No files selected, nothing to do. \n');
         return;
       }
 
@@ -146,25 +147,25 @@ function run(transformFile, paths, options) {
       // return the next chunk of work for a free worker
       function next() {
         if (!options.silent && !options.runInBand && index < numFiles) {
-          console.log(
-            'Sending %d files to free worker...',
-            Math.min(chunkSize, numFiles-index)
+          process.stdout.write(
+            'Sending ' +
+            Math.min(chunkSize, numFiles-index) +
+            ' files to free worker...\n'
           );
         }
         return files.slice(index, index += chunkSize);
       }
 
       if (!options.silent) {
-        console.log('Processing %d files...', numFiles);
+        process.stdout.write('Processing ' + files.length + ' files... \n');
         if (!options.runInBand) {
-          console.log(
-            'Spawning %d workers...',
-            processes,
+          process.stdout.write(
+            'Spawning ' + processes +' workers...\n'
           );
         }
         if (options.dry) {
-          console.log(
-            clc.green('Running in dry mode, no files will be written!')
+          process.stdout.write(
+            clc.green('Running in dry mode, no files will be written! \n')
           );
         }
       }
@@ -205,12 +206,11 @@ function run(transformFile, paths, options) {
       Promise.all(pendingWorkers).then(() => {
         if (!options.silent) {
           const endTime = process.hrtime(startTime);
-          console.log('All done.');
+          process.stdout.write('All done. \n');
           showFileStats(fileCounters);
           showStats(statsCounter);
-          console.log(
-            'Time elapsed: %s seconds',
-            (endTime[0] + endTime[1]/1e9).toFixed(3)
+          process.stdout.write(
+            'Time elapsed: ' + (endTime[0] + endTime[1]/1e9).toFixed(3) + 'seconds \n'
           );
         }
         return fileCounters;
