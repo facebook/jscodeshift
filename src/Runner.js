@@ -74,7 +74,7 @@ function dirFiles (dir, callback, acc) {
 
     acc.remaining += files.length;
     files.forEach(file => {
-      let name = dir + file;
+      let name = path.join(dir, file);
       fs.stat(name, (err, stats) => {
         if (err) {
           // probably a symlink issue
