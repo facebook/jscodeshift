@@ -78,7 +78,7 @@ function dirFiles (dir, callback, acc) {
       fs.stat(name, (err, stats) => {
         if (err) {
           // probably a symlink issue
-          process.std.write(
+          process.stdout.write(
             'Skipping path "' + name + '" which does not exist.\n'
           );
           done();
