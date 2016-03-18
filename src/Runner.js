@@ -25,16 +25,16 @@ const CHUNK_SIZE = 50;
 
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && process.stdout.write(clc.white.bgGreen(' OKK '), msg);
+    verbose >= 2 && process.stdout.write(clc.white.bgGreen(' OKK ') + msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' NOC '), msg);
+    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' NOC ') + msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' SKIP'), msg);
+    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' SKIP ') + msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && process.stdout.write(clc.white.bgRedBright(' ERR '), msg);
+    verbose >= 0 && process.stdout.write(clc.white.bgRedBright(' ERR ') + msg);
   },
 };
 
