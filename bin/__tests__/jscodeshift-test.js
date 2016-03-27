@@ -161,6 +161,19 @@ describe('jscodeshift CLI', () => {
     );
   });
 
+  pit('does not stall with too many files', () => {
+    var sources = [];
+    for (var i = 0; i < 100; i++) {
+      sources.push(createTempFileWith('a'));
+    }
+    var transform = createTransformWith('');
+    return run(['-t', transform, '--foo=42'].concat(sources)).then(
+      ([stdout, stderr]) => {
+        expect(true).toBe(true);
+      }
+    );
+  });
+
   describe('output', () => {
     pit('shows workers info and stats at the end by default', () => {
       var source = createTempFileWith('a');
