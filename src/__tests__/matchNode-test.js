@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-/*global jest, describe, it, expect*/
+/*global jest, describe, it, expect, beforeEach*/
 
 jest.autoMockOff();
 var matchNode = require('../matchNode');
@@ -15,9 +15,14 @@ var matchNode = require('../matchNode');
 describe('matchNode', function() {
   beforeEach(function() {
     jest.addMatchers({
-      toMatchNode: function(needle) {
-        var haystack = this.actual;
-        return matchNode(haystack, needle);
+      toMatchNode: function() {
+        return {
+          compare(haystack, needle) {
+            const result = {};
+            result.pass = matchNode(haystack, needle);
+            return result;
+          },
+        };
       }
     });
   })
