@@ -23,6 +23,10 @@ const temp = require('temp');
 const availableCpus = require('os').cpus().length - 1;
 const CHUNK_SIZE = 50;
 
+function lineBreak(str) {
+  return /\n$/.test(str) ? str : str + '\n';
+}
+
 const log = {
   ok(msg, verbose) {
     verbose >= 2 && process.stdout.write(colors.white.bgGreen(' OKK ') + msg);
@@ -220,7 +224,7 @@ function run(transformFile, paths, options) {
             switch (message.action) {
               case 'status':
                 fileCounters[message.status] += 1;
-                log[message.status](message.msg, options.verbose);
+                log[message.status](lineBreak(message.msg), options.verbose);
                 break;
               case 'update':
                 if (!statsCounter[message.name]) {
