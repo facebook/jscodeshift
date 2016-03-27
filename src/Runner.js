@@ -13,7 +13,7 @@
 require('es6-promise').polyfill();
 
 const child_process = require('child_process');
-const clc = require('cli-color');
+const colors = require('colors/safe');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
@@ -25,33 +25,33 @@ const CHUNK_SIZE = 50;
 
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && process.stdout.write(clc.white.bgGreen(' OKK ') + msg);
+    verbose >= 2 && process.stdout.write(colors.white.bgGreen(' OKK ') + msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' NOC ') + msg);
+    verbose >= 1 && process.stdout.write(colors.white.bgYellow(' NOC ') + msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && process.stdout.write(clc.white.bgYellow(' SKIP ') + msg);
+    verbose >= 1 && process.stdout.write(colors.white.bgYellow(' SKIP ') + msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && process.stdout.write(clc.white.bgRedBright(' ERR ') + msg);
+    verbose >= 0 && process.stdout.write(colors.white.bgRed(' ERR ') + msg);
   },
 };
 
 function showFileStats(fileStats) {
   process.stdout.write(
     'Results: \n'+
-    clc.red(fileStats.error + ' errors\n')+
-    clc.yellow(fileStats.nochange + ' unmodified\n')+
-    clc.yellow(fileStats.skip + ' skipped\n')+
-    clc.green(fileStats.ok + ' ok\n')
+    colors.red(fileStats.error + ' errors\n')+
+    colors.yellow(fileStats.nochange + ' unmodified\n')+
+    colors.yellow(fileStats.skip + ' skipped\n')+
+    colors.green(fileStats.ok + ' ok\n')
   );
 }
 
 function showStats(stats) {
   const names = Object.keys(stats).sort();
   if (names.length) {
-    process.stdout.write(clc.blue('Stats: \n'));
+    process.stdout.write(colors.blue('Stats: \n'));
   }
   names.forEach(name => process.stdout.write(name + ': \n', stats[name]));
 }
@@ -99,7 +99,7 @@ function getAllFiles(paths, filter) {
     paths.map(file => new Promise((resolve, reject) => {
       fs.lstat(file, (err, stat) => {
         if (err) {
-          process.stdout.error('Skipping path ' + file + ' which does not exist. \n');
+          process.stderr.write('Skipping path ' + file + ' which does not exist. \n');
           resolve();
           return;
         }
@@ -152,8 +152,8 @@ function run(transformFile, paths, options) {
       });
     });
   } else if (!fs.existsSync(transformFile)) {
-    process.stdout.error(
-      clc.whiteBright.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
+    process.stderr.write(
+      colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
   } else {
@@ -199,7 +199,7 @@ function run(transformFile, paths, options) {
           }
           if (options.dry) {
             process.stdout.write(
-              clc.green('Running in dry mode, no files will be written! \n')
+              colors.green('Running in dry mode, no files will be written! \n')
             );
           }
         }
