@@ -32,7 +32,7 @@ if (module.parent) {
     return emitter;
   };
 } else {
-  finish = () => { process.disconnect(); };
+  finish = () => setImmediate(() => process.disconnect());
   notify = (data) => { process.send(data); };
   process.on('message', (data) => { run(data); });
   setup(process.argv[2], process.argv[3]);
