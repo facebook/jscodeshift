@@ -45,7 +45,8 @@
     "preprocessCachingDisabled": true,
     "testPathDirs": [
       "src",
-      "bin"
+      "bin",
+      "sample"
     ],
     "unmockedModulePathPatterns": [
       "node_modules/"

@@ -292,6 +292,40 @@ This can be done by passing config options to [recast].
 
 More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61)
 
+### Unit Testing
+
+jscodeshift comes with a simple utility to allow easy unit testing with [Jest](https://facebook.github.io/jest/), without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:
+
+ - The test is located in a subdirectory under the directory the transform itself is located in (eg. `__tests__`)
+ - Test fixtures are located in a `__testfixtures__` directory
+
+This results in a directory structure like this:
+```
+/MyTransform.js
+/__tests__/MyTransform-test.js
+/__testfixtures__/MyTransform.input.js
+/__testfixtures__/MyTransform.output.js
+```
+
+To define a test, use `defineTest` from the `testUtils` module:
+
+```js
+jest.autoMockOff();
+const defineTest = require('jscodeshift/dist/testUtils').defineTest;
+defineTest(__dirname, 'MyTransform');
+```
+
+An alternate fixture filename can be provided as the fourth argument to `defineTest`. This also means that multiple test fixtures can be provided:
+```js
+defineTest(__dirname, 'MyTransform', null, 'FirstFixture');
+defineTest(__dirname, 'MyTransform', null, 'SecondFixture');
+```
+This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and one for `__testfixtures__/SecondFixture.input.js`
+
+
+A simple example is bundled in the [sample directory](sample).
+
+
 ### Example Codemods
 
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
