@@ -1,4 +1,5 @@
 /src/
+/sample/
 .gitignore
 .jshintrc
 .module-cache
