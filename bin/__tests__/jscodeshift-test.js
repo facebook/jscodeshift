@@ -20,6 +20,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
 var temp = require('temp');
+var mkdirp = require('mkdirp');
 require('es6-promise').polyfill();
 
 function run(args, stdin, cwd) {
@@ -58,6 +59,7 @@ describe('jscodeshift CLI', () => {
   function renameFileTo(oldPath, newFilename) {
     var projectPath = path.dirname(oldPath);
     var newPath = path.join(projectPath, newFilename);
+    mkdirp.sync(path.dirname(newPath));
     fs.renameSync(oldPath, newPath);
     return newPath;
   }
@@ -209,6 +211,20 @@ describe('jscodeshift CLI', () => {
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('a');
           expect(fs.readFileSync(sources[1]).toString()).toBe('transforma');
+        }
+      );
+    });
+
+    pit('sources ignore patterns from configuration file', () => {
+      var patterns = ['sub/dir/', '*-test.js'];
+      var gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      return run(['-t', transform, '--ignore-config', gitignore, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
         }
       );
     });

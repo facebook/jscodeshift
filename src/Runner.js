@@ -50,6 +50,9 @@ function addIgnorePattern(val) {
     let pattern = val;
     if (pattern.indexOf('/') === -1) {
       matchers.push('**/' + pattern);
+    } else if (pattern[pattern.length-1] === '/') {
+      matchers.push('**/' + pattern + '**');
+      matchers.push(pattern + '**');
     }
     matchers.push(pattern);
   }
@@ -159,6 +162,23 @@ function run(transformFile, paths, options) {
   const startTime = process.hrtime();
 
   addIgnorePattern(options.ignorePattern);
+
+  if (options.ignoreConfig) {
+    let lines = [];
+
+    if (typeof options.ignoreConfig === 'string') {
+      options.ignoreConfig = [options.ignoreConfig];
+    }
+    options.ignoreConfig.forEach(function(config) {
+      var stats = fs.statSync(config);
+      if (stats.isFile()) {
+        var content = fs.readFileSync(config, 'utf8');
+        lines = lines.concat(content.split('\n'));
+      }
+    });
+
+    lines.forEach(addIgnorePattern);
+  }
 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;

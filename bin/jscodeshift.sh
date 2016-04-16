@@ -63,6 +63,11 @@ var opts = require('nomnom')
       full: 'ignore-pattern',
       help: 'Ignore files that match a provided glob expression'
     },
+    ignoreConfig: {
+      full: 'ignore-config',
+      help: 'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)',
+      metavar: 'FILE'
+    },
     runInBand: {
       flag: true,
       default: false,
