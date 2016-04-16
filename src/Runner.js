@@ -15,11 +15,11 @@ require('es6-promise').polyfill();
 const child_process = require('child_process');
 const colors = require('colors/safe');
 const fs = require('fs');
-const mm = require('micromatch');
 const path = require('path');
 const http = require('http');
 const https = require('https');
 const temp = require('temp');
+const ignores = require('./ignoreFiles');
 
 const availableCpus = require('os').cpus().length - 1;
 const CHUNK_SIZE = 50;
@@ -42,26 +42,6 @@ const log = {
     verbose >= 0 && process.stdout.write(colors.white.bgRed(' ERR ') + msg);
   },
 };
-
-const matchers = [];
-
-function addIgnorePattern(val) {
-  if (val && typeof val === 'string') {
-    let pattern = val;
-    if (pattern.indexOf('/') === -1) {
-      matchers.push('**/' + pattern);
-    } else if (pattern[pattern.length-1] === '/') {
-      matchers.push('**/' + pattern + '**');
-      matchers.push(pattern + '**');
-    }
-    matchers.push(pattern);
-  }
-}
-
-function shouldIgnore(path) {
-  var matched = matchers.length ? mm.any(path, matchers, { dot:true }) : false;
-  return matched;
-}
 
 function showFileStats(fileStats) {
   process.stdout.write(
@@ -107,7 +87,7 @@ function dirFiles (dir, callback, acc) {
             'Skipping path "' + name + '" which does not exist.\n'
           );
           done();
-        } else if (shouldIgnore(name)) {
+        } else if (ignores.shouldIgnore(name)) {
           process.stdout.write(
             'Ignoring path "' + name + '".\n'
           );
@@ -139,7 +119,7 @@ function getAllFiles(paths, filter) {
             file,
             list => resolve(list.filter(filter))
           );
-        } else if (shouldIgnore(file)) {
+        } else if (ignores.shouldIgnore(file)) {
           process.stdout.write(
             'Ignoring file "' + file + '".\n'
           );
@@ -161,24 +141,8 @@ function run(transformFile, paths, options) {
   const statsCounter = {};
   const startTime = process.hrtime();
 
-  addIgnorePattern(options.ignorePattern);
-
-  if (options.ignoreConfig) {
-    let lines = [];
-
-    if (typeof options.ignoreConfig === 'string') {
-      options.ignoreConfig = [options.ignoreConfig];
-    }
-    options.ignoreConfig.forEach(function(config) {
-      var stats = fs.statSync(config);
-      if (stats.isFile()) {
-        var content = fs.readFileSync(config, 'utf8');
-        lines = lines.concat(content.split('\n'));
-      }
-    });
-
-    lines.forEach(addIgnorePattern);
-  }
+  ignores.add(options.ignorePattern);
+  ignores.addFromFile(options.ignoreConfig);
 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
