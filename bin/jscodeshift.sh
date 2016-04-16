@@ -59,6 +59,17 @@ var opts = require('nomnom')
       default: 'js',
       help: 'File extensions the transform file should be applied to'
     },
+    ignorePattern: {
+      full: 'ignore-pattern',
+      list: true,
+      help: 'Ignore files that match a provided glob expression'
+    },
+    ignoreConfig: {
+      full: 'ignore-config',
+      list: true,
+      help: 'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)',
+      metavar: 'FILE'
+    },
     runInBand: {
       flag: true,
       default: false,

@@ -19,6 +19,7 @@ const path = require('path');
 const http = require('http');
 const https = require('https');
 const temp = require('temp');
+const ignores = require('./ignoreFiles');
 
 const availableCpus = require('os').cpus().length - 1;
 const CHUNK_SIZE = 50;
@@ -86,6 +87,9 @@ function dirFiles (dir, callback, acc) {
             'Skipping path "' + name + '" which does not exist.\n'
           );
           done();
+        } else if (ignores.shouldIgnore(name)) {
+          // ignore the path
+          done();
         } else if (stats.isDirectory()) {
           dirFiles(name + '/', callback, acc);
         } else {
@@ -113,6 +117,9 @@ function getAllFiles(paths, filter) {
             file,
             list => resolve(list.filter(filter))
           );
+        } else if (ignores.shouldIgnore(file)) {
+          // ignoring the file
+          resolve([]);
         } else {
           resolve([file]);
         }
@@ -129,6 +136,9 @@ function run(transformFile, paths, options) {
   const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
   const statsCounter = {};
   const startTime = process.hrtime();
+
+  ignores.add(options.ignorePattern);
+  ignores.addFromFile(options.ignoreConfig);
 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;

@@ -20,6 +20,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
 var temp = require('temp');
+var mkdirp = require('mkdirp');
 require('es6-promise').polyfill();
 
 function run(args, stdin, cwd) {
@@ -44,11 +45,23 @@ function run(args, stdin, cwd) {
 }
 
 describe('jscodeshift CLI', () => {
-  function createTempFileWith(content) {
+  function createTempFileWith(content, filename) {
     var info = temp.openSync();
+    var filePath = info.path;
     fs.writeSync(info.fd, content);
     fs.closeSync(info.fd);
-    return info.path;
+    if (filename) {
+      filePath = renameFileTo(filePath, filename);
+    }
+    return filePath;
+  }
+
+  function renameFileTo(oldPath, newFilename) {
+    var projectPath = path.dirname(oldPath);
+    var newPath = path.join(projectPath, newFilename);
+    mkdirp.sync(path.dirname(newPath));
+    fs.renameSync(oldPath, newPath);
+    return newPath;
   }
 
   function createTransformWith(content) {
@@ -120,13 +133,8 @@ describe('jscodeshift CLI', () => {
     var transform = createTransformWith(
       'return (function() { "use strict"; const a = 42; }).toString();'
     );
-    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`);
-    //var babelrc = createTempFileWith('{}');
-    var projectPath = path.dirname(babelrc);
-    fs.renameSync(babelrc, path.join(projectPath, '.babelrc'));
-    var source = createTempFileWith('a');
-    fs.renameSync(source, path.join(projectPath, 'source.js'));
-    source = path.join(projectPath, 'source.js');
+    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
+    var source = createTempFileWith('a', 'source.js');
 
     return run(['-t', transform, source]).then(
       ([stdout, stderr]) => {
@@ -172,6 +180,79 @@ describe('jscodeshift CLI', () => {
         expect(true).toBe(true);
       }
     );
+  });
+
+  describe('ignoring', () => {
+    var transform = createTransformWith(
+      'return "transform" + fileInfo.source;'
+    );
+    var sources = [];
+
+    beforeEach(() => {
+      sources = [];
+      sources.push(createTempFileWith('a', 'a.js'));
+      sources.push(createTempFileWith('a', 'a-test.js'));
+      // sources.push(createTempFileWith('b', 'src/lib/b.js'));
+    });
+
+    pit('supports basic glob', () => {
+      var pattern = '*-test.js';
+      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+        }
+      );
+    });
+
+    pit('supports filename match', () => {
+      var pattern = 'a.js';
+      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('transforma');
+        }
+      );
+    });
+
+    pit('accepts a list of patterns', () => {
+      var patterns = ['--ignore-pattern', 'a.js', '--ignore-pattern', '*-test.js'];
+      return run(['-t', transform, ...patterns, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+        }
+      );
+    });
+
+    pit('sources ignore patterns from configuration file', () => {
+      var patterns = ['sub/dir/', '*-test.js'];
+      var gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      return run(['-t', transform, '--ignore-config', gitignore, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
+        }
+      );
+    });
+
+    pit('accepts a list of configuration files', () => {
+      var gitignore = createTempFileWith(['sub/dir/'].join('\n'), '.gitignore');
+      var eslintignore = createTempFileWith(['**/*test.js', 'a.js'].join('\n'), '.eslintignore');
+      var configs = ['--ignore-config', gitignore, '--ignore-config', eslintignore];
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      return run(['-t', transform, ...configs, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
+        }
+      );
+    });
   });
 
   describe('output', () => {
