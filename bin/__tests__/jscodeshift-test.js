@@ -193,12 +193,22 @@ describe('jscodeshift CLI', () => {
       // sources.push(createTempFileWith('b', 'src/lib/b.js'));
     });
 
-    pit('does not transform files matched with --ignore-pattern', () => {
+    pit('supports basic glob', () => {
       var pattern = '*-test.js';
       return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
         ([stdout, stderr]) => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
           expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+        }
+      );
+    });
+
+    pit('supports filename match', () => {
+      var pattern = 'a.js';
+      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('transforma');
         }
       );
     });

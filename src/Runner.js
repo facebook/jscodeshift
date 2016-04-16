@@ -45,8 +45,18 @@ const log = {
 
 const matchers = [];
 
+function addIgnorePattern(val) {
+  if (val && typeof val === 'string') {
+    let pattern = val;
+    if (pattern.indexOf('/') === -1) {
+      matchers.push('**/' + pattern);
+    }
+    matchers.push(pattern);
+  }
+}
+
 function shouldIgnore(path) {
-  var matched = matchers.length ? mm.any(path, matchers, { dot:true, matchBase:true }) : false;
+  var matched = matchers.length ? mm.any(path, matchers, { dot:true }) : false;
   return matched;
 }
 
@@ -148,9 +158,7 @@ function run(transformFile, paths, options) {
   const statsCounter = {};
   const startTime = process.hrtime();
 
-  if (options.ignorePattern && typeof options.ignorePattern === 'string') {
-    matchers.push(options.ignorePattern);
-  }
+  addIgnorePattern(options.ignorePattern);
 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
