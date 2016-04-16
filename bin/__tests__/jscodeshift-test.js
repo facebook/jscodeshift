@@ -180,6 +180,30 @@ describe('jscodeshift CLI', () => {
     );
   });
 
+  describe('ignoring', () => {
+    var transform = createTransformWith(
+      'return "transform" + fileInfo.source;'
+    );
+    var sources = [];
+
+    beforeEach(() => {
+      sources = [];
+      sources.push(createTempFileWith('a', 'a.js'));
+      sources.push(createTempFileWith('a', 'a-test.js'));
+      // sources.push(createTempFileWith('b', 'src/lib/b.js'));
+    });
+
+    pit('does not transform files matched with --ignore-pattern', () => {
+      var pattern = '*-test.js';
+      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+        }
+      );
+    });
+  });
+
   describe('output', () => {
     pit('shows workers info and stats at the end by default', () => {
       var source = createTempFileWith('a');

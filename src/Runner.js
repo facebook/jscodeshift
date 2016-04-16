@@ -15,6 +15,7 @@ require('es6-promise').polyfill();
 const child_process = require('child_process');
 const colors = require('colors/safe');
 const fs = require('fs');
+const mm = require('micromatch');
 const path = require('path');
 const http = require('http');
 const https = require('https');
@@ -41,6 +42,13 @@ const log = {
     verbose >= 0 && process.stdout.write(colors.white.bgRed(' ERR ') + msg);
   },
 };
+
+const matchers = [];
+
+function shouldIgnore(path) {
+  var matched = matchers.length ? mm.any(path, matchers, { dot:true, matchBase:true }) : false;
+  return matched;
+}
 
 function showFileStats(fileStats) {
   process.stdout.write(
@@ -86,6 +94,11 @@ function dirFiles (dir, callback, acc) {
             'Skipping path "' + name + '" which does not exist.\n'
           );
           done();
+        } else if (shouldIgnore(name)) {
+          process.stdout.write(
+            'Ignoring path "' + name + '".\n'
+          );
+          done();
         } else if (stats.isDirectory()) {
           dirFiles(name + '/', callback, acc);
         } else {
@@ -113,6 +126,11 @@ function getAllFiles(paths, filter) {
             file,
             list => resolve(list.filter(filter))
           );
+        } else if (shouldIgnore(file)) {
+          process.stdout.write(
+            'Ignoring file "' + file + '".\n'
+          );
+          resolve([]);
         } else {
           resolve([file]);
         }
@@ -129,6 +147,10 @@ function run(transformFile, paths, options) {
   const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
   const statsCounter = {};
   const startTime = process.hrtime();
+
+  if (options.ignorePattern && typeof options.ignorePattern === 'string') {
+    matchers.push(options.ignorePattern);
+  }
 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
