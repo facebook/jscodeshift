@@ -88,9 +88,7 @@ function dirFiles (dir, callback, acc) {
           );
           done();
         } else if (ignores.shouldIgnore(name)) {
-          process.stdout.write(
-            'Ignoring path "' + name + '".\n'
-          );
+          // ignore the path
           done();
         } else if (stats.isDirectory()) {
           dirFiles(name + '/', callback, acc);
@@ -120,9 +118,7 @@ function getAllFiles(paths, filter) {
             list => resolve(list.filter(filter))
           );
         } else if (ignores.shouldIgnore(file)) {
-          process.stdout.write(
-            'Ignoring file "' + file + '".\n'
-          );
+          // ignoring the file
           resolve([]);
         } else {
           resolve([file]);
