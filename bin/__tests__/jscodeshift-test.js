@@ -44,11 +44,22 @@ function run(args, stdin, cwd) {
 }
 
 describe('jscodeshift CLI', () => {
-  function createTempFileWith(content) {
+  function createTempFileWith(content, filename) {
     var info = temp.openSync();
+    var filePath = info.path;
     fs.writeSync(info.fd, content);
     fs.closeSync(info.fd);
-    return info.path;
+    if (filename) {
+      filePath = renameFileTo(filePath, filename);
+    }
+    return filePath;
+  }
+
+  function renameFileTo(oldPath, newFilename) {
+    var projectPath = path.dirname(oldPath);
+    var newPath = path.join(projectPath, newFilename);
+    fs.renameSync(oldPath, newPath);
+    return newPath;
   }
 
   function createTransformWith(content) {
@@ -120,13 +131,8 @@ describe('jscodeshift CLI', () => {
     var transform = createTransformWith(
       'return (function() { "use strict"; const a = 42; }).toString();'
     );
-    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`);
-    //var babelrc = createTempFileWith('{}');
-    var projectPath = path.dirname(babelrc);
-    fs.renameSync(babelrc, path.join(projectPath, '.babelrc'));
-    var source = createTempFileWith('a');
-    fs.renameSync(source, path.join(projectPath, 'source.js'));
-    source = path.join(projectPath, 'source.js');
+    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
+    var source = createTempFileWith('a', 'source.js');
 
     return run(['-t', transform, source]).then(
       ([stdout, stderr]) => {
