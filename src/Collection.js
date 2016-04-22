@@ -298,26 +298,67 @@ var CPt = Collection.prototype;
  */
 function registerMethods(methods, type) {
   for (var methodName in methods) {
-    if (CPt.hasOwnProperty(methodName)) {
-      throw Error(`A method with name "${methodName}" already exists.`);
+    if (!methods.hasOwnProperty(methodName)) {
+      return;
+    }
+    if (hasConflictingRegistration(methodName, type)) {
+      throw Error(`There is a conflicting registration for method with name "${methodName}".`);
     }
     if (!type) {
       CPt[methodName] = methods[methodName];
     } else {
       type = type.toString();
-      (function(methodName, method) {
-        CPt[methodName] = function() {
-          if (!this.isOfType(type)) {
-            throw Error(
-              `You have a collection of type [${this.getTypes()}]. ` +
-              `"${methodName}" is is only defined for "${type}".`
-            );
-          }
-          return method.apply(this, arguments);
-        };
-      }(methodName, methods[methodName]));
+      if (!CPt.hasOwnProperty(methodName)) {
+        installTypedMethod(methodName);
+      }
+      CPt[methodName].typedRegistrations[type] = methods[methodName];
     }
   }
+} 
+
+function installTypedMethod(methodName) {
+  if (CPt.hasOwnProperty(methodName)) {
+    throw new Error(`Internal Error: "${methodName}" method is already installed`);
+  }
+  
+  function typedMethod() {
+    var types = Object.keys(typedMethod.typedRegistrations);
+    
+    for (var i = 0; i < types.length; i++) {
+      if (this.isOfType(types[i])) {
+        return typedMethod.typedRegistrations[types[i]].apply(this, arguments);
+      }
+    }
+    
+    throw Error(
+      `You have a collection of type [${this.getTypes()}]. ` +
+      `"${methodName}" is only defined for one of [${types.join('|')}].`
+    );
+  }
+
+  typedMethod.typedRegistrations = {};
+
+  CPt[methodName] = typedMethod;
+}
+
+function hasConflictingRegistration(methodName, type) {
+  if (!type) {
+    return CPt.hasOwnProperty(methodName); 
+  }
+
+  if (!CPt.hasOwnProperty(methodName)) {
+    return false;
+  }
+
+  var registrations = CPt[methodName] && CPt[methodName].typedRegistrations;
+  
+  if (!registrations) {
+    return true;
+  }
+
+  return astTypes.getSupertypeNames(type.toString()).some(function (name) {
+    return registrations.hasOwnProperty(name);
+  }); 
 }
 
 var _defaultType = [];
@@ -336,4 +377,5 @@ function setDefaultCollectionType(type) {
 exports.fromPaths = fromPaths;
 exports.fromNodes = fromNodes;
 exports.registerMethods = registerMethods;
+exports.hasConflictingRegistration = hasConflictingRegistration;
 exports.setDefaultCollectionType = setDefaultCollectionType;

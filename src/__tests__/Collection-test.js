@@ -135,6 +135,39 @@ describe('Collection API', function() {
       ]);
       expect(() => collection.expressionMethod()).not.toThrow();
     });
+    
+    it('allows multiple registrations for non-conflicting types', function () {
+      Collection.registerMethods(
+        {foo: function () {}},
+        types.FunctionExpression
+      );
+      
+      Collection.registerMethods(
+        {foo: function () {}},
+        types.BinaryExpression
+      );
+      
+      var collection = Collection.fromNodes([
+        b.functionExpression(null, [], b.blockStatement([])),
+        b.functionExpression(null, [], b.blockStatement([])),
+        b.binaryExpression("+", b.identifier("a"), b.identifier("b"))
+      ]);
+      
+      function typeFilter(type) {
+        return function (path) {
+          return type.check(path.value);
+        };
+      }
+      
+      // allowed if collection contents match one of the registered types.
+      collection.filter(typeFilter(types.BinaryExpression)).foo();
+      collection.filter(typeFilter(types.FunctionExpression)).foo();
+      
+      // not allowed if there is mixed types (even though all types match one function or the other).
+      expect(function () {
+        collection.foo();
+      }).toThrow();
+    });
   });
 
   describe('Processing functions', function() {
