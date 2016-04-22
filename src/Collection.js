@@ -298,9 +298,6 @@ var CPt = Collection.prototype;
  */
 function registerMethods(methods, type) {
   for (var methodName in methods) {
-    if (CPt.hasOwnProperty(methodName)) {
-      throw Error(`A method with name "${methodName}" already exists.`);
-    }
     if (!type) {
       CPt[methodName] = methods[methodName];
     } else {
