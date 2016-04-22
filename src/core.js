@@ -112,4 +112,24 @@ for (var name in collections) {
   }
 }
 
+var plugins = [];
+
+/**
+ * Utility function for registering plugins.
+ * 
+ * Plugins are simple functions that are passed the core jscodeshift instance. 
+ * They should extend jscodeshift by call `registerMethods`, etc.
+ * This method guards against repeated registrations (the plugin callback will only be called once).
+ * 
+ * @param {Function} plugin
+ */
+function use(plugin) {
+  if (plugins.indexOf(plugin) === -1) {
+    plugins.push(plugin);
+    plugin(core);
+  }
+}
+
+core.use = use;
+
 module.exports = core;
