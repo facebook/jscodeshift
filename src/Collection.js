@@ -302,7 +302,25 @@ function registerMethods(methods, type) {
       return;
     }
     if (hasConflictingRegistration(methodName, type)) {
-      throw Error(`There is a conflicting registration for method with name "${methodName}".`);
+      var msg = `There is a conflicting registration for method with name "${methodName}".\nYou tried to register an additional method with `;
+      
+      if (type) {
+        msg += `type "${type.toString()}".`
+      } else {
+        msg += 'universal type.'
+      }
+      
+      msg += '\nThere are existing registrations for that method with ';
+      
+      var conflictingRegistrations = CPt[methodName].typedRegistrations;
+      
+      if (conflictingRegistrations) {
+        msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`; 
+      } else {
+        msg += 'universal type.';
+      }
+      
+      throw Error(msg);
     }
     if (!type) {
       CPt[methodName] = methods[methodName];
