@@ -311,7 +311,11 @@ function registerMethods(methods, type) {
       if (!CPt.hasOwnProperty(methodName)) {
         installTypedMethod(methodName);
       }
-      CPt[methodName].typedRegistrations[type] = methods[methodName];
+      var registrations = CPt[methodName].typedRegistrations;
+      registrations[type] = methods[methodName];
+      astTypes.getSupertypeNames(type).forEach(function (name) {
+        registrations[name] = false;
+      });
     }
   }
 } 
@@ -320,13 +324,16 @@ function installTypedMethod(methodName) {
   if (CPt.hasOwnProperty(methodName)) {
     throw new Error(`Internal Error: "${methodName}" method is already installed`);
   }
-  
+
+  var registrations = {};
+
   function typedMethod() {
-    var types = Object.keys(typedMethod.typedRegistrations);
+    var types = Object.keys(registrations);
     
     for (var i = 0; i < types.length; i++) {
-      if (this.isOfType(types[i])) {
-        return typedMethod.typedRegistrations[types[i]].apply(this, arguments);
+      var currentType = types[i];
+      if (registrations[currentType] && this.isOfType(currentType)) {
+        return registrations[currentType].apply(this, arguments);
       }
     }
     
@@ -336,7 +343,7 @@ function installTypedMethod(methodName) {
     );
   }
 
-  typedMethod.typedRegistrations = {};
+  typedMethod.typedRegistrations = registrations;
 
   CPt[methodName] = typedMethod;
 }
@@ -355,9 +362,15 @@ function hasConflictingRegistration(methodName, type) {
   if (!registrations) {
     return true;
   }
+  
+  type = type.toString();
+  
+  if (registrations.hasOwnProperty(type)) {
+    return true;
+  }
 
   return astTypes.getSupertypeNames(type.toString()).some(function (name) {
-    return registrations.hasOwnProperty(name);
+    return !!registrations[name];
   }); 
 }
 

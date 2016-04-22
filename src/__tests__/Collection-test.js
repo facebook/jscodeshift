@@ -168,6 +168,32 @@ describe('Collection API', function() {
         collection.foo();
       }).toThrow();
     });
+    
+    describe('hasConflictingRegistration', function () {
+      function register(methodName, type) {
+        var methods = {};
+        methods[methodName] = function () {};
+        if (!types[type]) {
+          throw new Error(type + ' is not a valid type');
+        }
+        Collection.registerMethods(methods, types[type]);
+      }
+      
+      it('true if supertype is registered', function () {
+        register('supertypeIsRegistered', 'Expression');
+        expect(Collection.hasConflictingRegistration('supertypeIsRegistered', 'FunctionExpression')).toBe(true);
+      });
+      
+      it('true if subtype is registered', function () {
+        register('subtypeIsRegistered', 'FunctionExpression');
+        expect(Collection.hasConflictingRegistration('subtypeIsRegistered', 'Expression')).toBe(true);
+      });
+      
+      it('false if only a sibling type is registered', function () {
+        register('siblingIsRegistered', 'FunctionExpression');
+        expect(Collection.hasConflictingRegistration('siblingIsRegistered', 'BinaryExpression')).toBe(false);
+      });
+    });
   });
 
   describe('Processing functions', function() {
