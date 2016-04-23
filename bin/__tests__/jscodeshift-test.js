@@ -238,6 +238,21 @@ describe('jscodeshift CLI', () => {
         }
       );
     });
+
+    pit('accepts a list of configuration files', () => {
+      var gitignore = createTempFileWith(['sub/dir/'].join('\n'), '.gitignore');
+      var eslintignore = createTempFileWith(['**/*test.js', 'a.js'].join('\n'), '.eslintignore');
+      var configs = ['--ignore-config', gitignore, '--ignore-config', eslintignore];
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      return run(['-t', transform, ...configs, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
+        }
+      );
+    });
   });
 
   describe('output', () => {

@@ -66,6 +66,7 @@ var opts = require('nomnom')
     },
     ignoreConfig: {
       full: 'ignore-config',
+      list: true,
       help: 'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)',
       metavar: 'FILE'
     },
