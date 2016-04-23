@@ -5,6 +5,12 @@ const mm = require('micromatch');
 
 const matchers = [];
 
+/**
+ * Add glob patterns to ignore matched files and folders.
+ * Creates glob patterns to approximate gitignore patterns.
+ * @param {String} val - the glob or gitignore-style pattern to ignore
+ * @see {@linkplain https://git-scm.com/docs/gitignore#_pattern_format}
+ */
 function addIgnorePattern(val) {
   if (val && typeof val === 'string') {
     let pattern = val;
@@ -18,6 +24,22 @@ function addIgnorePattern(val) {
   }
 }
 
+/**
+ * Adds ignore patterns directly from function input
+ * @param {String|Array<String>} input - the ignore patterns
+ */
+function addIgnoreFromInput(input) {
+  let patterns = [];
+  if (input) {
+    patterns = patterns.concat(input);
+  }
+  patterns.forEach(addIgnorePattern);
+}
+
+/**
+ * Adds ignore patterns by reading files
+ * @param {String|Array<String>} input - the paths to the ignore config files
+ */
 function addIgnoreFromFile(input) {
   let lines = [];
   let files = [];
@@ -41,6 +63,6 @@ function shouldIgnore(path) {
   return matched;
 }
 
-exports.add = addIgnorePattern;
+exports.add = addIgnoreFromInput;
 exports.addFromFile = addIgnoreFromFile;
 exports.shouldIgnore = shouldIgnore;

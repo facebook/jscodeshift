@@ -61,6 +61,7 @@ var opts = require('nomnom')
     },
     ignorePattern: {
       full: 'ignore-pattern',
+      list: true,
       help: 'Ignore files that match a provided glob expression'
     },
     ignoreConfig: {

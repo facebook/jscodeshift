@@ -215,6 +215,16 @@ describe('jscodeshift CLI', () => {
       );
     });
 
+    pit('accepts a list of patterns', () => {
+      var patterns = ['--ignore-pattern', 'a.js', '--ignore-pattern', '*-test.js'];
+      return run(['-t', transform, ...patterns, ...sources]).then(
+        ([stdout, stderr]) => {
+          expect(fs.readFileSync(sources[0]).toString()).toBe('a');
+          expect(fs.readFileSync(sources[1]).toString()).toBe('a');
+        }
+      );
+    });
+
     pit('sources ignore patterns from configuration file', () => {
       var patterns = ['sub/dir/', '*-test.js'];
       var gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
