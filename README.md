@@ -38,6 +38,10 @@ Options:
    -p, --print                 Print output, useful for development
    --babel                     Apply Babel to transform files  [true]
    --extensions                File extensions the transform file should be applied to  [js]
+   --ignore-pattern            Ignore files that match a provided glob expression
+   --ignore-config FILE        Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)
+   --run-in-band               Run serially in the current process  [false]
+   -s, --silent                No output  [false]
 ```
 
 This passes the source of all passed through the transform module specified
