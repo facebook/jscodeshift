@@ -223,7 +223,7 @@ make the transform more readable.
 
 Collections are "typed" which means that the type of a collection is the
 "lowest" type all AST nodes in the collection have in common. That means you
-cannot call a method for a `FunctionExpression` collection on a `Identifier`
+cannot call a method for a `FunctionExpression` collection on an `Identifier`
 collection.
 
 Here is an example of how one would find/traverse all `Identifier` nodes with
