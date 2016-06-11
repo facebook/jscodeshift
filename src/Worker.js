@@ -14,6 +14,7 @@ const EventEmitter = require('events').EventEmitter;
 
 const async = require('async');
 const fs = require('fs');
+const writeFile = require('write');
 const _ = require('lodash')
 const jscodeshift = require('./core');
 
@@ -75,15 +76,15 @@ function trimStackTrace(trace) {
   return result.join('\n');
 }
 
-function writeOutFile(file, out, callback) {
-  fs.writeFile(file, out, function(err) {
+function writeFileCallback(file, callback) {
+  return function writeCallback(err) {
     if (err) {
         updateStatus('error', file, 'File writer error: ' + err);
     } else {
       updateStatus('ok', file);
     }
     callback();
-  });
+  };
 }
 
 function completeCallback(callback) {
@@ -92,7 +93,7 @@ function completeCallback(callback) {
       updateStatus('error', '', 'This should never be shown!');
     }
     callback();
-  }
+  };
 }
 
 function run(data) {
@@ -137,12 +138,17 @@ function run(data) {
               async.each(
                 out,
                 function (outFile, outCallback) {
-                  writeOutFile(outFile.path, outFile.source, outCallback);
+                  // Create any intermediate directories if they don't already exist
+                  writeFile(
+                    outFile.path,
+                    outFile.source,
+                    writeFileCallback(outFile.path, outCallback)
+                  );
                 },
                 completeCallback(callback)
               );
             } else {
-              writeOutFile(file, out, callback);
+              fs.writeFile(file, out, writeFileCallback(file, callback));
             }
           } else {
             updateStatus('ok', file);
