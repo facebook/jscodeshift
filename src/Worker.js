@@ -15,7 +15,7 @@ const EventEmitter = require('events').EventEmitter;
 const async = require('async');
 const fs = require('fs');
 const writeFile = require('write');
-const _ = require('lodash')
+const _ = require('lodash');
 const jscodeshift = require('./core');
 
 let emitter;
@@ -138,7 +138,7 @@ function run(data) {
               async.each(
                 out,
                 function (outFile, outCallback) {
-                  // Create any intermediate directories if they don't already exist
+                  // Create file with any intermediate directories
                   writeFile(
                     outFile.path,
                     outFile.source,
