@@ -14,7 +14,7 @@ const EventEmitter = require('events').EventEmitter;
 
 const async = require('async');
 const fs = require('fs');
-
+const _ = require('lodash')
 const jscodeshift = require('./core');
 
 let emitter;
@@ -75,6 +75,26 @@ function trimStackTrace(trace) {
   return result.join('\n');
 }
 
+function writeOutFile(file, out, callback) {
+  fs.writeFile(file, out, function(err) {
+    if (err) {
+        updateStatus('error', file, 'File writer error: ' + err);
+    } else {
+      updateStatus('ok', file);
+    }
+    callback();
+  });
+}
+
+function completeCallback(callback) {
+  return function errorCallback(err) {
+    if (err) {
+      updateStatus('error', '', 'This should never be shown!');
+    }
+    callback();
+  }
+}
+
 function run(data) {
   var files = data.files;
   var options = data.options;
@@ -113,14 +133,17 @@ function run(data) {
             console.log(out);
           }
           if (!options.dry) {
-            fs.writeFile(file, out, function(err) {
-              if (err) {
-                updateStatus('error', file, 'File writer error: ' + err);
-              } else {
-                updateStatus('ok', file);
-              }
-              callback();
-            });
+            if (_.isArray(out)) {
+              async.each(
+                out,
+                function (outFile, outCallback) {
+                  writeOutFile(outFile.path, outFile.source, outCallback);
+                },
+                completeCallback(callback)
+              );
+            } else {
+              writeOutFile(file, out, callback);
+            }
           } else {
             updateStatus('ok', file);
             callback();
@@ -135,11 +158,6 @@ function run(data) {
         }
       });
     },
-    function(err) {
-      if (err) {
-        updateStatus('error', '', 'This should never be shown!');
-      }
-      free();
-    }
+    completeCallback(free)
   );
 }

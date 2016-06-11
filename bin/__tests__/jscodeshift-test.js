@@ -182,6 +182,26 @@ describe('jscodeshift CLI', () => {
     );
   });
 
+  pit('transform can return list of files', () => {
+    var source = createTempFileWith('a_b');
+    var secondFile = temp.path({suffix: '.js'});
+
+    var transform = createTransformWith(
+      `return fileInfo.source.split('_')
+        .map((source, i) => i === 0 ?
+          {source, path: fileInfo.path} :
+          {source, path: '${secondFile}'})`
+    );
+
+    return run(['-t', transform, source]).then(
+      ([stdout, stderr]) => {
+        expect(fs.readFileSync(source).toString()).toBe('a');
+        expect(fs.readFileSync(secondFile).toString()).toBe('b');
+      }
+    );
+  });
+
+
   describe('ignoring', () => {
     var transform = createTransformWith(
       'return "transform" + fileInfo.source;'
