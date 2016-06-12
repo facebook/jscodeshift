@@ -41,6 +41,9 @@ const log = {
   error(msg, verbose) {
     verbose >= 0 && process.stdout.write(colors.white.bgRed(' ERR ') + msg);
   },
+  create(msg, verbose) {
+    verbose >= 1 && process.stdout.write(colors.white.bgYellow(' CREATE ') + msg);
+  }
 };
 
 function showFileStats(fileStats) {

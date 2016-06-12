@@ -96,6 +96,38 @@ function completeCallback(callback) {
   };
 }
 
+function normalizeFileList(fileList, sourcePath) {
+  var paths = new Set();
+  return fileList.map(file => {
+    var normalizedFile;
+    if (_.isString(file)) {
+      normalizedFile = {path: sourcePath, source: file};
+    } else {
+      const pathName = _.has(file, 'path') ? file.path : sourcePath;
+      normalizedFile = {source: file.source, path: pathName};
+    }
+    if (paths.has(normalizedFile.path)) {
+      normalizedFile.isDuplicate = true;
+    } else if (normalizedFile.source) {
+      paths.add(normalizedFile.path);
+    }
+    return normalizedFile;
+  });
+}
+
+function writeFileWithCallback(pathName, content, callback) {
+  // Create file with any intermediate directories
+  writeFile(
+    pathName,
+    content,
+    writeFileCallback(pathName, callback)
+  );
+}
+
+function fileError(file, err) {
+  updateStatus('error', file, 'File error: ' + err);
+}
+
 function run(data) {
   var files = data.files;
   var options = data.options;
@@ -108,7 +140,7 @@ function run(data) {
     function(file, callback) {
       fs.readFile(file, function(err, source) {
         if (err) {
-          updateStatus('error', file, 'File error: ' + err);
+          fileError(file, err);
           callback();
           return;
         }
@@ -136,14 +168,46 @@ function run(data) {
           if (!options.dry) {
             if (_.isArray(out)) {
               async.each(
-                out,
+                normalizeFileList(out, file),
                 function (outFile, outCallback) {
-                  // Create file with any intermediate directories
-                  writeFile(
-                    outFile.path,
-                    outFile.source,
-                    writeFileCallback(outFile.path, outCallback)
-                  );
+                  var isSourceFile = outFile.path === file;
+                  if (!outFile.source || outFile.isDuplicate) {
+                    updateStatus('skip', outFile.path);
+                    outCallback();
+                    return;
+                  } else if (isSourceFile && outFile.source === source) {
+                    updateStatus('nochange', outFile.path);
+                    outCallback();
+                    return;
+                  } else {
+                    if (isSourceFile) {
+                      writeFileWithCallback(
+                        outFile.path,
+                        outFile.source,
+                        outCallback
+                      );
+                    } else {
+                      fs.readFile(outFile.path, function (err, content) {
+                         var fileNotExist = err && err.code === 'ENOENT';
+                         if (err && !fileNotExist) {
+                           fileError(outFile.path, err);
+                           outCallback();
+                         } else if (content === outFile.source) {
+                           updateStatus('nochange', outFile.path);
+                           outCallback();
+                         } else {
+                           if (fileNotExist) {
+                             updateStatus('create', outFile.path);
+                           }
+                           writeFileWithCallback(
+                             outFile.path,
+                             outFile.source,
+                             outCallback
+                           );
+                         }
+                      });
+                    }
+                  }
                 },
                 completeCallback(callback)
               );
