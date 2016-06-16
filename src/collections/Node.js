@@ -136,7 +136,7 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof nodes === 'function') ? nodes.call(path, path, i) : nodes;
-      path.replace(...toArray(newNodes));
+      path.replace.apply(path, toArray(newNodes));
     });
   },
 
@@ -150,7 +150,7 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertBefore(...toArray(newNodes));
+      path.insertBefore.apply(path, toArray(newNodes));
     });
   },
 
@@ -164,7 +164,7 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertAfter(...toArray(newNodes));
+      path.insertAfter.apply(path, toArray(newNodes));
     });
   },
 

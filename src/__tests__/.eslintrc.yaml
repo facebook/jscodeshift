@@ -1,0 +1,4 @@
+env:
+  jasmine: true
+globals:
+  jest: true

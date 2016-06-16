@@ -9,6 +9,8 @@
 
 /*global jest, describe, it, expect, beforeEach*/
 
+'use strict';
+
 jest.autoMockOff();
 var matchNode = require('../matchNode');
 

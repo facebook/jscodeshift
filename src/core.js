@@ -12,11 +12,10 @@
 var Collection = require('./Collection');
 
 var collections = require('./collections');
-var babel = require('babel-core');
+var getParser = require('./getParser');
 var matchNode = require('./matchNode');
 var recast = require('recast');
 var template = require('./template');
-var _ = require('lodash');
 
 var Node = recast.types.namedTypes.Node;
 var NodePath = recast.types.NodePath;
@@ -38,10 +37,13 @@ for (var name in collections) {
  * - an array of node paths
  *
  * @param {Node|NodePath|Array|string} source
+ * @param {Object} options Options to pass to Recast when passing source code
  * @return {Collection}
  */
-function core(source) {
-  return typeof source === 'string' ? fromSource(source) : fromAST(source);
+function core(source, options) {
+  return typeof source === 'string' ?
+    fromSource(source, options) :
+    fromAST(source);
 }
 
 /**
@@ -70,8 +72,14 @@ function fromAST(ast) {
   );
 }
 
-function fromSource(source) {
-  return fromAST(recast.parse(source, {esprima: babel}));
+function fromSource(source, options) {
+  if (!options) {
+    options = {};
+  }
+  if (!options.parser) {
+    options.parser = getParser();
+  }
+  return fromAST(recast.parse(source, options));
 }
 
 /**
@@ -92,35 +100,15 @@ function match(path, filter) {
   return matchNode(path.value, filter);
 }
 
-// add builders and types to the function for simple access
-_.assign(core, recast.types.namedTypes);
-_.assign(core, recast.types.builders);
-core.registerMethods = Collection.registerMethods;
-core.types = recast.types;
-core.match = match;
-core.template = template;
-
-// add mappings and filters to function
-core.filters = {};
-core.mappings = {};
-for (var name in collections) {
-  if (collections[name].filters) {
-    core.filters[name] = collections[name].filters;
-  }
-  if (collections[name].mappings) {
-    core.mappings[name] = collections[name].mappings;
-  }
-}
-
 var plugins = [];
 
 /**
  * Utility function for registering plugins.
- * 
- * Plugins are simple functions that are passed the core jscodeshift instance. 
+ *
+ * Plugins are simple functions that are passed the core jscodeshift instance.
  * They should extend jscodeshift by calling `registerMethods`, etc.
  * This method guards against repeated registrations (the plugin callback will only be called once).
- * 
+ *
  * @param {Function} plugin
  */
 function use(plugin) {
@@ -130,6 +118,50 @@ function use(plugin) {
   }
 }
 
-core.use = use;
+/**
+ * Returns a version of the core jscodeshift function "bound" to a specific
+ * parser.
+ */
+function withParser(parser) {
+  if (typeof parser === 'string') {
+    parser = getParser(parser);
+  }
 
-module.exports = core;
+  const newCore = function(source, options) {
+    if (options && !options.parser) {
+      options.parser = parser;
+    } else {
+      options = {parser};
+    }
+    return core(source, options);
+  };
+
+  return enrichCore(newCore, parser);
+}
+
+function enrichCore(core, parser) {
+  // add builders and types to the function for simple access
+  Object.assign(core, recast.types.namedTypes);
+  Object.assign(core, recast.types.builders);
+  core.registerMethods = Collection.registerMethods;
+  core.types = recast.types;
+  core.match = match;
+  core.template = template(parser);
+
+  // add mappings and filters to function
+  core.filters = {};
+  core.mappings = {};
+  for (var name in collections) {
+    if (collections[name].filters) {
+      core.filters[name] = collections[name].filters;
+    }
+    if (collections[name].mappings) {
+      core.mappings[name] = collections[name].mappings;
+    }
+  }
+  core.use = use;
+  core.withParser = withParser;
+  return core;
+}
+
+module.exports = enrichCore(core, getParser());

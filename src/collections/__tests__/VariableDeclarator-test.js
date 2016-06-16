@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var babel = require('babel-core');
+var babel = require('babelv5');
 var recast = require('recast');
 var types = recast.types.namedTypes;
 var b = recast.types.builders;
@@ -43,7 +43,7 @@ describe('VariableDeclarators', function() {
       'foo.bar();',
       'foo[bar]();',
       'bar.foo();'
-    ].join('\n'), {esprima: babel}).program];
+    ].join('\n'), {parser: babel}).program];
   });
 
   describe('Traversal', function() {

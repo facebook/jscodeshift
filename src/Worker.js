@@ -14,6 +14,7 @@ const EventEmitter = require('events').EventEmitter;
 
 const async = require('async');
 const fs = require('fs');
+const getParser = require('./getParser');
 
 const jscodeshift = require('./core');
 
@@ -21,6 +22,7 @@ let emitter;
 let finish;
 let notify;
 let transform;
+let parser;
 
 if (module.parent) {
   emitter = new EventEmitter();
@@ -38,12 +40,32 @@ if (module.parent) {
   setup(process.argv[2], process.argv[3]);
 }
 
+function prepareJscodeshift(options) {
+  if (parser) {
+    return jscodeshift.withParser(parser);
+  } else if (options.parser) {
+    return jscodeshift.withParser(getParser(options.parser));
+  } else {
+    return jscodeshift;
+  }
+}
+
 function setup(tr, babel) {
   if (babel === 'babel') {
-    // FIXME: use { babelrc: false } after migration to Babel 6
-    require('babel-core/register')({ breakConfig: true });
+    require('babel-register')({
+      babelrc: false,
+      presets: [require('babel-preset-es2015')],
+    });
   }
-  transform = require(tr);
+  const module = require(tr);
+  transform = typeof module.default === 'function' ?
+    module.default :
+    module;
+  if (module.parser) {
+    parser = typeof module.parser === 'string' ?
+      getParser(module.parser) :
+      module.parser;
+  }
 }
 
 function free() {
@@ -77,7 +99,7 @@ function trimStackTrace(trace) {
 
 function run(data) {
   var files = data.files;
-  var options = data.options;
+  var options = data.options || {};
   if (!files.length) {
     finish();
     return;
@@ -99,7 +121,7 @@ function run(data) {
               source: source,
             },
             {
-              jscodeshift: jscodeshift,
+              jscodeshift: prepareJscodeshift(options),
               stats: options.dry ? stats : empty
             },
             options
@@ -110,7 +132,7 @@ function run(data) {
             return;
           }
           if (options.print) {
-            console.log(out);
+            console.log(out); // eslint-disable-line no-console
           }
           if (!options.dry) {
             fs.writeFile(file, out, function(err) {
