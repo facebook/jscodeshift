@@ -27,7 +27,7 @@ var opts = require('nomnom')
     transform: {
       abbr: 't',
       default: './transform.js',
-      help: 'Path to the transform file',
+      help: 'Path to the transform file. Can be either a local path or url',
       metavar: 'FILE'
     },
     cpus: {
