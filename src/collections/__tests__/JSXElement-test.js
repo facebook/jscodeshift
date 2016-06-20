@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var babel = require('babel-core');
+var babel = require('babelv5');
 
 describe('JSXCollection API', function() {
   var nodes;
@@ -40,7 +40,7 @@ describe('JSXCollection API', function() {
       '  </Child>',
       '  <Child id="2" foo="baz"/>',
       '</FooBar>'
-    ].join('\n'), {esprima: babel}).program];
+    ].join('\n'), {parser: babel}).program];
   });
 
   describe('Traversal', function() {

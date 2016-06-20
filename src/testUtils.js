@@ -7,10 +7,12 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
-/* global expect, define, it */
+/* global expect, describe, it */
 
-import fs from 'fs';
-import path from 'path';
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Utility function to run a jscodeshift script within a unit test. This makes
@@ -31,7 +33,7 @@ import path from 'path';
  * - Test data should be located in a directory called __testfixtures__
  *   alongside the transform and __tests__ directory.
  */
-export function runTest(dirName, transformName, options, testFilePrefix) {
+function runTest(dirName, transformName, options, testFilePrefix) {
   if (!testFilePrefix) {
     testFilePrefix = transformName;
   }
@@ -61,12 +63,13 @@ export function runTest(dirName, transformName, options, testFilePrefix) {
   );
   expect((output || '').trim()).toEqual(expectedOutput.trim());
 }
+exports.runTest = runTest;
 
 /**
  * Handles some boilerplate around defining a simple jest/Jasmine test for a
  * jscodeshift transform.
  */
-export function defineTest(dirName, transformName, options, testFilePrefix) {
+function defineTest(dirName, transformName, options, testFilePrefix) {
   var testName = testFilePrefix
     ? `transforms correctly using "${testFilePrefix}" data`
     : 'transforms correctly';
@@ -76,3 +79,4 @@ export function defineTest(dirName, transformName, options, testFilePrefix) {
     });
   });
 }
+exports.defineTest = defineTest;

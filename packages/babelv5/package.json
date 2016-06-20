@@ -1,0 +1,10 @@
+{
+  "name": "babelv5",
+  "version": "1.0.0",
+  "description": "Wrapper to prevent version conflicts",
+  "private": true,
+  "main": "./index.js",
+  "dependencies": {
+    "babel-core": "^5"
+  }
+}
