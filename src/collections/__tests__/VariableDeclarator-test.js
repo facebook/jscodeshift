@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var babel = require('babelv5');
+var babel = require('babel-core');
 var recast = require('recast');
 var types = recast.types.namedTypes;
 var b = recast.types.builders;

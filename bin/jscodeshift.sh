@@ -97,7 +97,7 @@ const opts = require('nomnom')
         const requirePackage = require('../utils/requirePackage');
         return [
           `jscodeshift: ${pkg.version}`,
-          ` - babel: ${require('babelv5').version}`,
+          ` - babel: ${require('babel-core').version}`,
           ` - babylon: ${requirePackage('babylon').version}`,
           ` - flow: ${requirePackage('flow-parser').version}`,
         ].join('\n');

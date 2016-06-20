@@ -12,7 +12,7 @@
 
 jest.autoMockOff();
 
-var babel = require('babelv5');
+var babel = require('babel-core');
 
 describe('JSXCollection API', function() {
   var nodes;
