@@ -11,7 +11,7 @@
 
 'use strict';
 
-const Runner = require('../src/Runner.js');
+const Runner = require('../dist/Runner.js');
 
 const path = require('path');
 const pkg = require('../package.json');
