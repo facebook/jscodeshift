@@ -366,6 +366,10 @@ A simple example is bundled in the [sample directory](sample).
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
 
+### Recipes
+
+- [Retain leading comment(s) in file when replacing/removing first statement](recipes/retain-first-comment.md)
+
 ### Support
 
 * Discord - [#codemod](https://discordapp.com/channels/102860784329052160/103748721107292160) on [Reactiflux](http://www.reactiflux.com/)
