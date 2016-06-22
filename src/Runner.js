@@ -65,7 +65,7 @@ function showStats(stats) {
   if (names.length) {
     process.stdout.write(colors.blue('Stats: \n'));
   }
-  names.forEach(name => process.stdout.write(name + ': \n', stats[name]));
+  names.forEach(name => process.stdout.write(name + ': ' + stats[name] + '\n'));
 }
 
 function dirFiles (dir, callback, acc) {
