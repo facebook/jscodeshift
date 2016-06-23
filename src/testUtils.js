@@ -46,19 +46,23 @@ function runTest(dirName, transformName, options, testFilePrefix) {
     'utf8'
   );
   // Assumes transform is one level up from __tests__ directory
-  let transform = require(path.join(dirName, '..', transformName + '.js'));
+  const module = require(path.join(dirName, '..', transformName + '.js'));
   // Handle ES6 modules using default export for the transform
-  if (transform.default) {
-    transform = transform.default;
-  }
+  const transform = module.default ? module.default : module;
 
   // Jest resets the module registry after each test, so we need to always get
   // a fresh copy of jscodeshift on every test run.
-  const jscodeshift = require('./core');
+  let jscodeshift = require('./core');
+  if (module.parser) {
+    jscodeshift = jscodeshift.withParser(module.parser);
+  }
 
   const output = transform(
     {path: inputPath, source},
-    {jscodeshift},
+    {
+      jscodeshift,
+      stats: () => {},
+    },
     options || {}
   );
   expect((output || '').trim()).toEqual(expectedOutput.trim());
