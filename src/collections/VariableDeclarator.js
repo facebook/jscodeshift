@@ -80,11 +80,37 @@ var transformMethods = {
       var rootPath = rootScope.path;
       Collection.fromPaths([rootPath])
         .find(types.Identifier, {name: oldName})
-        .filter(function(path) { // ignore properties in MemberExpressions
+        .filter(function(path) { // ignore non-variables
           var parent = path.parent.node;
-          return !types.MemberExpression.check(parent) ||
-            parent.property !== path.node ||
-            !parent.computed;
+
+          if (
+            types.MemberExpression.check(parent) &&
+            parent.property === path.node &&
+            !parent.computed
+          ) {
+            // obj.oldName
+            return false;
+          }
+
+          if (
+            types.Property.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // { oldName: 3 }
+            return false;
+          }
+
+          if (
+            types.MethodDefinition.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // class A() { oldName() {} }
+            return false;
+          }
+
+          return true;
         })
         .forEach(function(path) {
           var scope = path.scope;
