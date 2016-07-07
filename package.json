@@ -1,6 +1,6 @@
 {
   "name": "jscodeshift",
-  "version": "0.3.20",
+  "version": "0.3.25",
   "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
@@ -9,13 +9,15 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist; babel src/ --out-dir dist/",
-    "watch": "babel src/ --out-dir dist/ --watch",
-    "test": " npm run build && jest",
-    "prepublish": "npm run test && npm run build"
+    "build": "cp -R src/ dist/",
+    "test": "jest --bail",
+    "prepublish": "npm run build && npm run test"
   },
   "bin": {
     "jscodeshift": "./bin/jscodeshift.sh"
+  },
+  "engines": {
+    "node": ">=4"
   },
   "keywords": [
     "codemod",
@@ -25,27 +27,26 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "async": "^1.5.0",
-    "babel-core": "^5.8.21",
-    "babel-runtime": "^5.6.18",
+    "babel-core": "^5",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "babylon": "^6.8.1",
     "colors": "^1.1.2",
     "es6-promise": "^3.0.0",
-    "lodash": "^3.5.0",
+    "flow-parser": "^0.*",
+    "lodash": "^4.13.1",
     "micromatch": "^2.3.7",
     "node-dir": "0.1.8",
-    "nomnom": "^1.8.1",
-    "recast": "^0.11.0",
+    "nomnom": "^1.8.1",    
+    "recast": "^0.11.8",
     "temp": "^0.8.1",
     "write": "^0.3.1"
   },
   "devDependencies": {
-    "babel": "^5.6.14",
-    "babel-jest": "^5.3.0",
-    "jest-cli": "^0.9.0",
+    "jest-cli": "^12.0.0",
     "mkdirp": "^0.5.1"
   },
   "jest": {
-    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
-    "preprocessCachingDisabled": true,
     "testPathDirs": [
       "src",
       "bin",

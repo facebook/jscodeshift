@@ -31,7 +31,7 @@ Usage: jscodeshift <path>... [options]
 path     Files or directory to transform
 
 Options:
-   -t FILE, --transform FILE   Path to the transform file  [./transform.js]
+   -t FILE, --transform FILE   Path to the transform file. Can be either a local path or url  [./transform.js]
    -c, --cpus                  (all by default) Determines the number of processes started.
    -v, --verbose               Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
@@ -42,6 +42,8 @@ Options:
    --ignore-config FILE        Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)
    --run-in-band               Run serially in the current process  [false]
    -s, --silent                No output  [false]
+   --parser                    The parser to use for parsing your source files (babel | babylon | flow)  [babel]
+   --version                   print version and exit
 ```
 
 This passes the source of all passed through the transform module specified
@@ -120,7 +122,7 @@ $ jscodeshift -t myTransforms fileA fileB --foo=bar
 `options` would contain `{foo: 'bar'}`. jscodeshift uses [nomnom][] to parse
 command line options.
 
-#### Return value
+### Return value
 
 The return value of the function determines the status of the transformation:
 
@@ -136,7 +138,28 @@ detailed information by setting the `-v` option to `1` or `2`.
 
 You can collect even more stats via the `stats` function as explained above.
 
-### Example
+### Parser
+
+The transform can let jscodeshift know with which parser to parse the source 
+files (and features like templates).
+
+To do that, the transform module can export `parser`, which can either be one 
+of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
+object that is compatible with with recast.
+
+For example:
+
+```js
+module.exports.parser = 'flow'; // use the flow parser
+// or
+module.exports.parser = {
+  parse: function(source) {
+    // return estree compatible AST
+  },
+};
+```
+
+### Example output
 
 ```text
 $ jscodeshift -t myTransform.js src
@@ -294,6 +317,13 @@ This can be done by passing config options to [recast].
 .toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
 ```
 
+You can also pass options to recast's `parse` method by passing an object to 
+jscodeshift as second argument:
+
+```js
+jscodeshift(source, {...})
+```
+
 More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61)
 
 ### Unit Testing
@@ -335,6 +365,10 @@ A simple example is bundled in the [sample directory](sample).
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
+
+### Recipes
+
+- [Retain leading comment(s) in file when replacing/removing first statement](recipes/retain-first-comment.md)
 
 ### Support
 

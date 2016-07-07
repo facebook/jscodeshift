@@ -8,6 +8,8 @@
  *
  */
 
+'use strict';
+
 /*global jest, describe, it, expect*/
 
 jest.autoMockOff();
@@ -54,24 +56,24 @@ describe('core API', function() {
     var source = '\nvar foo;\n';
     expect(core(source).toSource()).toEqual(source);
   });
-  
+
   it('plugins are called with core', function (done) {
     core.use(function (j) {
       expect(j).toBe(core);
       done();
     });
   });
-  
+
   it('plugins are only registered once', function () {
     var ct = 0;
-    
+
     function plugin() {
       ct++;
     }
-    
+
     core.use(plugin);
     core.use(plugin);
-    
+
     expect(ct).toBe(1);
   });
 

@@ -1,16 +1,32 @@
-/*global jest, defined, it, expect, beforeEach*/
+/*
+ *  Copyright (c) 2015-present, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+'use strict';
+
+/*global jest, describe, it, expect, beforeEach*/
 
 jest.autoMockOff();
 
-let jscodeshift = require('../core');
 
 describe('Templates', () => {
   let statements;
   let statement;
   let expression;
+  let jscodeshift;
 
   beforeEach(() => {
-    ({expression, statement, statements} = require('../template'));
+    jscodeshift = require('../core');
+    const template = jscodeshift.template;
+    expression = template.expression;
+    statement = template.statement;
+    statements = template.statements;
   });
 
   it('interpolates expression nodes with source code', () => {
@@ -44,7 +60,6 @@ if(alert(bar)) {
 
     let expected =
 `var i = 0;
-
 while (i < 10) {
   console.log(i);
   console.log(i / 2);
@@ -55,15 +70,25 @@ while (i < 10) {
       jscodeshift(input)
         .find('ForStatement')
         .replaceWith(
-          ({node}) => statements`
-            ${node.init};
-            while (${node.test}) {
-              ${node.body.body}
-              ${node.update}
+          p => statements`
+            ${p.node.init};
+            while (${p.node.test}) {
+              ${p.node.body.body}
+              ${p.node.update};
             }`
         )
         .toSource()
     ).toEqual(expected);
+  });
+
+  it('can be used with a different parser', () => {
+    const parser = require('flow-parser');
+    const template = require('../template')(parser);
+    const node = {type: 'Literal', value: 41};
+
+    expect(
+      jscodeshift(template.expression`1 + ${node}`, {parser}).toSource()
+    ).toEqual('1 + 41');
   });
 
   describe('explode arrays', () => {
@@ -76,7 +101,7 @@ while (i < 10) {
         jscodeshift(input)
           .find('ArrayExpression')
           .replaceWith(
-            ({node}) => expression`function foo(${node.elements}, c) {}`
+            p => expression`function foo(${p.node.elements}, c) {}`
           )
           .toSource()
       )
@@ -88,7 +113,7 @@ while (i < 10) {
         jscodeshift(input)
           .find('ArrayExpression')
           .replaceWith(
-            ({node}) => expression`function(${node.elements}, c) {}`
+            p => expression`function(${p.node.elements}, c) {}`
           )
           .toSource()
       )
@@ -100,7 +125,7 @@ while (i < 10) {
         jscodeshift(input)
           .find('ArrayExpression')
           .replaceWith(
-            ({node}) => expression`${node.elements} => {}`
+            p => expression`${p.node.elements} => {}`
           )
           .toSource()
       )
@@ -112,7 +137,7 @@ while (i < 10) {
         jscodeshift(input)
           .find('ArrayExpression')
           .replaceWith(
-            ({node}) => expression`(${node.elements}, c) => {}`
+            p => expression`(${p.node.elements}, c) => {}`
           )
           .toSource()
       )
@@ -128,7 +153,8 @@ while (i < 10) {
           // Need to use a block here because the arrow doesn't seem to be
           // compiled with a line break after the return statement. Can't repro
           // outside here though
-          .replaceWith(({node: {declarations: [node]}}) => {
+          .replaceWith(p => {
+            const node = p.node.declarations[0];
             return statement`var ${node.id}, ${node.init.elements};`;
           })
           .toSource()
@@ -142,7 +168,7 @@ while (i < 10) {
       expect(
         jscodeshift(input)
           .find('ArrayExpression')
-          .replaceWith(({node}) => expression`[${node.elements}, c]`)
+          .replaceWith(p => expression`[${p.node.elements}, c]`)
           .toSource()
       )
       .toEqual(expected);
@@ -154,7 +180,7 @@ while (i < 10) {
       expect(
         jscodeshift(input)
           .find('ObjectExpression')
-          .replaceWith(({node}) => expression`{${node.properties}, c: 42}`)
+          .replaceWith(p => expression`{${p.node.properties}, c: 42}`)
           .toSource()
       )
       .toMatch(expected);
@@ -168,7 +194,7 @@ while (i < 10) {
         jscodeshift(input)
           .find('ArrayExpression')
           .replaceWith(
-            ({node}) => expression`bar(${node.elements}, c)`
+            p => expression`bar(${p.node.elements}, c)`
           )
           .toSource()
       )

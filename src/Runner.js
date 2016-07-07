@@ -46,6 +46,13 @@ const log = {
   }
 };
 
+function concatAll(arrays) {
+  return arrays.reduce(
+    (result, array) => (result.push.apply(result, array), result),
+    []
+  );
+}
+
 function showFileStats(fileStats) {
   process.stdout.write(
     'Results: \n'+
@@ -61,7 +68,7 @@ function showStats(stats) {
   if (names.length) {
     process.stdout.write(colors.blue('Stats: \n'));
   }
-  names.forEach(name => process.stdout.write(name + ': \n', stats[name]));
+  names.forEach(name => process.stdout.write(name + ': ' + stats[name] + '\n'));
 }
 
 function dirFiles (dir, callback, acc) {
@@ -107,7 +114,7 @@ function dirFiles (dir, callback, acc) {
 
 function getAllFiles(paths, filter) {
   return Promise.all(
-    paths.map(file => new Promise((resolve, reject) => {
+    paths.map(file => new Promise(resolve => {
       fs.lstat(file, (err, stat) => {
         if (err) {
           process.stderr.write('Skipping path ' + file + ' which does not exist. \n');
@@ -128,7 +135,7 @@ function getAllFiles(paths, filter) {
         }
       })
     }))
-  ).then(files => [].concat(...files));
+  ).then(concatAll);
 }
 
 function run(transformFile, paths, options) {

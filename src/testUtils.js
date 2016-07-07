@@ -7,10 +7,12 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
-/* global expect, define, it */
+/* global expect, describe, it */
 
-import fs from 'fs';
-import path from 'path';
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Utility function to run a jscodeshift script within a unit test. This makes
@@ -31,7 +33,7 @@ import path from 'path';
  * - Test data should be located in a directory called __testfixtures__
  *   alongside the transform and __tests__ directory.
  */
-export function runTest(dirName, transformName, options, testFilePrefix) {
+function runTest(dirName, transformName, options, testFilePrefix) {
   if (!testFilePrefix) {
     testFilePrefix = transformName;
   }
@@ -44,29 +46,34 @@ export function runTest(dirName, transformName, options, testFilePrefix) {
     'utf8'
   );
   // Assumes transform is one level up from __tests__ directory
-  let transform = require(path.join(dirName, '..', transformName + '.js'));
+  const module = require(path.join(dirName, '..', transformName + '.js'));
   // Handle ES6 modules using default export for the transform
-  if (transform.default) {
-    transform = transform.default;
-  }
+  const transform = module.default ? module.default : module;
 
   // Jest resets the module registry after each test, so we need to always get
   // a fresh copy of jscodeshift on every test run.
-  const jscodeshift = require('./core');
+  let jscodeshift = require('./core');
+  if (module.parser) {
+    jscodeshift = jscodeshift.withParser(module.parser);
+  }
 
   const output = transform(
     {path: inputPath, source},
-    {jscodeshift},
+    {
+      jscodeshift,
+      stats: () => {},
+    },
     options || {}
   );
   expect((output || '').trim()).toEqual(expectedOutput.trim());
 }
+exports.runTest = runTest;
 
 /**
  * Handles some boilerplate around defining a simple jest/Jasmine test for a
  * jscodeshift transform.
  */
-export function defineTest(dirName, transformName, options, testFilePrefix) {
+function defineTest(dirName, transformName, options, testFilePrefix) {
   var testName = testFilePrefix
     ? `transforms correctly using "${testFilePrefix}" data`
     : 'transforms correctly';
@@ -76,3 +83,4 @@ export function defineTest(dirName, transformName, options, testFilePrefix) {
     });
   });
 }
+exports.defineTest = defineTest;
