@@ -13,7 +13,6 @@
  */
 function transformer(file, api) {
   const j = api.jscodeshift;
-  const {expression, statement, statements} = j.template;
 
   return j(file.source)
     .find(j.Identifier)
@@ -21,6 +20,6 @@ function transformer(file, api) {
       p => j.identifier(p.node.name.split('').reverse().join(''))
     )
     .toSource();
-};
+}
 
 module.exports = transformer;

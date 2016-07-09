@@ -15,8 +15,9 @@
  * in reverse-identifiers-output.
  */
 
+'use strict';
 
 jest.autoMockOff();
-const defineTest = require('../../dist/testUtils').defineTest;
+const defineTest = require('../../src/testUtils').defineTest;
 
 defineTest(__dirname, 'reverse-identifiers');

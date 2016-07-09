@@ -8,20 +8,23 @@
  *
  */
 
-/*global jest, jasmine, describe, pit, expect*/
+/*global jest, jasmine, describe, it, expect, beforeEach*/
 /*eslint camelcase: 0, no-unused-vars: 0*/
 
 jest.autoMockOff();
 
 // Increase default timeout (5000ms) for Travis
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000; // 10 minutes
 
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
 var temp = require('temp');
 var mkdirp = require('mkdirp');
-require('es6-promise').polyfill();
+var testUtils = require('../../utils/testUtils');
+
+var createTransformWith = testUtils.createTransformWith;
+var createTempFileWith = testUtils.createTempFileWith;
 
 function run(args, stdin, cwd) {
   return new Promise(resolve => {
@@ -45,32 +48,8 @@ function run(args, stdin, cwd) {
 }
 
 describe('jscodeshift CLI', () => {
-  function createTempFileWith(content, filename) {
-    var info = temp.openSync();
-    var filePath = info.path;
-    fs.writeSync(info.fd, content);
-    fs.closeSync(info.fd);
-    if (filename) {
-      filePath = renameFileTo(filePath, filename);
-    }
-    return filePath;
-  }
 
-  function renameFileTo(oldPath, newFilename) {
-    var projectPath = path.dirname(oldPath);
-    var newPath = path.join(projectPath, newFilename);
-    mkdirp.sync(path.dirname(newPath));
-    fs.renameSync(oldPath, newPath);
-    return newPath;
-  }
-
-  function createTransformWith(content) {
-    return createTempFileWith(
-      'module.exports = function(fileInfo, api, options) { ' + content + ' }'
-    );
-  }
-
-  pit('calls the transform and file information', () => {
+  it('calls the transform and file information', () => {
     var sourceA = createTempFileWith('a');
     var sourceB = createTempFileWith('b\n');
     var sourceC = createTempFileWith('c');
@@ -83,45 +62,47 @@ describe('jscodeshift CLI', () => {
 
     return Promise.all([
       run(['-t', transformA, sourceA, sourceB]).then(
-        ([stdout, stderr]) => {
+        out => {
+          expect(out[1]).toBe('');
           expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
           expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
         }
       ),
       run(['-t', transformB, sourceC]).then(
-        ([stdout, stderr]) => {
+        out => {
+          expect(out[1]).toBe('');
           expect(fs.readFileSync(sourceC).toString()).toBe(sourceC);
         }
       )
     ]);
   });
 
-  pit('does not transform files in a dry run', () => {
+  it('does not transform files in a dry run', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith(
       'return "transform" + fileInfo.source;'
     );
     return run(['-t', transform, '-d', source]).then(
-      ([stdout, stderr]) => {
+      () => {
         expect(fs.readFileSync(source).toString()).toBe('a');
       }
     );
   });
 
-  pit('loads transform files with Babel if not disabled', () => {
+  it('loads transform files with Babel if not disabled', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith(
       'return (function() { "use strict"; const a = 42; }).toString();'
     );
     return Promise.all([
       run(['-t', transform, source]).then(
-        ([stdout, stderr]) => {
+        () => {
           expect(fs.readFileSync(source).toString())
             .toMatch(/var\s*a\s*=\s*42/);
         }
       ),
       run(['-t', transform, '--no-babel', source]).then(
-        ([stdout, stderr]) => {
+        () => {
           expect(fs.readFileSync(source).toString())
             .toMatch(/const\s*a\s*=\s*42/);
         }
@@ -129,7 +110,7 @@ describe('jscodeshift CLI', () => {
     ]);
   });
 
-  pit('ignores .babelrc files in the directories of the source files', () => {
+  it('ignores .babelrc files in the directories of the source files', () => {
     var transform = createTransformWith(
       'return (function() { "use strict"; const a = 42; }).toString();'
     );
@@ -137,14 +118,14 @@ describe('jscodeshift CLI', () => {
     var source = createTempFileWith('a', 'source.js');
 
     return run(['-t', transform, source]).then(
-      ([stdout, stderr]) => {
+      () => {
         expect(fs.readFileSync(source).toString())
           .toMatch(/var\s*a\s*=\s*42/);
       }
     );
   });
 
-  pit('passes jscodeshift and stats the transform function', () => {
+  it('passes jscodeshift and stats the transform function', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith([
       '  return String(',
@@ -153,34 +134,73 @@ describe('jscodeshift CLI', () => {
       '  );',
     ].join('\n'));
     return run(['-t', transform, source]).then(
-      ([stdout, stderr]) => {
+      () => {
         expect(fs.readFileSync(source).toString()).toBe('true');
       }
     );
   });
 
-  pit('passes options along to the transform', () => {
+  it('passes options along to the transform', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith('return options.foo;');
     return run(['-t', transform, '--foo=42', source]).then(
-      ([stdout, stderr]) => {
+      () => {
         expect(fs.readFileSync(source).toString()).toBe('42');
       }
     );
   });
 
-  pit('does not stall with too many files', () => {
+  it('does not stall with too many files', () => {
     var sources = [];
     for (var i = 0; i < 100; i++) {
       sources.push(createTempFileWith('a'));
     }
     var transform = createTransformWith('');
     return run(['-t', transform, '--foo=42'].concat(sources)).then(
-      ([stdout, stderr]) => {
+      () => {
         expect(true).toBe(true);
       }
     );
   });
+
+  pit('transform can return list of files: files witout path is a source', () => {
+    var source = createTempFileWith('a_b');
+    var secondFile = temp.path({suffix: '.js'});
+
+    var transform = createTransformWith(
+      `return fileInfo.source.split('_')
+        .map((source, i) => i === 0 ?
+          source :
+          {source, path: '${secondFile}'})`
+    );
+
+    return run(['-t', transform, source]).then(
+      ([stdout, stderr]) => {
+        expect(fs.readFileSync(source).toString()).toBe('a');
+        expect(fs.readFileSync(secondFile).toString()).toBe('b');
+      }
+    );
+  });
+
+  pit('transform can return list of files: duplicate and nochange files skipped', () => {
+    var source = createTempFileWith('a_b');
+    var secondFile = temp.path({suffix: '.js'});
+
+    var transform = createTransformWith(
+      `return [{source: fileInfo.source},
+        {source: 'aaa', path: '${secondFile}'},
+        {source: 'bbb', path: '${secondFile}'}];`
+    );
+
+    return run(['-t', transform, '-v', 1, source]).then(
+      ([stdout, stderr]) => {
+        expect(stdout).toContain('CREATE');
+        expect(fs.readFileSync(source).toString()).toBe('a_b');
+        expect(fs.readFileSync(secondFile).toString()).toBe('aaa');
+      }
+    );
+  });
+
 
   describe('ignoring', () => {
     var transform = createTransformWith(
@@ -195,43 +215,43 @@ describe('jscodeshift CLI', () => {
       // sources.push(createTempFileWith('b', 'src/lib/b.js'));
     });
 
-    pit('supports basic glob', () => {
+    it('supports basic glob', () => {
       var pattern = '*-test.js';
-      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
-        ([stdout, stderr]) => {
+      return run(['-t', transform, '--ignore-pattern', pattern].concat(sources)).then(
+        () => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
           expect(fs.readFileSync(sources[1]).toString()).toBe('a');
         }
       );
     });
 
-    pit('supports filename match', () => {
+    it('supports filename match', () => {
       var pattern = 'a.js';
-      return run(['-t', transform, '--ignore-pattern', pattern, ...sources]).then(
-        ([stdout, stderr]) => {
+      return run(['-t', transform, '--ignore-pattern', pattern].concat(sources)).then(
+        () => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('a');
           expect(fs.readFileSync(sources[1]).toString()).toBe('transforma');
         }
       );
     });
 
-    pit('accepts a list of patterns', () => {
+    it('accepts a list of patterns', () => {
       var patterns = ['--ignore-pattern', 'a.js', '--ignore-pattern', '*-test.js'];
-      return run(['-t', transform, ...patterns, ...sources]).then(
-        ([stdout, stderr]) => {
+      return run(['-t', transform].concat(patterns).concat(sources)).then(
+        () => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('a');
           expect(fs.readFileSync(sources[1]).toString()).toBe('a');
         }
       );
     });
 
-    pit('sources ignore patterns from configuration file', () => {
+    it('sources ignore patterns from configuration file', () => {
       var patterns = ['sub/dir/', '*-test.js'];
       var gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
       sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
 
-      return run(['-t', transform, '--ignore-config', gitignore, ...sources]).then(
-        ([stdout, stderr]) => {
+      return run(['-t', transform, '--ignore-config', gitignore].concat(sources)).then(
+        () => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('transforma');
           expect(fs.readFileSync(sources[1]).toString()).toBe('a');
           expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
@@ -239,14 +259,14 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    pit('accepts a list of configuration files', () => {
+    it('accepts a list of configuration files', () => {
       var gitignore = createTempFileWith(['sub/dir/'].join('\n'), '.gitignore');
       var eslintignore = createTempFileWith(['**/*test.js', 'a.js'].join('\n'), '.eslintignore');
       var configs = ['--ignore-config', gitignore, '--ignore-config', eslintignore];
       sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
 
-      return run(['-t', transform, ...configs, ...sources]).then(
-        ([stdout, stderr]) => {
+      return run(['-t', transform].concat(configs).concat(sources)).then(
+        () => {
           expect(fs.readFileSync(sources[0]).toString()).toBe('a');
           expect(fs.readFileSync(sources[1]).toString()).toBe('a');
           expect(fs.readFileSync(sources[2]).toString()).toBe('subfile');
@@ -256,27 +276,27 @@ describe('jscodeshift CLI', () => {
   });
 
   describe('output', () => {
-    pit('shows workers info and stats at the end by default', () => {
+    it('shows workers info and stats at the end by default', () => {
       var source = createTempFileWith('a');
       var transform = createTransformWith('return null;');
       return run(['-t', transform, source]).then(
-        ([stdout, stderr]) => {
-          expect(stdout).toContain('Processing 1 files...');
-          expect(stdout).toContain('Spawning 1 workers...');
-          expect(stdout).toContain('Sending 1 files to free worker...');
-          expect(stdout).toContain('All done.');
-          expect(stdout).toContain('Results: ');
-          expect(stdout).toContain('Time elapsed: ');
+        out => {
+          expect(out[0]).toContain('Processing 1 files...');
+          expect(out[0]).toContain('Spawning 1 workers...');
+          expect(out[0]).toContain('Sending 1 files to free worker...');
+          expect(out[0]).toContain('All done.');
+          expect(out[0]).toContain('Results: ');
+          expect(out[0]).toContain('Time elapsed: ');
         }
       );
     });
 
-    pit('does not ouput anything in silent mode', () => {
+    it('does not ouput anything in silent mode', () => {
       var source = createTempFileWith('a');
       var transform = createTransformWith('return null;');
       return run(['-t', transform, '-s', source]).then(
-        ([stdout, stderr]) => {
-          expect(stdout).toEqual('');
+        out => {
+          expect(out[0]).toEqual('');
         }
       );
     });

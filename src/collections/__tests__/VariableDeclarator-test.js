@@ -43,7 +43,7 @@ describe('VariableDeclarators', function() {
       'foo.bar();',
       'foo[bar]();',
       'bar.foo();'
-    ].join('\n'), {esprima: babel}).program];
+    ].join('\n'), {parser: babel}).program];
   });
 
   describe('Traversal', function() {

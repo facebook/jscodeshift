@@ -40,7 +40,7 @@ describe('JSXCollection API', function() {
       '  </Child>',
       '  <Child id="2" foo="baz"/>',
       '</FooBar>'
-    ].join('\n'), {esprima: babel}).program];
+    ].join('\n'), {parser: babel}).program];
   });
 
   describe('Traversal', function() {

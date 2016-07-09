@@ -11,10 +11,11 @@
 
 'use strict';
 
-var Runner = require('../dist/Runner.js');
+const Runner = require('../dist/Runner.js');
 
-var path = require('path');
-var opts = require('nomnom')
+const path = require('path');
+const pkg = require('../package.json');
+const opts = require('nomnom')
   .script('jscodeshift')
   .options({
     path: {
@@ -27,7 +28,7 @@ var opts = require('nomnom')
     transform: {
       abbr: 't',
       default: './transform.js',
-      help: 'Path to the transform file',
+      help: 'Path to the transform file. Can be either a local path or url',
       metavar: 'FILE'
     },
     cpus: {
@@ -82,7 +83,26 @@ var opts = require('nomnom')
       default: false,
       full: 'silent',
       help: 'No output'
-    }
+    },
+    parser: {
+      choices: ['babel', 'babylon', 'flow'],
+      default: 'babel',
+      full: 'parser',
+      help: 'The parser to use for parsing your source files (babel | babylon | flow)'
+    },
+    version: {
+      flag: true,
+      help: 'print version and exit',
+      callback: function() {
+        const requirePackage = require('../utils/requirePackage');
+        return [
+          `jscodeshift: ${pkg.version}`,
+          ` - babel: ${require('babel-core').version}`,
+          ` - babylon: ${requirePackage('babylon').version}`,
+          ` - flow: ${requirePackage('flow-parser').version}`,
+        ].join('\n');
+      },
+    },
   })
   .parse();
 

@@ -135,40 +135,40 @@ describe('Collection API', function() {
       ]);
       expect(() => collection.expressionMethod()).not.toThrow();
     });
-    
+
     it('allows multiple registrations for non-conflicting types', function () {
       Collection.registerMethods(
         {foo: function () {}},
         types.FunctionExpression
       );
-      
+
       Collection.registerMethods(
         {foo: function () {}},
         types.BinaryExpression
       );
-      
+
       var collection = Collection.fromNodes([
         b.functionExpression(null, [], b.blockStatement([])),
         b.functionExpression(null, [], b.blockStatement([])),
         b.binaryExpression("+", b.identifier("a"), b.identifier("b"))
       ]);
-      
+
       function typeFilter(type) {
         return function (path) {
           return type.check(path.value);
         };
       }
-      
+
       // allowed if collection contents match one of the registered types.
       collection.filter(typeFilter(types.BinaryExpression)).foo();
       collection.filter(typeFilter(types.FunctionExpression)).foo();
-      
+
       // not allowed if there is mixed types (even though all types match one function or the other).
       expect(function () {
         collection.foo();
       }).toThrow();
     });
-    
+
     describe('hasConflictingRegistration', function () {
       function register(methodName, type) {
         var methods = {};
@@ -178,17 +178,17 @@ describe('Collection API', function() {
         }
         Collection.registerMethods(methods, types[type]);
       }
-      
+
       it('true if supertype is registered', function () {
         register('supertypeIsRegistered', 'Expression');
         expect(Collection.hasConflictingRegistration('supertypeIsRegistered', 'FunctionExpression')).toBe(true);
       });
-      
+
       it('true if subtype is registered', function () {
         register('subtypeIsRegistered', 'FunctionExpression');
         expect(Collection.hasConflictingRegistration('subtypeIsRegistered', 'Expression')).toBe(true);
       });
-      
+
       it('false if only a sibling type is registered', function () {
         register('siblingIsRegistered', 'FunctionExpression');
         expect(Collection.hasConflictingRegistration('siblingIsRegistered', 'BinaryExpression')).toBe(false);
@@ -264,5 +264,12 @@ describe('Collection API', function() {
       });
     });
 
+    describe('toSource with isPretty', function() {
+      it('should use pretty print', function() {
+        var root = Collection.fromNodes([recast.parse('props => {}')]);
+        root.paths()[0].value.program.body[0].expression.params[0].typeAnnotation = b.typeAnnotation(b.genericTypeAnnotation(b.identifier('Props'), null))
+        expect(root.toSource({}, true)).toEqual('(props: Props) => {};');
+      });
+    });
   });
 });
