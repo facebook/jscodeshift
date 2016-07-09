@@ -139,7 +139,7 @@ class Collection {
     }
     const printer = isPretty ?
         (...args) => recast.prettyPrint(...args) :
-        (...args) => recast.pretty(...args);
+        (...args) => recast.print(...args);
     if (this.__paths.length === 1) {
       return printer(this.__paths[0], options).code;
     } else {

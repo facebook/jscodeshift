@@ -270,6 +270,11 @@ describe('Collection API', function() {
         root.paths()[0].value.program.body[0].expression.params[0].typeAnnotation = b.typeAnnotation(b.genericTypeAnnotation(b.identifier('Props'), null))
         expect(root.toSource({}, true)).toEqual('(props: Props) => {};');
       });
+
+      it('should use common print', function() {
+        var root = Collection.fromNodes([recast.parse('props => {}')]);
+        expect(root.toSource()).toEqual('props => {}');
+      });
     });
   });
 });
