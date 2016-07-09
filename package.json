@@ -11,7 +11,6 @@
   "scripts": {
     "build": "cp -R src/ dist/",
     "test": "jest --bail",
-    "postinstall": "npm run build",
     "prepublish": "npm run build && npm run test"
   },
   "bin": {
