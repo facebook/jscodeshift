@@ -264,5 +264,12 @@ describe('Collection API', function() {
       });
     });
 
+    describe('toSource with isPretty', function() {
+      it('should use pretty print', function() {
+        var root = Collection.fromNodes([recast.parse('props => {}')]);
+        root.paths()[0].value.program.body[0].expression.params[0].typeAnnotation = b.typeAnnotation(b.genericTypeAnnotation(b.identifier('Props'), null))
+        expect(root.toSource({}, true)).toEqual('(props: Props) => {};');
+      });
+    });
   });
 });

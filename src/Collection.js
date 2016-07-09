@@ -133,14 +133,17 @@ class Collection {
     return this.__paths;
   }
 
-  toSource(options) {
+  toSource(options, isPretty = false) {
     if (this._parent) {
       return this._parent.toSource(options);
     }
+    const printer = isPretty ?
+        (...args) => recast.prettyPrint(...args) :
+        (...args) => recast.pretty(...args);
     if (this.__paths.length === 1) {
-      return recast.print(this.__paths[0], options).code;
+      return printer(this.__paths[0], options).code;
     } else {
-      return this.__paths.map(p => recast.print(p, options).code);
+      return this.__paths.map(p => printer(p, options).code);
     }
   }
 
