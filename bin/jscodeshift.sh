@@ -100,6 +100,7 @@ const opts = require('nomnom')
           ` - babel: ${require('babel-core').version}`,
           ` - babylon: ${requirePackage('babylon').version}`,
           ` - flow: ${requirePackage('flow-parser').version}`,
+          ` - recast: ${requirePackage('recast').version}`,
         ].join('\n');
       },
     },
