@@ -42,7 +42,18 @@ describe('VariableDeclarators', function() {
       '}',
       'foo.bar();',
       'foo[bar]();',
-      'bar.foo();'
+      'bar.foo();',
+      'function func() {',
+      '  var blah;',
+      '  var obj = {',
+      '    blah: 4,',
+      '    blah() {},',
+      '  };',
+      '  obj.blah = 3;',
+      '  class A {',
+      '    blah() {}',
+      '  }',
+      '}',
     ].join('\n'), {parser: babel}).program];
   });
 
@@ -54,7 +65,7 @@ describe('VariableDeclarators', function() {
     it('finds all variable declarators', function() {
       var declarators = Collection.fromNodes(nodes).findVariableDeclarators();
       expect(declarators.getTypes()).toContain('VariableDeclarator');
-      expect(declarators.size()).toBe(5);
+      expect(declarators.size()).toBe(7);
     });
 
     it('finds variable declarators by name', function() {
@@ -104,6 +115,18 @@ describe('VariableDeclarators', function() {
         .find(types.Identifier, {name: 'xyz'});
 
       expect(identifiers.size()).toBe(6);
+    });
+
+    it('does not rename things that are not variables', function() {
+      var declarators = Collection.fromNodes(nodes)
+        .findVariableDeclarators('blah')
+        .renameTo('blarg');
+
+      var identifiers =
+        Collection.fromNodes(nodes)
+        .find(types.Identifier, {name: 'blarg'});
+
+      expect(identifiers.size()).toBe(1);
     });
   });
 
