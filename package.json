@@ -1,6 +1,6 @@
 {
   "name": "jscodeshift",
-  "version": "0.3.25",
+  "version": "0.3.26",
   "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
