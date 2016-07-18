@@ -259,19 +259,23 @@ function run(transformFile, paths, options) {
       })
       .then(pendingWorkers =>
         Promise.all(pendingWorkers).then(() => {
+          const endTime = process.hrtime(startTime);
+          const timeElapsed = (endTime[0] + endTime[1]/1e9).toFixed(3);
           if (!options.silent) {
-            const endTime = process.hrtime(startTime);
             process.stdout.write('All done. \n');
             showFileStats(fileCounters);
             showStats(statsCounter);
             process.stdout.write(
-              'Time elapsed: ' + (endTime[0] + endTime[1]/1e9).toFixed(3) + 'seconds \n'
+              'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
           }
           if (usedRemoteScript) {
             temp.cleanupSync();
           }
-          return fileCounters;
+          return Object.assign({
+            stats: statsCounter,
+            timeElapsed: timeElapsed
+          }, fileCounters);
         })
       );
   }
