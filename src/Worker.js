@@ -54,7 +54,13 @@ function setup(tr, babel) {
   if (babel === 'babel') {
     require('babel-register')({
       babelrc: false,
-      presets: [require('babel-preset-es2015')],
+      presets: [
+        require('babel-preset-es2015'),
+        require('babel-preset-stage-1'),
+      ],
+      plugins: [
+        require('babel-plugin-transform-flow-strip-types'),
+      ]
     });
   }
   const module = require(tr);

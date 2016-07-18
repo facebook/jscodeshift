@@ -89,40 +89,78 @@ describe('jscodeshift CLI', () => {
     );
   });
 
-  it('loads transform files with Babel if not disabled', () => {
-    var source = createTempFileWith('a');
-    var transform = createTransformWith(
-      'return (function() { "use strict"; const a = 42; }).toString();'
-    );
-    return Promise.all([
-      run(['-t', transform, source]).then(
+  describe('Babel', () => {
+
+    it('loads transform files with Babel if not disabled', () => {
+      var source = createTempFileWith('a');
+      var transform = createTransformWith(
+        'return (function() { "use strict"; const a = 42; }).toString();'
+      );
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          () => {
+            expect(fs.readFileSync(source).toString())
+              .toMatch(/var\s*a\s*=\s*42/);
+          }
+        ),
+        run(['-t', transform, '--no-babel', source]).then(
+          () => {
+            expect(fs.readFileSync(source).toString())
+              .toMatch(/const\s*a\s*=\s*42/);
+          }
+        ),
+      ]);
+    });
+
+    it('supports proposals in transform files', () => {
+      var source = createTempFileWith('a');
+      var transform = createTransformWith(
+        'return (function() {' +
+        '  "use strict"; ' +
+        '  const spread = {}; ' +
+        '  ({...spread})' +
+        '}).toString();'
+      );
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          () => {
+            expect(fs.readFileSync(source).toString())
+              .toMatch(/\(\{\},\s*spread\)/);
+          }
+        ),
+      ]);
+    });
+
+    it('supports flow type annotations in transform files', () => {
+      var source = createTempFileWith('a');
+      var transform = createTransformWith(
+        'return (function() { "use strict"; const a: number = 42; }).toString();'
+      );
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          () => {
+            expect(fs.readFileSync(source).toString())
+              .toMatch(/var\s*a\s*=\s*42/);
+          }
+        ),
+      ]);
+    });
+
+    it('ignores .babelrc files in the directories of the source files', () => {
+      var transform = createTransformWith(
+        'return (function() { "use strict"; const a = 42; }).toString();'
+      );
+      var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
+      var source = createTempFileWith('a', 'source.js');
+
+      return run(['-t', transform, source]).then(
         () => {
           expect(fs.readFileSync(source).toString())
             .toMatch(/var\s*a\s*=\s*42/);
         }
-      ),
-      run(['-t', transform, '--no-babel', source]).then(
-        () => {
-          expect(fs.readFileSync(source).toString())
-            .toMatch(/const\s*a\s*=\s*42/);
-        }
-      ),
-    ]);
-  });
+      );
+    });
 
-  it('ignores .babelrc files in the directories of the source files', () => {
-    var transform = createTransformWith(
-      'return (function() { "use strict"; const a = 42; }).toString();'
-    );
-    var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
-    var source = createTempFileWith('a', 'source.js');
-
-    return run(['-t', transform, source]).then(
-      () => {
-        expect(fs.readFileSync(source).toString())
-          .toMatch(/var\s*a\s*=\s*42/);
-      }
-    );
   });
 
   it('passes jscodeshift and stats the transform function', () => {
