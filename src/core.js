@@ -16,6 +16,7 @@ var getParser = require('./getParser');
 var matchNode = require('./matchNode');
 var recast = require('recast');
 var template = require('./template');
+var cliGenerator = require('./cli').cliGenerator;
 
 var Node = recast.types.namedTypes.Node;
 var NodePath = recast.types.NodePath;
@@ -147,6 +148,7 @@ function enrichCore(core, parser) {
   core.types = recast.types;
   core.match = match;
   core.template = template(parser);
+  core.cli = cliGenerator;
 
   // add mappings and filters to function
   core.filters = {};

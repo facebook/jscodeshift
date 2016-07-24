@@ -15,7 +15,7 @@ const Runner = require('../dist/Runner.js');
 
 const path = require('path');
 const pkg = require('../package.json');
-const cliOptions = require('../src/cli').options;
+const cliOptions = require('../src/cli').defaults;
 const opts = require('nomnom')
   .script('jscodeshift')
   .options(cliOptions)
