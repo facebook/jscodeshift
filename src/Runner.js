@@ -21,7 +21,7 @@ const https = require('https');
 const temp = require('temp');
 const ignores = require('./ignoreFiles');
 
-const availableCpus = require('os').cpus().length - 1;
+const availableCpus = (require('os').cpus().length - 1) || 1;
 const CHUNK_SIZE = 50;
 
 function lineBreak(str) {
