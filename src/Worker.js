@@ -91,6 +91,9 @@ function stats(name, quantity) {
 }
 
 function trimStackTrace(trace) {
+  if (!trace) {
+    return '';
+  }
   // Remove this file from the stack trace of an error thrown in the transformer
   var lines = trace.split('\n');
   var result = [];
