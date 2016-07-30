@@ -8,7 +8,10 @@
  *
  */
 
+ /* eslint-disable no-console */
+
 const _ = require('lodash');
+const fs = require('fs');
 
 const pkg = require('../package.json');
 const Runner = require('../dist/Runner.js');
@@ -145,11 +148,21 @@ function cliGenerator(cliOptions) {
     .options(_.assign({}, defaults, {version, transform, path}))
     .parse();
 
-  Runner.run(
-    resolve(args.transform),
-    args.path,
-    _.assign({}, options, args)
-  );
+  const transformerPath = resolve(args.transform);
+  fs.stat(transformerPath, function (error) {
+    if (error) {
+      console.error(`The transform ${args.transform} does not exist.`);
+      process.exit(1);
+    }
+
+    console.log(`Using transform ${args.transform}.`);
+
+    Runner.run(
+      transformerPath,
+      args.path,
+      _.assign({}, options, args)
+    );
+  });
 }
 
 module.exports = {defaults, cliGenerator};
