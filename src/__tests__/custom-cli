@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const resolve = require('path').resolve;
+const cli = require('../cli').cliGenerator;
+
+cli({
+  name: 'Custom CLI',
+  packageVersion: '2.3.0',
+  resolve(name) {
+    return resolve(__dirname, `../../sample/${name}.js`);
+  },
+});
