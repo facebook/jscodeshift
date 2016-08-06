@@ -359,6 +359,29 @@ This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and on
 
 A simple example is bundled in the [sample directory](sample).
 
+### Custom CLI helper for codemod collections
+In collections of codemods one might want to make it easy to use the codemods through npm.
+The idea behind the custom CLI helper is to make it easy for codemod collection authors to
+create CLIs for their collections. It provides tailored responses to `--help` and `--version`.
+
+#### Example usage
+The code below can be used as an example for creating bin files for a custom CLI.
+
+```js
+#!/usr/bin/env node
+
+const resolve = require('path').resolve;
+const cli = require('jscodeshift').cli;
+
+cli({
+  name: 'Custom CLI',
+  packageVersion: '2.3.0',
+  resolve(name) {
+    // return absolute path to the transform with a given name.
+    return resolve(__dirname, `./transforms/${name}.js`);
+  },
+});
+```
 
 ### Example Codemods
 
