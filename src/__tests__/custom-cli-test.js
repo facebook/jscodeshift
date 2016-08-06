@@ -29,6 +29,8 @@ function execFile(file, args) {
 }
 
 describe('Custom CLI', function() {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
   it('should show help when --help is passed', function() {
     return execFile(cli, ['--help'])
       .then(function (result) {
