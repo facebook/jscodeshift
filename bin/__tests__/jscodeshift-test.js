@@ -201,6 +201,45 @@ describe('jscodeshift CLI', () => {
     );
   });
 
+  pit('transform can return list of files: files witout path is a source', () => {
+    var source = createTempFileWith('a_b');
+    var secondFile = temp.path({suffix: '.js'});
+
+    var transform = createTransformWith(
+      `return fileInfo.source.split('_')
+        .map((source, i) => i === 0 ?
+          source :
+          {source, path: '${secondFile}'})`
+    );
+
+    return run(['-t', transform, source]).then(
+      ([stdout, stderr]) => {
+        expect(fs.readFileSync(source).toString()).toBe('a');
+        expect(fs.readFileSync(secondFile).toString()).toBe('b');
+      }
+    );
+  });
+
+  pit('transform can return list of files: duplicate and nochange files skipped', () => {
+    var source = createTempFileWith('a_b');
+    var secondFile = temp.path({suffix: '.js'});
+
+    var transform = createTransformWith(
+      `return [{source: fileInfo.source},
+        {source: 'aaa', path: '${secondFile}'},
+        {source: 'bbb', path: '${secondFile}'}];`
+    );
+
+    return run(['-t', transform, '-v', 1, source]).then(
+      ([stdout, stderr]) => {
+        expect(stdout).toContain('CREATE');
+        expect(fs.readFileSync(source).toString()).toBe('a_b');
+        expect(fs.readFileSync(secondFile).toString()).toBe('aaa');
+      }
+    );
+  });
+
+
   describe('ignoring', () => {
     var transform = createTransformWith(
       'return "transform" + fileInfo.source;'
