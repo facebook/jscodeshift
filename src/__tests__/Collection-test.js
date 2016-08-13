@@ -264,5 +264,11 @@ describe('Collection API', function() {
       });
     });
 
+    describe('get', function() {
+      it('should throw descriptive error when no paths are present', function() {
+        var root = Collection.fromNodes([]);
+        expect(() => root.get()).toThrowError(/cannot call "get" on a collection with no paths/);
+      });
+    });
   });
 });
