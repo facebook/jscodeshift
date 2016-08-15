@@ -40,7 +40,7 @@
     "micromatch": "^2.3.7",
     "node-dir": "0.1.8",
     "nomnom": "^1.8.1",
-    "recast": "^0.11.8",
+    "recast": "^0.11.11",
     "temp": "^0.8.1"
   },
   "devDependencies": {
