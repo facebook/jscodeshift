@@ -172,6 +172,12 @@ class Collection {
    */
   get() {
     var path = this.__paths[0];
+    if (!path) {
+      throw Error(
+        'You cannot call "get" on a collection with no paths. ' +
+        'Instead, check "size()" first to verify at least 1 path exists.'
+      );
+    }
     return path.get.apply(path, arguments);
   }
 
