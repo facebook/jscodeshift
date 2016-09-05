@@ -11,7 +11,8 @@
   "scripts": {
     "build": "cp -R src/ dist/",
     "test": "jest --bail",
-    "prepublish": "npm run build && npm run test"
+    "prepublish": "npm run build && npm run test",
+    "docs": "rm -rf docs && jsdoc -d docs -R README.md src/collections/* src/core.js src/Collection.js"
   },
   "bin": {
     "jscodeshift": "./bin/jscodeshift.sh"
@@ -47,6 +48,7 @@
     "babel-eslint": "^6.1.2",
     "eslint": "^3.1.1",
     "jest-cli": "^12.0.0",
+    "jsdoc": "^3.4.0",
     "mkdirp": "^0.5.1"
   },
   "jest": {
