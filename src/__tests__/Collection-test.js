@@ -150,7 +150,7 @@ describe('Collection API', function() {
       var collection = Collection.fromNodes([
         b.functionExpression(null, [], b.blockStatement([])),
         b.functionExpression(null, [], b.blockStatement([])),
-        b.binaryExpression("+", b.identifier("a"), b.identifier("b"))
+        b.binaryExpression('+', b.identifier('a'), b.identifier('b'))
       ]);
 
       function typeFilter(type) {
@@ -205,7 +205,7 @@ describe('Collection API', function() {
         var fooVariables = Collection.fromNodes(nodes).filter(filter);
 
         expect(filter.mock.calls.length).toBe(2);
-        expect(fooVariables.size()).toBe(1);
+        expect(fooVariables.length).toBe(1);
       });
 
     });
@@ -234,7 +234,7 @@ describe('Collection API', function() {
         var mapped = root.map((_, i) => new NodePath(nodes[+!i]));
 
         expect(root).not.toBe(mapped);
-        expect(mapped.size()).toBe(2);
+        expect(mapped.length).toBe(2);
         expect(mapped.nodes()[0]).toBe(nodes[1]);
         expect(mapped.nodes()[1]).toBe(nodes[0]);
       });
@@ -245,7 +245,7 @@ describe('Collection API', function() {
         var mapped = root.map(_ => path);
 
         expect(root).not.toBe(mapped);
-        expect(mapped.size()).toBe(1);
+        expect(mapped.length).toBe(1);
         expect(mapped.paths()[0]).toBe(path);
       });
     });

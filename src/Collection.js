@@ -114,6 +114,15 @@ class Collection {
   }
 
   /**
+   * Returns the number of elements in this collection.
+   *
+   * @return {number}
+   */
+  get length() {
+    return this.__paths.length;
+  }
+
+  /**
    * Returns an array of AST nodes in this collection.
    *
    * @return {Array}
@@ -175,7 +184,7 @@ class Collection {
     if (!path) {
       throw Error(
         'You cannot call "get" on a collection with no paths. ' +
-        'Instead, check "size()" first to verify at least 1 path exists.'
+        'Instead, check the "length" property first to verify at least 1 path exists.'
       );
     }
     return path.get.apply(path, arguments);
@@ -309,23 +318,23 @@ function registerMethods(methods, type) {
     }
     if (hasConflictingRegistration(methodName, type)) {
       var msg = `There is a conflicting registration for method with name "${methodName}".\nYou tried to register an additional method with `;
-      
+
       if (type) {
         msg += `type "${type.toString()}".`
       } else {
         msg += 'universal type.'
       }
-      
+
       msg += '\nThere are existing registrations for that method with ';
-      
+
       var conflictingRegistrations = CPt[methodName].typedRegistrations;
-      
+
       if (conflictingRegistrations) {
-        msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`; 
+        msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`;
       } else {
         msg += 'universal type.';
       }
-      
+
       throw Error(msg);
     }
     if (!type) {
@@ -342,7 +351,7 @@ function registerMethods(methods, type) {
       });
     }
   }
-} 
+}
 
 function installTypedMethod(methodName) {
   if (CPt.hasOwnProperty(methodName)) {
@@ -353,14 +362,14 @@ function installTypedMethod(methodName) {
 
   function typedMethod() {
     var types = Object.keys(registrations);
-    
+
     for (var i = 0; i < types.length; i++) {
       var currentType = types[i];
       if (registrations[currentType] && this.isOfType(currentType)) {
         return registrations[currentType].apply(this, arguments);
       }
     }
-    
+
     throw Error(
       `You have a collection of type [${this.getTypes()}]. ` +
       `"${methodName}" is only defined for one of [${types.join('|')}].`
@@ -374,7 +383,7 @@ function installTypedMethod(methodName) {
 
 function hasConflictingRegistration(methodName, type) {
   if (!type) {
-    return CPt.hasOwnProperty(methodName); 
+    return CPt.hasOwnProperty(methodName);
   }
 
   if (!CPt.hasOwnProperty(methodName)) {
@@ -382,20 +391,20 @@ function hasConflictingRegistration(methodName, type) {
   }
 
   var registrations = CPt[methodName] && CPt[methodName].typedRegistrations;
-  
+
   if (!registrations) {
     return true;
   }
-  
+
   type = type.toString();
-  
+
   if (registrations.hasOwnProperty(type)) {
     return true;
   }
 
   return astTypes.getSupertypeNames(type.toString()).some(function (name) {
     return !!registrations[name];
-  }); 
+  });
 }
 
 var _defaultType = [];
