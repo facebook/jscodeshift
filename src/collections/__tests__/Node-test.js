@@ -12,6 +12,8 @@
 
 jest.autoMockOff();
 
+var babel = require('babel-core');
+
 describe('Collection API', function() {
   var ast;
   var Collection;
@@ -273,6 +275,23 @@ describe('Collection API', function() {
         expect(S.nodes()[0].expressions[0]).toEqual(b.identifier('foo0'));
         // baz1 is properly replaced
         expect(S.nodes()[0].expressions[2]).toEqual(b.identifier('bar1'));
+      });
+
+      it('retains comment blocks through replacements', function() {
+        var nodes = [recast.parse([
+          '// Test comment',
+          'import a from \'abc\';',
+        ].join('\n'), {parser: babel}).program];
+        var S = Collection.fromNodes(nodes);
+        var newImport = b.importDeclaration(
+          [b.importDefaultSpecifier(b.identifier('test'))],
+          b.literal('test-module1')
+        );
+        S.find(types.ImportDeclaration)
+         .replaceWith(newImport);
+        var importNode = S.find(types.ImportDeclaration).nodes()[0];
+        expect(importNode.comments).not.toEqual(null);
+        expect(importNode.comments[0].value).toEqual(' Test comment');
       });
     });
 
