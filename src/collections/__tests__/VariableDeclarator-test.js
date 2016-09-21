@@ -65,13 +65,13 @@ describe('VariableDeclarators', function() {
     it('finds all variable declarators', function() {
       var declarators = Collection.fromNodes(nodes).findVariableDeclarators();
       expect(declarators.getTypes()).toContain('VariableDeclarator');
-      expect(declarators.size()).toBe(7);
+      expect(declarators.length).toBe(7);
     });
 
     it('finds variable declarators by name', function() {
       var declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators('bar');
-      expect(declarators.size()).toBe(2);
+      expect(declarators.length).toBe(2);
     });
   });
 
@@ -81,7 +81,7 @@ describe('VariableDeclarators', function() {
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule());
 
-      expect(declarators.size()).toBe(2);
+      expect(declarators.length).toBe(2);
     });
 
     it('finds module imports (require) by module name', function() {
@@ -89,7 +89,7 @@ describe('VariableDeclarators', function() {
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule('module'));
 
-      expect(declarators.size()).toBe(1);
+      expect(declarators.length).toBe(1);
     });
 
     it('accepts multiple module names', function() {
@@ -99,7 +99,7 @@ describe('VariableDeclarators', function() {
           ['module', 'module2']
         ));
 
-      expect(declarators.size()).toBe(2);
+      expect(declarators.length).toBe(2);
     });
   });
 
@@ -114,7 +114,7 @@ describe('VariableDeclarators', function() {
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'xyz'});
 
-      expect(identifiers.size()).toBe(6);
+      expect(identifiers.length).toBe(6);
     });
 
     it('does not rename things that are not variables', function() {
@@ -126,7 +126,7 @@ describe('VariableDeclarators', function() {
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'blarg'});
 
-      expect(identifiers.size()).toBe(1);
+      expect(identifiers.length).toBe(1);
     });
   });
 

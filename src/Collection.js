@@ -119,6 +119,15 @@ class Collection {
   }
 
   /**
+   * Returns the number of elements in this collection.
+   *
+   * @return {number}
+   */
+  get length() {
+    return this.__paths.length;
+  }
+
+  /**
    * Returns an array of AST nodes in this collection.
    *
    * @return {Array}
@@ -180,7 +189,7 @@ class Collection {
     if (!path) {
       throw Error(
         'You cannot call "get" on a collection with no paths. ' +
-        'Instead, check "size()" first to verify at least 1 path exists.'
+        'Instead, check the "length" property first to verify at least 1 path exists.'
       );
     }
     return path.get.apply(path, arguments);

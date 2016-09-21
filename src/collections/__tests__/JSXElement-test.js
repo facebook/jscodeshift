@@ -47,19 +47,19 @@ describe('JSXCollection API', function() {
     it('returns a non empty JSXCollection', function() {
       var jsx = Collection.fromNodes(nodes).find(types.JSXElement);
       expect(jsx.getTypes()).toContain('JSXElement');
-      expect(jsx.size()).toBeGreaterThan(0);
+      expect(jsx.length).toBeGreaterThan(0);
     });
 
     it('lets us find JSXElements by name conveniently', function() {
       var jsx = Collection.fromNodes(nodes).findJSXElements('Child');
 
-      expect(jsx.size()).toBe(3);
+      expect(jsx.length).toBe(3);
     });
 
     it('finds JSXElements by module name', function() {
       var jsx = Collection.fromNodes(nodes).findJSXElementsByModuleName('XYZ');
 
-      expect(jsx.size()).toBe(1);
+      expect(jsx.length).toBe(1);
     });
 
     it('returns the child nodes of an JSXElement', function() {
@@ -67,7 +67,7 @@ describe('JSXCollection API', function() {
         Collection.fromNodes(nodes)
         .findJSXElements('FooBar')
         .childNodes();
-      expect(children.size()).toBe(5);
+      expect(children.length).toBe(5);
       expect(children.getTypes()).toContain('Expression');
     });
 
@@ -77,7 +77,7 @@ describe('JSXCollection API', function() {
         .findJSXElements('FooBar')
         .childElements();
 
-      expect(children.size()).toBe(2);
+      expect(children.length).toBe(2);
       expect(children.getTypes()).toContain('JSXElement');
     });
 
@@ -87,7 +87,7 @@ describe('JSXCollection API', function() {
         .findJSXElements('Foo')
         .childElements();
 
-      expect(children.size()).toBe(0);
+      expect(children.length).toBe(0);
       expect(children.getTypes()).toContain('JSXElement');
     });
   });
@@ -96,8 +96,8 @@ describe('JSXCollection API', function() {
     it('filters elements by attributes', function() {
       var jsx = Collection.fromNodes(nodes)
         .findJSXElements()
-        .filter(JSXElementCollection.filters.hasAttributes({foo: "bar"}));
-      expect(jsx.size()).toBe(2);
+        .filter(JSXElementCollection.filters.hasAttributes({foo: 'bar'}));
+      expect(jsx.length).toBe(2);
     });
 
     it('accepts callback functions as attribute filters', function() {
@@ -106,14 +106,14 @@ describe('JSXCollection API', function() {
         .filter(JSXElementCollection.filters.hasAttributes(
             {foo: v => ['bar', 'baz'].indexOf(v) > -1}
         ));
-      expect(jsx.size()).toBe(3);
+      expect(jsx.length).toBe(3);
     });
 
     it('filters elements by children', function() {
       var jsx = Collection.fromNodes(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filters.hasChildren('Child'));
-      expect(jsx.size()).toBe(2);
+      expect(jsx.length).toBe(2);
     });
   });
 

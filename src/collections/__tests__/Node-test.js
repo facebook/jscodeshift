@@ -62,7 +62,7 @@ describe('Collection API', function() {
         ]);
         var vars = Collection.fromNodes([ast]).find(types.Identifier);
 
-        expect(vars.size()).toBe(2);
+        expect(vars.length).toBe(2);
       });
 
       it('doesn\'t find the nodes in the collection itself', function() {
@@ -73,7 +73,7 @@ describe('Collection API', function() {
         ];
         var vars = Collection.fromNodes(nodes).find(types.Identifier);
 
-        expect(vars.size()).toBe(0);
+        expect(vars.length).toBe(0);
       });
 
       it('finds nodes by type and properties', function() {
@@ -85,7 +85,7 @@ describe('Collection API', function() {
         var vars = Collection.fromNodes([ast])
           .find(types.Identifier, {name: 'bar'});
 
-        expect(vars.size()).toBe(1);
+        expect(vars.length).toBe(1);
         expect(vars.nodes()[0]).toBe(ast.expressions[2]);
       });
 
@@ -94,7 +94,7 @@ describe('Collection API', function() {
           .find(types.FunctionDeclaration)
           .find(types.VariableDeclarator, {id: {name: 'bar'}});
 
-        expect(vars.size()).toBe(1);
+        expect(vars.length).toBe(1);
         expect(vars.nodes()[0]).toBe(
           ast.body[1].body.body[0].declarations[0]
         );
@@ -110,9 +110,9 @@ describe('Collection API', function() {
         var baz = functionDeclarations
           .find(types.VariableDeclarator, {id: {name: 'baz'}});
 
-        expect(bar.size()).toBe(1);
+        expect(bar.length).toBe(1);
         expect(bar.nodes()[0]).toBe(functionBody[0].declarations[0]);
-        expect(baz.size()).toBe(1);
+        expect(baz.length).toBe(1);
         expect(baz.nodes()[0]).toBe(functionBody[1].declarations[0]);
       });
     });
@@ -155,7 +155,7 @@ describe('Collection API', function() {
           .find(types.Identifier)
           .closest(types.FunctionDeclaration);
 
-        expect(decl.size()).toBe(1);
+        expect(decl.length).toBe(1);
         expect(decl.nodes()[0]).toBe(functionDeclaration);
       });
 
@@ -206,7 +206,7 @@ describe('Collection API', function() {
         var decl = Collection.fromNodes([program])
           .find(types.Identifier)
           .getVariableDeclarators(p => p.value.name);
-        expect(decl.size()).toBe(1);
+        expect(decl.length).toBe(1);
         expect(decl.nodes()[0]).toBe(variableDeclarator);
       });
     });

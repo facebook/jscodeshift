@@ -115,7 +115,7 @@ var traversalMethods = {
       if (!bindings) return;
       var decl = Collection.fromPaths(bindings)
         .closest(types.VariableDeclarator);
-      if (decl.size() === 1) {
+      if (decl.length === 1) {
         return decl.paths()[0];
       }
     }, types.VariableDeclarator);
