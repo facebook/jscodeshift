@@ -142,7 +142,11 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof nodes === 'function') ? nodes.call(path, path, i) : nodes;
+      var comments = path.value.comments;
+      var loc = path.value.loc;
       path.replace.apply(path, toArray(newNodes));
+      path.value.comments = comments;
+      path.value.loc = loc;
     });
   },
 
