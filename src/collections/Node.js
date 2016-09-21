@@ -19,6 +19,9 @@ var recast = require('recast');
 var Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
 
+/**
+* @mixin
+*/
 var traversalMethods = {
 
   /**
@@ -123,6 +126,9 @@ function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
 
+/**
+* @mixin
+*/
 var mutationMethods = {
   /**
    * Simply replaces the selected nodes with the provided node. If a function

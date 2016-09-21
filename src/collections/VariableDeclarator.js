@@ -22,6 +22,9 @@ var types = recast.types.namedTypes;
 
 var VariableDeclarator = recast.types.namedTypes.VariableDeclarator;
 
+/**
+* @mixin
+*/
 var globalMethods = {
   /**
    * Finds all variable declarators, optionally filtered by name.
@@ -34,7 +37,6 @@ var globalMethods = {
     return this.find(VariableDeclarator, filter);
   }
 };
-
 
 var filterMethods = {
   /**
@@ -64,6 +66,9 @@ var filterMethods = {
   }
 };
 
+/**
+* @mixin
+*/
 var transformMethods = {
   /**
    * Renames a variable and all its occurrences.

@@ -25,6 +25,7 @@ var Literal = types.Literal;
 
 /**
  * Contains filter methods and mutation methods for processing JSXElements.
+ * @mixin
  */
 var globalMethods = {
   /**
@@ -124,6 +125,9 @@ var filterMethods = {
   }
 };
 
+/**
+* @mixin
+*/
 var traversalMethods = {
 
   /**

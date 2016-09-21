@@ -23,6 +23,11 @@ var Node = types.Node;
  * This represents a generic collection of node paths. It only has a generic
  * API to access and process the elements of the list. It doesn't know anything
  * about AST types.
+ *
+ * @mixes traversalMethods
+ * @mixes mutationMethods
+ * @mixes transformMethods
+ * @mixes globalMethods
  */
 class Collection {
 
@@ -204,7 +209,7 @@ class Collection {
 
 /**
  * Given a set of paths, this infers the common types of all paths.
- *
+ * @private
  * @param {Array} paths An array of paths.
  * @return {Type} type An AST type
  */
@@ -255,6 +260,7 @@ function _toTypeArray(value) {
  * element has the same type, a typed collection is created (if it exists),
  * otherwise, a generic collection will be created.
  *
+ * @ignore
  * @param {Array} paths An array of paths
  * @param {Collection} parent A parent collection
  * @param {Type} type An AST type
@@ -275,6 +281,7 @@ function fromPaths(paths, parent, type) {
  *
  *    Collections.fromPaths(paths, parent, type)
  *
+ * @ignore
  * @param {Array} nodes An array of AST nodes
  * @param {Collection} parent A parent collection
  * @param {Type} type An AST type
@@ -309,23 +316,23 @@ function registerMethods(methods, type) {
     }
     if (hasConflictingRegistration(methodName, type)) {
       var msg = `There is a conflicting registration for method with name "${methodName}".\nYou tried to register an additional method with `;
-      
+
       if (type) {
         msg += `type "${type.toString()}".`
       } else {
         msg += 'universal type.'
       }
-      
+
       msg += '\nThere are existing registrations for that method with ';
-      
+
       var conflictingRegistrations = CPt[methodName].typedRegistrations;
-      
+
       if (conflictingRegistrations) {
-        msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`; 
+        msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`;
       } else {
         msg += 'universal type.';
       }
-      
+
       throw Error(msg);
     }
     if (!type) {
@@ -342,7 +349,7 @@ function registerMethods(methods, type) {
       });
     }
   }
-} 
+}
 
 function installTypedMethod(methodName) {
   if (CPt.hasOwnProperty(methodName)) {
@@ -353,14 +360,14 @@ function installTypedMethod(methodName) {
 
   function typedMethod() {
     var types = Object.keys(registrations);
-    
+
     for (var i = 0; i < types.length; i++) {
       var currentType = types[i];
       if (registrations[currentType] && this.isOfType(currentType)) {
         return registrations[currentType].apply(this, arguments);
       }
     }
-    
+
     throw Error(
       `You have a collection of type [${this.getTypes()}]. ` +
       `"${methodName}" is only defined for one of [${types.join('|')}].`
@@ -374,7 +381,7 @@ function installTypedMethod(methodName) {
 
 function hasConflictingRegistration(methodName, type) {
   if (!type) {
-    return CPt.hasOwnProperty(methodName); 
+    return CPt.hasOwnProperty(methodName);
   }
 
   if (!CPt.hasOwnProperty(methodName)) {
@@ -382,20 +389,20 @@ function hasConflictingRegistration(methodName, type) {
   }
 
   var registrations = CPt[methodName] && CPt[methodName].typedRegistrations;
-  
+
   if (!registrations) {
     return true;
   }
-  
+
   type = type.toString();
-  
+
   if (registrations.hasOwnProperty(type)) {
     return true;
   }
 
   return astTypes.getSupertypeNames(type.toString()).some(function (name) {
     return !!registrations[name];
-  }); 
+  });
 }
 
 var _defaultType = [];
@@ -405,6 +412,7 @@ var _defaultType = [];
  * empty set of paths and no type is specified, we return a collection of this
  * type.
  *
+ * @ignore
  * @param {Type} type
  */
 function setDefaultCollectionType(type) {
