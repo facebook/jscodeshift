@@ -372,10 +372,11 @@ The code below can be used as an example for creating bin files for a custom CLI
 
 const resolve = require('path').resolve;
 const cli = require('jscodeshift').cli;
+const pkg = require('./package.json');
 
 cli({
   name: 'Custom CLI',
-  packageVersion: '2.3.0',
+  packageVersion: pkg.version,
   resolve(name) {
     // return absolute path to the transform with a given name.
     return resolve(__dirname, `./transforms/${name}.js`);
