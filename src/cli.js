@@ -10,7 +10,6 @@
 
  /* eslint-disable no-console */
 
-const _ = require('lodash');
 const fs = require('fs');
 
 const pkg = require('../package.json');
@@ -145,7 +144,7 @@ function cliGenerator(cliOptions) {
 
   const args = require('nomnom')
     .script(name)
-    .options(_.assign({}, defaults, {version, transform, path}))
+    .options(Object.assign({}, defaults, {version, transform, path}))
     .parse();
 
   const transformerPath = resolve(args.transform);
@@ -160,7 +159,7 @@ function cliGenerator(cliOptions) {
     Runner.run(
       transformerPath,
       args.path,
-      _.assign({}, options, args)
+      Object.assign({}, options, args)
     );
   });
 }
