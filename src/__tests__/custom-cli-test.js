@@ -47,14 +47,14 @@ describe('Custom CLI', function() {
   });
 
   it('should fail when transform is not resolved', function() {
-    let catched = false;
+    let caught = false;
     return execFile(cli, ['non-existing-codemod', resolve(__dirname, 'custom-cli-test.js')])
       .catch(function (error) {
-        catched = true;
+        caught = true;
         expect(error.toString()).toContain('The transform non-existing-codemod does not exist.')
       })
       .then(() => {
-        expect(catched).toBe(true);
+        expect(caught).toBe(true);
       });
   });
 });
