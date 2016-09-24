@@ -10,8 +10,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 var babel = require('babel-core');
 
 describe('JSXCollection API', function() {
@@ -23,6 +21,8 @@ describe('JSXCollection API', function() {
   var b;
 
   beforeEach(function() {
+    jest.resetModuleRegistry();
+
     Collection = require('../../Collection');
     JSXElementCollection = require('../JSXElement');
     recast = require('recast');

@@ -10,8 +10,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 describe('Collection API', function() {
   var ast;
   var Collection;
@@ -21,6 +19,8 @@ describe('Collection API', function() {
   var b;
 
   beforeEach(function() {
+    jest.resetModuleRegistry();
+
     Collection = require('../../Collection');
     NodeCollection = require('../Node');
     recast = require('recast');

@@ -12,8 +12,6 @@
 
 /*global jest, describe, it, expect, beforeEach*/
 
-jest.autoMockOff();
-
 
 describe('Templates', () => {
   let statements;
@@ -22,6 +20,8 @@ describe('Templates', () => {
   let jscodeshift;
 
   beforeEach(() => {
+    jest.resetModuleRegistry();
+
     jscodeshift = require('../core');
     const template = jscodeshift.template;
     expression = template.expression;

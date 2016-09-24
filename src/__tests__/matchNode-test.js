@@ -11,7 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
 var matchNode = require('../matchNode');
 
 describe('matchNode', function() {

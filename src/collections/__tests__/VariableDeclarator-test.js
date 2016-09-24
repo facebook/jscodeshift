@@ -10,13 +10,10 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 var babel = require('babel-core');
 var recast = require('recast');
 var types = recast.types.namedTypes;
 var b = recast.types.builders;
-
 
 describe('VariableDeclarators', function() {
   var nodes;
@@ -24,6 +21,8 @@ describe('VariableDeclarators', function() {
   var VariableDeclaratorCollection;
 
   beforeEach(function() {
+    jest.resetModuleRegistry();
+
     Collection = require('../../Collection');
     VariableDeclaratorCollection =  require('../VariableDeclarator');
     VariableDeclaratorCollection.register();

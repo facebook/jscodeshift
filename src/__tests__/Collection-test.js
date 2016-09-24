@@ -10,19 +10,25 @@
 
 'use strict';
 
-jest.autoMockOff();
-
-var recast = require('recast');
-var Collection = require('../Collection');
-
-var NodePath = recast.types.NodePath;
-var types = recast.types.namedTypes;
-var b = recast.types.builders;
 
 describe('Collection API', function() {
   var nodes;
+  var Collection;
+  var recast;
+  var NodePath;
+  var types;
+  var b;
 
   beforeEach(function() {
+    jest.resetModuleRegistry();
+
+    Collection = require('../Collection');
+    recast = require('recast');
+
+    NodePath = recast.types.NodePath;
+    types = recast.types.namedTypes;
+    b = recast.types.builders;
+
     nodes = [b.identifier('foo'), b.identifier('bar')];
   });
 
