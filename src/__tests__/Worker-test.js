@@ -40,6 +40,25 @@ describe('Worker API', () => {
     });
   });
 
+  it('passes j as argument', done => {
+    var transformPath = createTempFileWith(
+      `module.exports = function (file, api) {
+        return api.j(file.source).toSource() + ' changed';
+       }`
+    );
+    var sourcePath = createTempFileWith('const x = 10;');
+
+    const emitter = worker([transformPath]);
+    emitter.send({files: [sourcePath]});
+    emitter.once('message', (data) => {
+      expect(data.status).toBe('ok');
+      expect(getFileContent(sourcePath)).toBe(
+        'const x = 10;' + ' changed'
+      );
+      done();
+    });
+  });
+
   describe('custom parser', () => {
     function getTransformForParser(parser) {
       return createTempFileWith(

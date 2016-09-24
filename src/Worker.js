@@ -124,13 +124,15 @@ function run(data) {
         }
         source = source.toString();
         try {
+          var jscodeshift = prepareJscodeshift(options);
           var out = transform(
             {
               path: file,
               source: source,
             },
             {
-              jscodeshift: prepareJscodeshift(options),
+              j: jscodeshift,
+              jscodeshift: jscodeshift,
               stats: options.dry ? stats : empty
             },
             options
