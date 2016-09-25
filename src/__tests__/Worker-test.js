@@ -12,11 +12,12 @@
 
 jest.autoMockOff();
 
-const testUtils = require('../../utils/testUtils');
+const fs = require('fs');
+const createTempFolder = require('../../utils/createTempFolder');
 
-const createTransformWith = testUtils.createTransformWith;
-const createTempFileWith = testUtils.createTempFileWith;
-const getFileContent = testUtils.getFileContent;
+function getFileContent(filePath) {
+  return fs.readFileSync(filePath).toString();
+}
 
 describe('Worker API', () => {
   let worker;
@@ -26,9 +27,10 @@ describe('Worker API', () => {
   });
 
   it('transforms files', done => {
+    const tempFolder = createTempFolder();
     const transformPath =
-      createTransformWith('return fileInfo.source + " changed";');
-    const sourcePath = createTempFileWith('foo');
+      tempFolder.createTransformWith('return fileInfo.source + " changed";');
+    const sourcePath = tempFolder.createFileWith('foo');
     const emitter = worker([transformPath]);
 
     emitter.send({files: [sourcePath]});
@@ -41,8 +43,8 @@ describe('Worker API', () => {
   });
 
   describe('custom parser', () => {
-    function getTransformForParser(parser) {
-      return createTempFileWith(
+    function getTransformForParser(tempFolder, parser) {
+      return tempFolder.createFileWith(
         `function transform(fileInfo, api) {
           api.jscodeshift(fileInfo.source);
           return "changed";
@@ -52,18 +54,19 @@ describe('Worker API', () => {
         `
       );
     }
-    function getSourceFile() {
+    function getSourceFile(tempFolder) {
       // This code cannot be parsed by Babel v5
-      return createTempFileWith(
+      return tempFolder.createFileWith(
          'const x = (a: Object, b: string): void => {}'
       );
     }
 
     it('errors if new flow type code is parsed with babel v5', done => {
-      const transformPath = createTransformWith(
+      const tempFolder = createTempFolder();
+      const transformPath = tempFolder.createTransformWith(
         'api.jscodeshift(fileInfo.source); return "changed";'
       );
-      const sourcePath = getSourceFile();
+      const sourcePath = getSourceFile(tempFolder);
       const emitter = worker([transformPath]);
 
       emitter.send({files: [sourcePath]});
@@ -75,8 +78,9 @@ describe('Worker API', () => {
     });
 
     it('uses babylon if configured as such', done => {
-      const transformPath = getTransformForParser('babylon');
-      const sourcePath = getSourceFile();
+      const tempFolder = createTempFolder();
+      const transformPath = getTransformForParser(tempFolder, 'babylon');
+      const sourcePath = getSourceFile(tempFolder);
       const emitter = worker([transformPath]);
 
       emitter.send({files: [sourcePath]});
@@ -88,8 +92,9 @@ describe('Worker API', () => {
     });
 
     it('uses flow if configured as such', done => {
-      const transformPath = getTransformForParser('flow');
-      const sourcePath = getSourceFile();
+      const tempFolder = createTempFolder();
+      const transformPath = getTransformForParser(tempFolder, 'flow');
+      const sourcePath = getSourceFile(tempFolder);
       const emitter = worker([transformPath]);
 
       emitter.send({files: [sourcePath]});
