@@ -21,10 +21,7 @@ var fs = require('fs');
 var path = require('path');
 var temp = require('temp');
 var mkdirp = require('mkdirp');
-var testUtils = require('../../utils/testUtils');
-
-var createTransformWith = testUtils.createTransformWith;
-var createTempFileWith = testUtils.createTempFileWith;
+var createTempFolder = require('../../utils/createTempFolder');
 
 function run(args, stdin, cwd) {
   return new Promise(resolve => {
@@ -47,16 +44,33 @@ function run(args, stdin, cwd) {
   });
 }
 
+// Implementation of it.concurrent borrowed from jest 16
+// https://github.com/facebook/jest/blob/46f1bc903fd44b46dad154448e9235e990b877ba/packages/jest-jasmine2/src/jasmine-async.js#L77
+function makeConcurrent(originalFn, env) {
+  return function(specName, fn, timeout) {
+    try {
+      var promise = fn();
+    } catch (error) {
+      return originalFn.call(env, Promise.reject(error));
+    }
+    return originalFn.call(env, specName, () => promise, timeout);
+  };
+}
+
+// When jest 16 is released, use it.concurrent
+var concurrentIt = makeConcurrent(it);
+
 describe('jscodeshift CLI', () => {
 
-  it('calls the transform and file information', () => {
-    var sourceA = createTempFileWith('a');
-    var sourceB = createTempFileWith('b\n');
-    var sourceC = createTempFileWith('c');
-    var transformA = createTransformWith(
+  concurrentIt('calls the transform and file information', () => {
+    var tempFolder = createTempFolder();
+    var sourceA = tempFolder.createFileWith('a');
+    var sourceB = tempFolder.createFileWith('b\n');
+    var sourceC = tempFolder.createFileWith('c');
+    var transformA = tempFolder.createTransformWith(
       'return "transform" + fileInfo.source;'
     );
-    var transformB = createTransformWith(
+    var transformB = tempFolder.createTransformWith(
       'return fileInfo.path;'
     );
 
@@ -77,9 +91,10 @@ describe('jscodeshift CLI', () => {
     ]);
   });
 
-  it('does not transform files in a dry run', () => {
-    var source = createTempFileWith('a');
-    var transform = createTransformWith(
+  concurrentIt('does not transform files in a dry run', () => {
+    var tempFolder = createTempFolder();
+    var source = tempFolder.createFileWith('a');
+    var transform = tempFolder.createTransformWith(
       'return "transform" + fileInfo.source;'
     );
     return run(['-t', transform, '-d', source]).then(
@@ -91,9 +106,10 @@ describe('jscodeshift CLI', () => {
 
   describe('Babel', () => {
 
-    it('loads transform files with Babel if not disabled', () => {
-      var source = createTempFileWith('a');
-      var transform = createTransformWith(
+    concurrentIt('loads transform files with Babel if not disabled', () => {
+      var tempFolder = createTempFolder();
+      var source = tempFolder.createFileWith('a');
+      var transform = tempFolder.createTransformWith(
         'return (function() { "use strict"; const a = 42; }).toString();'
       );
       return Promise.all([
@@ -112,9 +128,10 @@ describe('jscodeshift CLI', () => {
       ]);
     });
 
-    it('supports proposals in transform files', () => {
-      var source = createTempFileWith('a');
-      var transform = createTransformWith(
+    concurrentIt('supports proposals in transform files', () => {
+      var tempFolder = createTempFolder();
+      var source = tempFolder.createFileWith('a');
+      var transform = tempFolder.createTransformWith(
         'return (function() {' +
         '  "use strict"; ' +
         '  const spread = {}; ' +
@@ -131,9 +148,10 @@ describe('jscodeshift CLI', () => {
       ]);
     });
 
-    it('supports flow type annotations in transform files', () => {
-      var source = createTempFileWith('a');
-      var transform = createTransformWith(
+    concurrentIt('supports flow type annotations in transform files', () => {
+      var tempFolder = createTempFolder();
+      var source = tempFolder.createFileWith('a');
+      var transform = tempFolder.createTransformWith(
         'return (function() { "use strict"; const a: number = 42; }).toString();'
       );
       return Promise.all([
@@ -146,12 +164,13 @@ describe('jscodeshift CLI', () => {
       ]);
     });
 
-    it('ignores .babelrc files in the directories of the source files', () => {
-      var transform = createTransformWith(
+    concurrentIt('ignores .babelrc files in the directories of the source files', () => {
+      var tempFolder = createTempFolder();
+      var transform = tempFolder.createTransformWith(
         'return (function() { "use strict"; const a = 42; }).toString();'
       );
-      var babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
-      var source = createTempFileWith('a', 'source.js');
+      var babelrc = tempFolder.createFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
+      var source = tempFolder.createFileWith('a', 'source.js');
 
       return run(['-t', transform, source]).then(
         () => {
@@ -163,9 +182,10 @@ describe('jscodeshift CLI', () => {
 
   });
 
-  it('passes jscodeshift and stats the transform function', () => {
-    var source = createTempFileWith('a');
-    var transform = createTransformWith([
+  concurrentIt('passes jscodeshift and stats the transform function', () => {
+    var tempFolder = createTempFolder();
+    var source = tempFolder.createFileWith('a');
+    var transform = tempFolder.createTransformWith([
       '  return String(',
       '    typeof api.jscodeshift === "function" &&',
       '    typeof api.stats === "function"',
@@ -178,9 +198,10 @@ describe('jscodeshift CLI', () => {
     );
   });
 
-  it('passes options along to the transform', () => {
-    var source = createTempFileWith('a');
-    var transform = createTransformWith('return options.foo;');
+  concurrentIt('passes options along to the transform', () => {
+    var tempFolder = createTempFolder();
+    var source = tempFolder.createFileWith('a');
+    var transform = tempFolder.createTransformWith('return options.foo;');
     return run(['-t', transform, '--foo=42', source]).then(
       () => {
         expect(fs.readFileSync(source).toString()).toBe('42');
@@ -188,12 +209,13 @@ describe('jscodeshift CLI', () => {
     );
   });
 
-  it('does not stall with too many files', () => {
+  concurrentIt('does not stall with too many files', () => {
+    var tempFolder = createTempFolder();
     var sources = [];
     for (var i = 0; i < 100; i++) {
-      sources.push(createTempFileWith('a'));
+      sources.push(tempFolder.createFileWith('a'));
     }
-    var transform = createTransformWith('');
+    var transform = tempFolder.createTransformWith('');
     return run(['-t', transform, '--foo=42'].concat(sources)).then(
       () => {
         expect(true).toBe(true);
@@ -202,19 +224,22 @@ describe('jscodeshift CLI', () => {
   });
 
   describe('ignoring', () => {
-    var transform = createTransformWith(
+    var tempFolder = createTempFolder();
+    var transform = tempFolder.createTransformWith(
       'return "transform" + fileInfo.source;'
     );
-    var sources = [];
 
-    beforeEach(() => {
-      sources = [];
-      sources.push(createTempFileWith('a', 'a.js'));
-      sources.push(createTempFileWith('a', 'a-test.js'));
-      // sources.push(createTempFileWith('b', 'src/lib/b.js'));
-    });
+    function getSources(tempFolder) {
+      return [
+        tempFolder.createFileWith('a', 'a.js'),
+        tempFolder.createFileWith('a', 'a-test.js'),
+      // tempFolder.createFileWith('b', 'src/lib/b.js'),
+      ];
+    }
 
-    it('supports basic glob', () => {
+    concurrentIt('supports basic glob', () => {
+      var tempFolder = createTempFolder();
+      var sources = getSources(tempFolder);
       var pattern = '*-test.js';
       return run(['-t', transform, '--ignore-pattern', pattern].concat(sources)).then(
         () => {
@@ -224,7 +249,9 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    it('supports filename match', () => {
+    concurrentIt('supports filename match', () => {
+      var tempFolder = createTempFolder();
+      var sources = getSources(tempFolder);
       var pattern = 'a.js';
       return run(['-t', transform, '--ignore-pattern', pattern].concat(sources)).then(
         () => {
@@ -234,7 +261,9 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    it('accepts a list of patterns', () => {
+    concurrentIt('accepts a list of patterns', () => {
+      var tempFolder = createTempFolder();
+      var sources = getSources(tempFolder);
       var patterns = ['--ignore-pattern', 'a.js', '--ignore-pattern', '*-test.js'];
       return run(['-t', transform].concat(patterns).concat(sources)).then(
         () => {
@@ -244,10 +273,12 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    it('sources ignore patterns from configuration file', () => {
+    concurrentIt('sources ignore patterns from configuration file', () => {
+      var tempFolder = createTempFolder();
+      var sources = getSources(tempFolder);
       var patterns = ['sub/dir/', '*-test.js'];
-      var gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
-      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+      var gitignore = tempFolder.createFileWith(patterns.join('\n'), '.gitignore');
+      sources.push(tempFolder.createFileWith('subfile', 'sub/dir/file.js'));
 
       return run(['-t', transform, '--ignore-config', gitignore].concat(sources)).then(
         () => {
@@ -258,11 +289,13 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    it('accepts a list of configuration files', () => {
-      var gitignore = createTempFileWith(['sub/dir/'].join('\n'), '.gitignore');
-      var eslintignore = createTempFileWith(['**/*test.js', 'a.js'].join('\n'), '.eslintignore');
+    concurrentIt('accepts a list of configuration files', () => {
+      var tempFolder = createTempFolder();
+      var sources = getSources(tempFolder);
+      var gitignore = tempFolder.createFileWith(['sub/dir/'].join('\n'), '.gitignore');
+      var eslintignore = tempFolder.createFileWith(['**/*test.js', 'a.js'].join('\n'), '.eslintignore');
       var configs = ['--ignore-config', gitignore, '--ignore-config', eslintignore];
-      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+      sources.push(tempFolder.createFileWith('subfile', 'sub/dir/file.js'));
 
       return run(['-t', transform].concat(configs).concat(sources)).then(
         () => {
@@ -275,9 +308,9 @@ describe('jscodeshift CLI', () => {
   });
 
   describe('output', () => {
-    it('shows workers info and stats at the end by default', () => {
-      var source = createTempFileWith('a');
-      var transform = createTransformWith('return null;');
+    concurrentIt('shows workers info and stats at the end by default', () => {
+      var source = tempFolder.createFileWith('a');
+      var transform = tempFolder.createTransformWith('return null;');
       return run(['-t', transform, source]).then(
         out => {
           expect(out[0]).toContain('Processing 1 files...');
@@ -290,9 +323,9 @@ describe('jscodeshift CLI', () => {
       );
     });
 
-    it('does not ouput anything in silent mode', () => {
-      var source = createTempFileWith('a');
-      var transform = createTransformWith('return null;');
+    concurrentIt('does not ouput anything in silent mode', () => {
+      var source = tempFolder.createFileWith('a');
+      var transform = tempFolder.createTransformWith('return null;');
       return run(['-t', transform, '-s', source]).then(
         out => {
           expect(out[0]).toEqual('');
