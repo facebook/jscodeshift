@@ -12,7 +12,6 @@
 
 /*global jest, describe, it, expect*/
 
-jest.autoMockOff();
 var core = require('../core');
 var recast = require('recast');
 var b = recast.types.builders;

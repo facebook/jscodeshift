@@ -10,8 +10,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const testUtils = require('../../utils/testUtils');
 
 const createTransformWith = testUtils.createTransformWith;
@@ -22,6 +20,7 @@ describe('Worker API', () => {
   let worker;
 
   beforeEach(() => {
+    jest.resetModuleRegistry();
     worker = require('../Worker');
   });
 

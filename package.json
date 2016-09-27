@@ -47,8 +47,8 @@
   "devDependencies": {
     "babel-eslint": "^6.1.2",
     "eslint": "^3.1.1",
-    "jest-cli": "^12.0.0",
     "jsdoc": "^3.4.0",
+    "jest": "^15.1.1",
     "mkdirp": "^0.5.1"
   },
   "jest": {
@@ -56,9 +56,6 @@
       "src",
       "bin",
       "sample"
-    ],
-    "unmockedModulePathPatterns": [
-      "node_modules/"
     ]
   }
 }
