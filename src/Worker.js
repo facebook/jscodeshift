@@ -146,13 +146,21 @@ function run(data) {
             console.log(out); // eslint-disable-line no-console
           }
           if (!options.dry) {
-            fs.writeFile(file, out, function(err) {
+            const tmpFile = `${file}.tmp.${Math.floor(Math.random() * 1000000)}`;
+            fs.writeFile(tmpFile, out, function(err) {
               if (err) {
                 updateStatus('error', file, 'File writer error: ' + err);
+                callback();
               } else {
-                updateStatus('ok', file);
+                fs.rename(tmpFile, file, function(err) {
+                  if (err) {
+                    updateStatus('error', file, 'File move error: ' + err);
+                  } else {
+                    updateStatus('ok', file);
+                  }
+                  callback();
+                });
               }
-              callback();
             });
           } else {
             updateStatus('ok', file);
