@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: collections/VariableDeclarator.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: collections/VariableDeclarator.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ *  Copyright (c) 2015-present, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+'use strict';
+
+var _ = require('lodash');
+var Collection = require('../Collection');
+var NodeCollection = require('./Node');
+var matchNode = require('../matchNode');
+var recast = require('recast');
+
+var astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
+var b = recast.types.builders;
+var types = recast.types.namedTypes;
+
+var VariableDeclarator = recast.types.namedTypes.VariableDeclarator;
+
+/**
+* @mixin
+*/
+var globalMethods = {
+  /**
+   * Finds all variable declarators, optionally filtered by name.
+   *
+   * @param {string} name
+   * @return {Collection}
+   */
+  findVariableDeclarators: function(name) {
+    var filter = name ? {id: {name: name}} : null;
+    return this.find(VariableDeclarator, filter);
+  }
+};
+
+var filterMethods = {
+  /**
+   * Returns a function that returns true if the provided path is a variable
+   * declarator and requires one of the specified module names.
+   *
+   * @param {string|Array} names A module name or an array of module names
+   * @return {Function}
+   */
+  requiresModule: function(names) {
+    if (names &amp;&amp; !Array.isArray(names)) {
+      names = [names];
+    }
+    var requireIdentifier = b.identifier('require');
+    return function(path) {
+      var node = path.value;
+      if (!VariableDeclarator.check(node) ||
+          !types.CallExpression.check(node.init) ||
+          !astNodesAreEquivalent(node.init.callee, requireIdentifier)) {
+        return false;
+      }
+      return !names ||
+        names.some(
+          n => astNodesAreEquivalent(node.init.arguments[0], b.literal(n))
+        );
+    };
+  }
+};
+
+/**
+* @mixin
+*/
+var transformMethods = {
+  /**
+   * Renames a variable and all its occurrences.
+   *
+   * @param {string} newName
+   * @return {Collection}
+   */
+  renameTo: function(newName) {
+    // TODO: Include JSXElements
+    return this.forEach(function(path) {
+      var node = path.value;
+      var oldName = node.id.name;
+      var rootScope = path.scope;
+      var rootPath = rootScope.path;
+      Collection.fromPaths([rootPath])
+        .find(types.Identifier, {name: oldName})
+        .filter(function(path) { // ignore non-variables
+          var parent = path.parent.node;
+
+          if (
+            types.MemberExpression.check(parent) &amp;&amp;
+            parent.property === path.node &amp;&amp;
+            !parent.computed
+          ) {
+            // obj.oldName
+            return false;
+          }
+
+          if (
+            types.Property.check(parent) &amp;&amp;
+            parent.key === path.node &amp;&amp;
+            !parent.computed
+          ) {
+            // { oldName: 3 }
+            return false;
+          }
+
+          if (
+            types.MethodDefinition.check(parent) &amp;&amp;
+            parent.key === path.node &amp;&amp;
+            !parent.computed
+          ) {
+            // class A() { oldName() {} }
+            return false;
+          }
+
+          return true;
+        })
+        .forEach(function(path) {
+          var scope = path.scope;
+          while (scope &amp;&amp; scope !== rootScope) {
+            if (scope.declares(oldName)) {
+              return;
+            }
+            scope = scope.parent;
+          }
+          if (scope) { // identifier must refer to declared variable
+            path.get('name').replace(newName);
+          }
+        });
+    });
+  }
+};
+
+
+function register() {
+  NodeCollection.register();
+  Collection.registerMethods(globalMethods);
+  Collection.registerMethods(transformMethods, VariableDeclarator);
+}
+
+exports.register = _.once(register);
+exports.filters = filterMethods;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-jscodeshift.html">jscodeshift</a></li></ul><h3>Externals</h3><ul><li><a href="external-astTypes.html">astTypes</a></li></ul><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a></li></ul><h3>Mixins</h3><ul><li><a href="globalMethods.html">globalMethods</a></li><li><a href="mutationMethods.html">mutationMethods</a></li><li><a href="transformMethods.html">transformMethods</a></li><li><a href="traversalMethods.html">traversalMethods</a></li></ul><h3>Global</h3><ul><li><a href="global.html#registerMethods">registerMethods</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Wed Sep 21 2016 16:53:09 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
