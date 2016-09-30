@@ -82,7 +82,7 @@ while (i < 10) {
   });
 
   it('can be used with a different parser', () => {
-    const parser = require('flow-parser');
+    const parser = require('../../parser/flow');
     const template = require('../template')(parser);
     const node = {type: 'Literal', value: 41};
 
