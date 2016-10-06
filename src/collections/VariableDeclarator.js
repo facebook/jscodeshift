@@ -111,7 +111,7 @@ var transformMethods = {
             parent.key === path.node &&
             !parent.computed
           ) {
-            // class A() { oldName() {} }
+            // class A { oldName() {} }
             return false;
           }
 
