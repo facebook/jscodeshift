@@ -145,7 +145,7 @@ files (and features like templates).
 
 To do that, the transform module can export `parser`, which can either be one 
 of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
-object that is compatible with with recast.
+object that is compatible with recast.
 
 For example:
 
