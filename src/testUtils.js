@@ -53,6 +53,7 @@ function runTest(dirName, transformName, options, testFilePrefix) {
   // Jest resets the module registry after each test, so we need to always get
   // a fresh copy of jscodeshift on every test run.
   let jscodeshift = require('./core');
+  let jsx = require('./jsx');
   if (module.parser) {
     jscodeshift = jscodeshift.withParser(module.parser);
   }
@@ -61,6 +62,7 @@ function runTest(dirName, transformName, options, testFilePrefix) {
     {path: inputPath, source},
     {
       jscodeshift,
+      jsx,
       stats: () => {},
     },
     options || {}
