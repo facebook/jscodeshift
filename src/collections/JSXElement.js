@@ -10,24 +10,24 @@
 
 'use strict';
 
-var _ = require('lodash');
-var Collection = require('../Collection');
-var NodeCollection = require('./Node');
+const _ = require('lodash');
+const Collection = require('../Collection');
+const NodeCollection = require('./Node');
 
-var assert = require('assert');
-var recast = require('recast');
-var requiresModule = require('./VariableDeclarator').filters.requiresModule;
+const assert = require('assert');
+const recast = require('recast');
+const requiresModule = require('./VariableDeclarator').filters.requiresModule;
 
-var types = recast.types.namedTypes;
-var JSXElement = types.JSXElement;
-var JSXAttribute = types.JSXAttribute;
-var Literal = types.Literal;
+const types = recast.types.namedTypes;
+const JSXElement = types.JSXElement;
+const JSXAttribute = types.JSXAttribute;
+const Literal = types.Literal;
 
 /**
  * Contains filter methods and mutation methods for processing JSXElements.
  * @mixin
  */
-var globalMethods = {
+const globalMethods = {
   /**
    * Finds all JSXElements optionally filtered by name
    *
@@ -35,7 +35,7 @@ var globalMethods = {
    * @return {Collection}
    */
   findJSXElements: function(name) {
-    var nameFilter = name && {openingElement: {name: {name: name}}};
+    const nameFilter = name && {openingElement: {name: {name: name}}};
     return this.find(JSXElement, nameFilter);
   },
 
@@ -57,7 +57,7 @@ var globalMethods = {
     return this.find(types.VariableDeclarator)
       .filter(requiresModule(moduleName))
       .map(function(path) {
-        var id = path.value.id.name;
+        const id = path.value.id.name;
         if (id) {
           return Collection.fromPaths([path])
             .closestScope()
@@ -68,7 +68,7 @@ var globalMethods = {
   }
 };
 
-var filterMethods = {
+const filterMethods = {
 
   /**
    * Filter method for attributes.
@@ -77,12 +77,12 @@ var filterMethods = {
    * @return {function}
    */
   hasAttributes: function(attributeFilter) {
-    var attributeNames = Object.keys(attributeFilter);
+    const attributeNames = Object.keys(attributeFilter);
     return function filter(path) {
       if (!JSXElement.check(path.value)) {
         return false;
       }
-      var elementAttributes = Object.create(null);
+      const elementAttributes = Object.create(null);
       path.value.openingElement.attributes.forEach(function(attr) {
         if (!JSXAttribute.check(attr) ||
           !(attr.name.name in attributeFilter)) {
@@ -95,9 +95,9 @@ var filterMethods = {
         if (!(name in elementAttributes) ){
           return false;
         }
-        var value = elementAttributes[name].value;
-        var expected = attributeFilter[name];
-        var actual = Literal.check(value) ? value.value : value.expression;
+        const value = elementAttributes[name].value;
+        const expected = attributeFilter[name];
+        const actual = Literal.check(value) ? value.value : value.expression;
         if (typeof expected === 'function') {
           return expected(actual);
         } else {
@@ -128,7 +128,7 @@ var filterMethods = {
 /**
 * @mixin
 */
-var traversalMethods = {
+const traversalMethods = {
 
   /**
    * Returns all child nodes, including literals and expressions.
@@ -136,11 +136,11 @@ var traversalMethods = {
    * @return {Collection}
    */
   childNodes: function() {
-    var paths = [];
+    const paths = [];
     this.forEach(function(path) {
-      var children = path.get('children');
-      var l = children.value.length;
-      for (var i = 0; i < l; i++) {
+      const children = path.get('children');
+      const l = children.value.length;
+      for (let i = 0; i < l; i++) {
         paths.push(children.get(i));
       }
     });
@@ -153,11 +153,11 @@ var traversalMethods = {
    * @return {JSXElementCollection}
    */
   childElements: function() {
-    var paths = [];
+    const paths = [];
     this.forEach(function(path) {
-      var children = path.get('children');
-      var l = children.value.length;
-      for (var i = 0; i < l; i++) {
+      const children = path.get('children');
+      const l = children.value.length;
+      for (let i = 0; i < l; i++) {
         if (types.JSXElement.check(children.value[i])) {
           paths.push(children.get(i));
         }
@@ -167,7 +167,7 @@ var traversalMethods = {
   },
 };
 
-var mappingMethods = {
+const mappingMethods = {
   /**
    * Given a JSXElement, returns its "root" name. E.g. it would return "Foo" for
    * both <Foo /> and <Foo.Bar />.
@@ -176,7 +176,7 @@ var mappingMethods = {
    * @return {string}
    */
   getRootName: function(path) {
-    var name = path.value.openingElement.name;
+    let name = path.value.openingElement.name;
     while (types.JSXMemberExpression.check(name)) {
       name = name.object;
     }

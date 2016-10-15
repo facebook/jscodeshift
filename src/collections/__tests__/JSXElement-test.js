@@ -10,15 +10,15 @@
 
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
 
 describe('JSXCollection API', function() {
-  var nodes;
-  var Collection;
-  var JSXElementCollection;
-  var recast;
-  var types;
-  var b;
+  let nodes;
+  let Collection;
+  let JSXElementCollection;
+  let recast;
+  let types;
+  let b;
 
   beforeEach(function() {
     jest.resetModuleRegistry();
@@ -45,25 +45,25 @@ describe('JSXCollection API', function() {
 
   describe('Traversal', function() {
     it('returns a non empty JSXCollection', function() {
-      var jsx = Collection.fromNodes(nodes).find(types.JSXElement);
+      const jsx = Collection.fromNodes(nodes).find(types.JSXElement);
       expect(jsx.getTypes()).toContain('JSXElement');
       expect(jsx.length).toBeGreaterThan(0);
     });
 
     it('lets us find JSXElements by name conveniently', function() {
-      var jsx = Collection.fromNodes(nodes).findJSXElements('Child');
+      const jsx = Collection.fromNodes(nodes).findJSXElements('Child');
 
       expect(jsx.length).toBe(3);
     });
 
     it('finds JSXElements by module name', function() {
-      var jsx = Collection.fromNodes(nodes).findJSXElementsByModuleName('XYZ');
+      const jsx = Collection.fromNodes(nodes).findJSXElementsByModuleName('XYZ');
 
       expect(jsx.length).toBe(1);
     });
 
     it('returns the child nodes of an JSXElement', function() {
-      var children =
+      const children =
         Collection.fromNodes(nodes)
         .findJSXElements('FooBar')
         .childNodes();
@@ -72,7 +72,7 @@ describe('JSXCollection API', function() {
     });
 
     it('returns the child JSXElements of an JSXElement', function() {
-      var children =
+      const children =
         Collection.fromNodes(nodes)
         .findJSXElements('FooBar')
         .childElements();
@@ -82,7 +82,7 @@ describe('JSXCollection API', function() {
     });
 
     it('returns a properly typed collection even if empty', function() {
-      var children =
+      const children =
         Collection.fromNodes([])
         .findJSXElements('Foo')
         .childElements();
@@ -94,14 +94,14 @@ describe('JSXCollection API', function() {
 
   describe('Filtering', function() {
     it('filters elements by attributes', function() {
-      var jsx = Collection.fromNodes(nodes)
+      const jsx = Collection.fromNodes(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filters.hasAttributes({foo: 'bar'}));
       expect(jsx.length).toBe(2);
     });
 
     it('accepts callback functions as attribute filters', function() {
-      var jsx = Collection.fromNodes(nodes)
+      const jsx = Collection.fromNodes(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filters.hasAttributes(
             {foo: v => ['bar', 'baz'].indexOf(v) > -1}
@@ -110,7 +110,7 @@ describe('JSXCollection API', function() {
     });
 
     it('filters elements by children', function() {
-      var jsx = Collection.fromNodes(nodes)
+      const jsx = Collection.fromNodes(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filters.hasChildren('Child'));
       expect(jsx.length).toBe(2);
@@ -119,7 +119,7 @@ describe('JSXCollection API', function() {
 
   describe('Mappings', function() {
     it('gets the root names of JSXElements', function() {
-      var names = Collection.fromNodes(nodes)
+      const names = Collection.fromNodes(nodes)
         .findJSXElements()
         .paths().map(JSXElementCollection.mappings.getRootName);
 
@@ -131,20 +131,20 @@ describe('JSXCollection API', function() {
 
   describe('Mutation', function() {
     it('handles insertions before children correctly', function() {
-      var childElement = b.jsxElement(
+      const childElement = b.jsxElement(
         b.jsxOpeningElement(b.jsxIdentifier('Bar'), [], true)
       );
-      var newChildElement = b.jsxElement(
+      const newChildElement = b.jsxElement(
         b.jsxOpeningElement(b.jsxIdentifier('Baz'), [], true)
       );
-      var literal = b.literal('\n  ');
-      var ast = b.jsxElement(
+      const literal = b.literal('\n  ');
+      const ast = b.jsxElement(
         b.jsxOpeningElement(b.jsxIdentifier('Foo')),
         b.jsxClosingElement(b.jsxIdentifier('Foo')),
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      var children = Collection.fromNodes([ast])
+      const children = Collection.fromNodes([ast])
         .childElements().at(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);

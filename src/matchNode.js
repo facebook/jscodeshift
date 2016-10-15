@@ -10,7 +10,7 @@
 
 'use strict';
 
-var hasOwn =
+const hasOwn =
   Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 
 /**

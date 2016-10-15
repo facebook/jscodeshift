@@ -74,7 +74,7 @@ exports.runTest = runTest;
  * jscodeshift transform.
  */
 function defineTest(dirName, transformName, options, testFilePrefix) {
-  var testName = testFilePrefix
+  const testName = testFilePrefix
     ? `transforms correctly using "${testFilePrefix}" data`
     : 'transforms correctly';
   describe(transformName, () => {

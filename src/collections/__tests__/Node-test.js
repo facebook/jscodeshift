@@ -11,12 +11,12 @@
 'use strict';
 
 describe('Collection API', function() {
-  var ast;
-  var Collection;
-  var NodeCollection;
-  var recast;
-  var types;
-  var b;
+  let ast;
+  let Collection;
+  let NodeCollection;
+  let recast;
+  let types;
+  let b;
 
   beforeEach(function() {
     jest.resetModuleRegistry();
@@ -55,34 +55,34 @@ describe('Collection API', function() {
   describe('Traversal', function() {
     describe('find', function() {
       it('finds nodes by type', function() {
-        var ast = b.sequenceExpression([ // eslint-disable-line no-shadow
+        const ast = b.sequenceExpression([ // eslint-disable-line no-shadow
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ]);
-        var vars = Collection.fromNodes([ast]).find(types.Identifier);
+        const vars = Collection.fromNodes([ast]).find(types.Identifier);
 
         expect(vars.length).toBe(2);
       });
 
       it('doesn\'t find the nodes in the collection itself', function() {
-        var nodes = [
+        const nodes = [
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ];
-        var vars = Collection.fromNodes(nodes).find(types.Identifier);
+        const vars = Collection.fromNodes(nodes).find(types.Identifier);
 
         expect(vars.length).toBe(0);
       });
 
       it('finds nodes by type and properties', function() {
-        var ast = b.sequenceExpression([ // eslint-disable-line no-shadow
+        const ast = b.sequenceExpression([ // eslint-disable-line no-shadow
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ]);
-        var vars = Collection.fromNodes([ast])
+        const vars = Collection.fromNodes([ast])
           .find(types.Identifier, {name: 'bar'});
 
         expect(vars.length).toBe(1);
@@ -90,7 +90,7 @@ describe('Collection API', function() {
       });
 
       it('handles chained find calls properly', function() {
-        var vars = Collection.fromNodes([ast])
+        const vars = Collection.fromNodes([ast])
           .find(types.FunctionDeclaration)
           .find(types.VariableDeclarator, {id: {name: 'bar'}});
 
@@ -101,13 +101,13 @@ describe('Collection API', function() {
       });
 
       it('handles multi chain find calls properly', function() {
-        var functionBody = ast.body[1].body.body;
-        var functionDeclarations = Collection.fromNodes([ast])
+        const functionBody = ast.body[1].body.body;
+        const functionDeclarations = Collection.fromNodes([ast])
           .find(types.FunctionDeclaration);
 
-        var bar = functionDeclarations
+        const bar = functionDeclarations
           .find(types.VariableDeclarator, {id: {name: 'bar'}});
-        var baz = functionDeclarations
+        const baz = functionDeclarations
           .find(types.VariableDeclarator, {id: {name: 'baz'}});
 
         expect(bar.length).toBe(1);
@@ -119,8 +119,8 @@ describe('Collection API', function() {
 
     describe('closestScope', function() {
       it('gets the closest scope', function() {
-        var functionDeclaration = ast.body[1];
-        var scopes = Collection.fromNodes([ast])
+        const functionDeclaration = ast.body[1];
+        const scopes = Collection.fromNodes([ast])
           .find(types.Identifier)
           .closestScope();
 
@@ -130,7 +130,7 @@ describe('Collection API', function() {
     });
 
     describe('closest', function() {
-      var decl;
+      let decl;
       beforeEach(()=> {
         decl = b.functionDeclaration(
           b.identifier('foo'),
@@ -150,7 +150,7 @@ describe('Collection API', function() {
       });
 
       it('finds closest node (up the tree) of the given type', function() {
-        var functionDeclaration = ast.body[1];
+        const functionDeclaration = ast.body[1];
         decl = Collection.fromNodes([ast])
           .find(types.Identifier)
           .closest(types.FunctionDeclaration);
@@ -160,10 +160,10 @@ describe('Collection API', function() {
       });
 
       it('allows to filter nodes by pattern', function() {
-        var literals = Collection.fromNodes([decl])
+        const literals = Collection.fromNodes([decl])
           .find(types.Literal);
         expect(literals.get(0).node.value).toBe(3);
-        var closest = literals.closest(
+        const closest = literals.closest(
           types.FunctionDeclaration,
           {id: {name: 'foo'}}
         );
@@ -171,10 +171,10 @@ describe('Collection API', function() {
       });
 
       it('allows to filter nodes with a filter function', function() {
-        var literals = Collection.fromNodes([decl])
+        const literals = Collection.fromNodes([decl])
           .find(types.Literal);
         expect(literals.get(0).node.value).toBe(3);
-        var closest = literals.closest(
+        const closest = literals.closest(
           types.FunctionDeclaration,
           (node) => node.id && node.id.name === 'foo'
         );
@@ -182,10 +182,10 @@ describe('Collection API', function() {
       });
 
       it('fails when filter evaluates as false', function() {
-        var literals = Collection.fromNodes([decl])
+        const literals = Collection.fromNodes([decl])
           .find(types.Literal);
         expect(literals.get(0).node.value).toBe(3);
-        var closest = literals.closest(
+        const closest = literals.closest(
           types.FunctionDeclaration,
           (node) => node.id && node.id.name === 'blue'
         );
@@ -195,15 +195,15 @@ describe('Collection API', function() {
 
     describe('getVariableDeclarators', function() {
       it('gets the variable declarators for each selected path', function() {
-        var variableDeclarator =
+        const variableDeclarator =
           b.variableDeclarator(b.identifier('foo'), null);
-        var program = b.program([
+        const program = b.program([
           b.variableDeclaration('var', [variableDeclarator]),
           b.expressionStatement(b.identifier('foo')),
           b.expressionStatement(b.identifier('bar'))
         ]);
 
-        var decl = Collection.fromNodes([program])
+        const decl = Collection.fromNodes([program])
           .find(types.Identifier)
           .getVariableDeclarators(p => p.value.name);
         expect(decl.length).toBe(1);
@@ -215,14 +215,14 @@ describe('Collection API', function() {
   describe('Mutation', function() {
     describe('replaceWith', function() {
       it('handles simple AST node replacement', function() {
-        var ast = b.sequenceExpression([ // eslint-disable-line no-shadow
+        const ast = b.sequenceExpression([ // eslint-disable-line no-shadow
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ]);
-        var newNode = b.identifier('xyz');
+        const newNode = b.identifier('xyz');
 
-        var S = Collection.fromNodes([ast]);
+        const S = Collection.fromNodes([ast]);
         S.find(types.Identifier, {name: 'bar'})
           .replaceWith(newNode);
 
@@ -230,15 +230,15 @@ describe('Collection API', function() {
       });
 
       it('accepts an array as replacement', function() {
-        var ast = b.sequenceExpression([   // eslint-disable-line no-shadow
+        const ast = b.sequenceExpression([   // eslint-disable-line no-shadow
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ]);
-        var newNode1 = b.identifier('xyz');
-        var newNode2 = b.identifier('jkl');
+        const newNode1 = b.identifier('xyz');
+        const newNode2 = b.identifier('jkl');
 
-        var S = Collection.fromNodes([ast]);
+        const S = Collection.fromNodes([ast]);
         S.find(types.Identifier, {name: 'bar'})
           .replaceWith([newNode1, newNode2]);
 
@@ -247,15 +247,15 @@ describe('Collection API', function() {
       });
 
       it('accepts a function as replacement ', function() {
-        var ast = b.sequenceExpression([ // eslint-disable-line no-shadow
+        const ast = b.sequenceExpression([ // eslint-disable-line no-shadow
           b.identifier('foo'),
           b.literal('asd'),
           b.identifier('bar'),
         ]);
 
-        var expectedArgs = [b.identifier('foo'), b.identifier('bar')];
-        var receivedArgs = [];
-        var replaceFunction =
+        const expectedArgs = [b.identifier('foo'), b.identifier('bar')];
+        const receivedArgs = [];
+        const replaceFunction =
           jest.genMockFunction().mockImplementation(function(path, i) {
             // We have to keep a reference to the argument before it gets
             // replaced
@@ -263,7 +263,7 @@ describe('Collection API', function() {
             return b.identifier(path.value.name + i);
           });
 
-        var S = Collection.fromNodes([ast]);
+        const S = Collection.fromNodes([ast]);
         S.find(types.Identifier)
          .replaceWith(replaceFunction);
 
@@ -278,11 +278,11 @@ describe('Collection API', function() {
 
     describe('insertBefore', function() {
       it('inserts a new node before the current one', function() {
-        var ast = b.variableDeclaration( // eslint-disable-line no-shadow
+        const ast = b.variableDeclaration( // eslint-disable-line no-shadow
           'var',
           [b.variableDeclarator(b.identifier('foo'), null)]
         );
-        var one = b.variableDeclarator(b.identifier('one'), null);
+        const one = b.variableDeclarator(b.identifier('one'), null);
 
         Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
@@ -293,12 +293,12 @@ describe('Collection API', function() {
       });
 
       it('accepts an array of nodes', function() {
-        var ast = b.variableDeclaration( // eslint-disable-line no-shadow
+        const ast = b.variableDeclaration( // eslint-disable-line no-shadow
           'var',
           [b.variableDeclarator(b.identifier('foo'), null)]
         );
-        var one = b.variableDeclarator(b.identifier('one'), null);
-        var two = b.variableDeclarator(b.identifier('two'), null);
+        const one = b.variableDeclarator(b.identifier('one'), null);
+        const two = b.variableDeclarator(b.identifier('two'), null);
 
         Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
@@ -310,10 +310,10 @@ describe('Collection API', function() {
       });
 
       it('accepts a function', function() {
-        var x = b.identifier('x');
-        var foo = b.identifier('foo');
-        var bar = b.identifier('bar');
-        var ast = b.sequenceExpression([foo, bar]); // eslint-disable-line no-shadow
+        const x = b.identifier('x');
+        const foo = b.identifier('foo');
+        const bar = b.identifier('bar');
+        const ast = b.sequenceExpression([foo, bar]); // eslint-disable-line no-shadow
 
         Collection.fromNodes([ast])
           .find(types.Identifier)
@@ -330,11 +330,11 @@ describe('Collection API', function() {
 
     describe('insertAfter', function() {
       it('inserts a new node after the current one', function() {
-        var ast = b.variableDeclaration( // eslint-disable-line no-shadow
+        const ast = b.variableDeclaration( // eslint-disable-line no-shadow
           'var',
           [b.variableDeclarator(b.identifier('foo'), null)]
         );
-        var one = b.variableDeclarator(b.identifier('one'), null);
+        const one = b.variableDeclarator(b.identifier('one'), null);
 
         Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
@@ -345,12 +345,12 @@ describe('Collection API', function() {
       });
 
       it('accepts an array of nodes', function() {
-        var ast = b.variableDeclaration( // eslint-disable-line no-shadow
+        const ast = b.variableDeclaration( // eslint-disable-line no-shadow
           'var',
           [b.variableDeclarator(b.identifier('foo'), null)]
         );
-        var one = b.variableDeclarator(b.identifier('one'), null);
-        var two = b.variableDeclarator(b.identifier('two'), null);
+        const one = b.variableDeclarator(b.identifier('one'), null);
+        const two = b.variableDeclarator(b.identifier('two'), null);
 
         Collection.fromNodes([ast])
           .find(types.VariableDeclarator)
@@ -362,10 +362,10 @@ describe('Collection API', function() {
       });
 
       it('accepts a function', function() {
-        var x = b.identifier('x');
-        var foo = b.identifier('foo');
-        var bar = b.identifier('bar');
-        var ast = b.sequenceExpression([foo, bar]); // eslint-disable-line no-shadow
+        const x = b.identifier('x');
+        const foo = b.identifier('foo');
+        const bar = b.identifier('bar');
+        const ast = b.sequenceExpression([foo, bar]); // eslint-disable-line no-shadow
 
         Collection.fromNodes([ast])
           .find(types.Identifier)
@@ -382,9 +382,9 @@ describe('Collection API', function() {
 
     describe('removes', function() {
       it('removes a node if it is part of the body of a statement', function() {
-        var x = b.expressionStatement(b.identifier('x'));
-        var y = b.expressionStatement(b.identifier('y'));
-        var ast = b.program([x, y]); // eslint-disable-line no-shadow
+        const x = b.expressionStatement(b.identifier('x'));
+        const y = b.expressionStatement(b.identifier('y'));
+        const ast = b.program([x, y]); // eslint-disable-line no-shadow
 
         Collection.fromNodes([ast])
           .find(types.Identifier, {name: 'x'})
@@ -395,9 +395,9 @@ describe('Collection API', function() {
       });
 
       it('removes a node if it is a function param', function() {
-        var x = b.identifier('x');
-        var y = b.identifier('y');
-        var ast = b.arrowFunctionExpression( // eslint-disable-line no-shadow
+        const x = b.identifier('x');
+        const y = b.identifier('y');
+        const ast = b.arrowFunctionExpression( // eslint-disable-line no-shadow
           [x, b.identifier('z')],
           y
         );

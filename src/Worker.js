@@ -95,8 +95,8 @@ function trimStackTrace(trace) {
     return '';
   }
   // Remove this file from the stack trace of an error thrown in the transformer
-  var lines = trace.split('\n');
-  var result = [];
+  const lines = trace.split('\n');
+  const result = [];
   lines.every(function(line) {
     if (line.indexOf(__filename) === -1) {
       result.push(line);
@@ -107,8 +107,8 @@ function trimStackTrace(trace) {
 }
 
 function run(data) {
-  var files = data.files;
-  var options = data.options || {};
+  const files = data.files;
+  const options = data.options || {};
   if (!files.length) {
     finish();
     return;
@@ -124,8 +124,8 @@ function run(data) {
         }
         source = source.toString();
         try {
-          var jscodeshift = prepareJscodeshift(options);
-          var out = transform(
+          const jscodeshift = prepareJscodeshift(options);
+          const out = transform(
             {
               path: file,
               source: source,

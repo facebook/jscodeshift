@@ -48,9 +48,9 @@ function addIgnoreFromFile(input) {
   }
 
   files.forEach(function(config) {
-    var stats = fs.statSync(config);
+    const stats = fs.statSync(config);
     if (stats.isFile()) {
-      var content = fs.readFileSync(config, 'utf8');
+      const content = fs.readFileSync(config, 'utf8');
       lines = lines.concat(content.split('\n'));
     }
   });
@@ -59,7 +59,7 @@ function addIgnoreFromFile(input) {
 }
 
 function shouldIgnore(path) {
-  var matched = matchers.length ? mm.any(path, matchers, { dot:true }) : false;
+  const matched = matchers.length ? mm.any(path, matchers, { dot:true }) : false;
   return matched;
 }
 

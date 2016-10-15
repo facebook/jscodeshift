@@ -10,22 +10,22 @@
 
 'use strict';
 
-var _ = require('lodash');
-var Collection = require('../Collection');
-var NodeCollection = require('./Node');
-var matchNode = require('../matchNode');
-var recast = require('recast');
+const _ = require('lodash');
+const Collection = require('../Collection');
+const NodeCollection = require('./Node');
+const matchNode = require('../matchNode');
+const recast = require('recast');
 
-var astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
-var b = recast.types.builders;
+const astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
+const b = recast.types.builders;
 var types = recast.types.namedTypes;
 
-var VariableDeclarator = recast.types.namedTypes.VariableDeclarator;
+const VariableDeclarator = recast.types.namedTypes.VariableDeclarator;
 
 /**
 * @mixin
 */
-var globalMethods = {
+const globalMethods = {
   /**
    * Finds all variable declarators, optionally filtered by name.
    *
@@ -33,12 +33,12 @@ var globalMethods = {
    * @return {Collection}
    */
   findVariableDeclarators: function(name) {
-    var filter = name ? {id: {name: name}} : null;
+    const filter = name ? {id: {name: name}} : null;
     return this.find(VariableDeclarator, filter);
   }
 };
 
-var filterMethods = {
+const filterMethods = {
   /**
    * Returns a function that returns true if the provided path is a variable
    * declarator and requires one of the specified module names.
@@ -50,9 +50,9 @@ var filterMethods = {
     if (names && !Array.isArray(names)) {
       names = [names];
     }
-    var requireIdentifier = b.identifier('require');
+    const requireIdentifier = b.identifier('require');
     return function(path) {
-      var node = path.value;
+      const node = path.value;
       if (!VariableDeclarator.check(node) ||
           !types.CallExpression.check(node.init) ||
           !astNodesAreEquivalent(node.init.callee, requireIdentifier)) {
@@ -69,7 +69,7 @@ var filterMethods = {
 /**
 * @mixin
 */
-var transformMethods = {
+const transformMethods = {
   /**
    * Renames a variable and all its occurrences.
    *
@@ -79,14 +79,14 @@ var transformMethods = {
   renameTo: function(newName) {
     // TODO: Include JSXElements
     return this.forEach(function(path) {
-      var node = path.value;
-      var oldName = node.id.name;
-      var rootScope = path.scope;
-      var rootPath = rootScope.path;
+      const node = path.value;
+      const oldName = node.id.name;
+      const rootScope = path.scope;
+      const rootPath = rootScope.path;
       Collection.fromPaths([rootPath])
         .find(types.Identifier, {name: oldName})
         .filter(function(path) { // ignore non-variables
-          var parent = path.parent.node;
+          const parent = path.parent.node;
 
           if (
             types.MemberExpression.check(parent) &&
@@ -118,7 +118,7 @@ var transformMethods = {
           return true;
         })
         .forEach(function(path) {
-          var scope = path.scope;
+          let scope = path.scope;
           while (scope && scope !== rootScope) {
             if (scope.declares(oldName)) {
               return;

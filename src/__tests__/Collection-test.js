@@ -12,12 +12,12 @@
 
 
 describe('Collection API', function() {
-  var nodes;
-  var Collection;
-  var recast;
-  var NodePath;
-  var types;
-  var b;
+  let nodes;
+  let Collection;
+  let recast;
+  let NodePath;
+  let types;
+  let b;
 
   beforeEach(function() {
     jest.resetModuleRegistry();
@@ -39,7 +39,7 @@ describe('Collection API', function() {
     });
 
     it('should create a collection from an array of paths', function() {
-      var paths = [
+      const paths = [
         new NodePath(b.identifier('foo')),
         new NodePath(b.identifier('bar')),
       ];
@@ -47,13 +47,13 @@ describe('Collection API', function() {
     });
 
     it('accepts an empty array as input', function() {
-      var values = [];
+      const values = [];
       expect(() => Collection.fromPaths(values)).not.toThrow();
       expect(() => Collection.fromNodes(values)).not.toThrow();
     });
 
     it('throws if it is passed an array of mixed values', function() {
-      var values = [
+      const values = [
         new NodePath(b.identifier('foo')),
         b.identifier('bar'),
       ];
@@ -62,7 +62,7 @@ describe('Collection API', function() {
     });
 
     it('returns a collection of the closest common type', function() {
-      var nodes = [
+      let nodes = [
         b.identifier('foo'),
         b.sequenceExpression([]),
       ];
@@ -80,13 +80,13 @@ describe('Collection API', function() {
 
   describe('Method extensions', function() {
     it('handles method extensions for types', function() {
-      var Collection = require('../Collection');
-      var getNames = jest.genMockFunction().mockImpl(function() {
+      const Collection = require('../Collection');
+      const getNames = jest.genMockFunction().mockImpl(function() {
         expect(this.nodes()).toEqual(nodes);
       });
       Collection.registerMethods({getNames: getNames}, types.Identifier);
 
-      var collection = Collection.fromNodes(nodes);
+      const collection = Collection.fromNodes(nodes);
 
       expect(collection.getNames).toBeDefined();
       collection.getNames();
@@ -94,11 +94,11 @@ describe('Collection API', function() {
     });
 
     it('throws if a method is called for the wrong node type', function() {
-      var Collection = require('../Collection');
-      var getNames = jest.genMockFunction();
+      const Collection = require('../Collection');
+      const getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames}, types.Identifier);
 
-      var collection = Collection.fromNodes([
+      const collection = Collection.fromNodes([
         b.blockStatement([])
       ]);
 
@@ -106,8 +106,8 @@ describe('Collection API', function() {
     });
 
     it('ads "global" methods to all types', function() {
-      var Collection = require('../Collection');
-      var getNames = jest.genMockFunction();
+      const Collection = require('../Collection');
+      const getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames});
 
       expect(Collection.fromNodes([b.blockStatement([])])).toBeDefined();
@@ -116,16 +116,16 @@ describe('Collection API', function() {
     });
 
     it('handles type inheritance chains', function() {
-      var Collection = require('../Collection');
-      var nodeMethod = function() {};
-      var identifierMethod = function() {};
+      const Collection = require('../Collection');
+      const nodeMethod = function() {};
+      const identifierMethod = function() {};
       Collection.registerMethods({nodeMethod: nodeMethod}, types.Node);
       Collection.registerMethods(
         {identifierMethod: identifierMethod},
         types.Identifier
       );
 
-      var collection = Collection.fromNodes([b.identifier('foo')]);
+      const collection = Collection.fromNodes([b.identifier('foo')]);
 
       expect(() => collection.identifierMethod()).not.toThrow();
       expect(() => collection.nodeMethod()).not.toThrow();
@@ -136,7 +136,7 @@ describe('Collection API', function() {
         {expressionMethod: function() {}},
         types.Expression
       );
-      var collection = Collection.fromNodes([
+      const collection = Collection.fromNodes([
         b.functionExpression(null, [], b.blockStatement([]))
       ]);
       expect(() => collection.expressionMethod()).not.toThrow();
@@ -153,7 +153,7 @@ describe('Collection API', function() {
         types.BinaryExpression
       );
 
-      var collection = Collection.fromNodes([
+      const collection = Collection.fromNodes([
         b.functionExpression(null, [], b.blockStatement([])),
         b.functionExpression(null, [], b.blockStatement([])),
         b.binaryExpression('+', b.identifier('a'), b.identifier('b'))
@@ -177,7 +177,7 @@ describe('Collection API', function() {
 
     describe('hasConflictingRegistration', function () {
       function register(methodName, type) {
-        var methods = {};
+        const methods = {};
         methods[methodName] = function () {};
         if (!types[type]) {
           throw new Error(type + ' is not a valid type');
@@ -205,10 +205,10 @@ describe('Collection API', function() {
   describe('Processing functions', function() {
     describe('filter', function() {
       it('lets you filter with custom logic', function() {
-        var filter = jest.genMockFunction().mockImplementation(function(path) {
+        const filter = jest.genMockFunction().mockImplementation(function(path) {
           return path.value.name === 'foo';
         });
-        var fooVariables = Collection.fromNodes(nodes).filter(filter);
+        const fooVariables = Collection.fromNodes(nodes).filter(filter);
 
         expect(filter.mock.calls.length).toBe(2);
         expect(fooVariables.length).toBe(1);
@@ -218,8 +218,8 @@ describe('Collection API', function() {
 
     describe('forEach', function() {
       it('lets you iterate over each element of an collection', function() {
-        var each = jest.genMockFunction();
-        var fVariables = Collection.fromNodes(nodes).forEach(each);
+        const each = jest.genMockFunction();
+        const fVariables = Collection.fromNodes(nodes).forEach(each);
 
         expect(each.mock.calls.length).toBe(2);
         expect(each.mock.calls[0][0].value).toBe(nodes[0]);
@@ -227,8 +227,8 @@ describe('Collection API', function() {
       });
 
       it('returns the collection itself', function() {
-        var fVariables = Collection.fromNodes(nodes);
-        var result = fVariables.forEach(function(){});
+        const fVariables = Collection.fromNodes(nodes);
+        const result = fVariables.forEach(function(){});
 
         expect(result).toBe(fVariables);
       });
@@ -236,8 +236,8 @@ describe('Collection API', function() {
 
     describe('map', function() {
       it('returns a new collection with mapped values', function() {
-        var root = Collection.fromNodes(nodes);
-        var mapped = root.map((_, i) => new NodePath(nodes[+!i]));
+        const root = Collection.fromNodes(nodes);
+        const mapped = root.map((_, i) => new NodePath(nodes[+!i]));
 
         expect(root).not.toBe(mapped);
         expect(mapped.length).toBe(2);
@@ -246,9 +246,9 @@ describe('Collection API', function() {
       });
 
       it('dedupes elements', function() {
-        var path = new NodePath(nodes[0]);
-        var root = Collection.fromNodes(nodes);
-        var mapped = root.map(_ => path);
+        const path = new NodePath(nodes[0]);
+        const root = Collection.fromNodes(nodes);
+        const mapped = root.map(_ => path);
 
         expect(root).not.toBe(mapped);
         expect(mapped.length).toBe(1);
@@ -258,13 +258,13 @@ describe('Collection API', function() {
 
     describe('at', function() {
       it('should work with positive indecies', function() {
-        var root = Collection.fromNodes(nodes);
+        const root = Collection.fromNodes(nodes);
         expect(root.at(0).nodes()[0]).toEqual(nodes[0]);
         expect(root.at(1).nodes()[0]).toEqual(nodes[1]);
       });
 
       it('should work with negative indecies', function() {
-        var root = Collection.fromNodes(nodes);
+        const root = Collection.fromNodes(nodes);
         expect(root.at(-1).nodes()[0]).toEqual(nodes[nodes.length - 1]);
         expect(root.at(-2).nodes()[0]).toEqual(nodes[nodes.length - 2]);
       });
@@ -272,7 +272,7 @@ describe('Collection API', function() {
 
     describe('get', function() {
       it('should throw descriptive error when no paths are present', function() {
-        var root = Collection.fromNodes([]);
+        const root = Collection.fromNodes([]);
         expect(() => root.get()).toThrowError(/cannot call "get" on a collection with no paths/);
       });
     });
