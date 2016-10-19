@@ -1,8 +1,11 @@
-const { createElement, parse } = require('./util');
+const j = require('../core');
+const AstWrapper = require('./AstWrapper');
 const components = require('./components');
+const { createElement } = require('./util');
 
-const jsx = Object.assign(parse, components, {
-  createElement: createElement,
-});
+function jsx(source) {
+  return new AstWrapper(j(source));
+}
+jsx.createElement = createElement;
 
-module.exports = jsx;
+module.exports = Object.assign(jsx, components);

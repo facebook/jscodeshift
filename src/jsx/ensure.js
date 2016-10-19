@@ -1,8 +1,15 @@
-function ensure({ test, value }, data, message, ...args) {
+function ensure({ test, value }, data, message) {
   const result = test(data);
   if (!result) {
-    throw new Error(message(value, ...args));
+    throw new Error(message || data);
   }
+}
+
+function Exists(value) {
+  return {
+    value,
+    test: () => value !== undefined,
+  };
 }
 
 function Length(value) {
@@ -14,16 +21,16 @@ function Length(value) {
   };
 }
 
-
-function Exists(value) {
+function Type(value) {
   return {
-    value,
-    test: () => value !== undefined,
-  };
+    value: typeof value,
+    test: (type) => typeof value === type,
+  }
 }
 
 module.exports = {
   ensure: ensure,
-  Length: Length,
   Exists: Exists,
+  Length: Length,
+  Type: Type,
 };

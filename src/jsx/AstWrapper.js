@@ -1,7 +1,7 @@
 const j = require('../core');
 const { fromNodes } = require('../Collection');
-
 const { ensure, Exists, Length } = require('./ensure');
+const { find, toAST } = require('./util');
 
 module.exports = class AstWrapper {
   constructor(ast) {
@@ -22,10 +22,6 @@ module.exports = class AstWrapper {
     return new AstWrapper(fromNodes([nodes[index]]));
   }
 
-  debug() {
-    return this.ast.toSource();
-  }
-
   /* Single node methods */
 
   prop(key) {
@@ -41,7 +37,7 @@ module.exports = class AstWrapper {
   /* Utility methods */
 
   find(component) {
-    const found = this.ast.find(j[component.TYPE], component.matches.bind(component));
+    const found = this.ast.find(j[component.constructor.name], find(component));
     return new AstWrapper(found);
   }
 
@@ -62,10 +58,10 @@ module.exports = class AstWrapper {
       this.ast.nodes().forEach((childNode, index) => {
         const childAst = fromNodes([childNode]);
         const component = new AstWrapper(childAst);
-        this.ast.at(index).replaceWith(arg(component).toAST());
+        this.ast.at(index).replaceWith(toAST(arg(component)));
       });
     } else {
-      this.ast.replaceWith(arg.toAST());
+      this.ast.replaceWith(toAST(arg));
     }
     return this;
   }

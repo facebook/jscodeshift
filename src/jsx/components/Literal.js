@@ -1,16 +1,14 @@
 const j = require('../../core');
+const { oneOf, string, number } = require('../PropTypes');
 
 module.exports = class Literal {
-  constructor(props) {
-    this.TYPE = 'Literal';
-    this.props = props;
+
+  static propTypes = {
+    value: oneOf([string, number])
+  };
+
+  static toAST = ({ value }) => {
+    return j.literal(value);
   }
 
-  toAST() {
-    return j.literal(this.props.value);
-  }
-
-  matches(node) {
-    return node.value === this.props.value;
-  }
 }

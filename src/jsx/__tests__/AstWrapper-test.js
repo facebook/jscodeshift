@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const AstWrapper = require('../AstWrapper');
 const jsx = require('../index');
 const  {
