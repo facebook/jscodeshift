@@ -91,6 +91,26 @@ while (i < 10) {
     ).toEqual('1 + 41');
   });
 
+  it('handles out-of-order traversal', () => {
+    const input = `var x`;
+    const expected = `class X extends a {f(b) {}}`;
+
+    const a = jscodeshift.identifier('a');
+    const b = jscodeshift.identifier('b');
+
+    const classDecl = statement`
+      class X extends ${a} {f(${b}) {}}
+    `;
+
+    expect(
+      jscodeshift(input)
+        .find('VariableDeclaration')
+        .replaceWith(classDecl)
+        .toSource()
+    )
+    .toEqual(expected);
+  });
+
   describe('explode arrays', () => {
 
     it('explodes arrays in function definitions', () => {
