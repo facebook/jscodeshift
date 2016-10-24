@@ -17,7 +17,6 @@ const fs = require('fs');
 const getParser = require('./getParser');
 
 const jscodeshift = require('./core');
-const jsx = require('./jsx');
 
 let emitter;
 let finish;
@@ -61,7 +60,7 @@ function setup(tr, babel) {
       ],
       plugins: [
         require('babel-plugin-transform-flow-strip-types'),
-        [require('babel-plugin-transform-react-jsx'), { pragma: 'jsx.createElement' }],
+        [require('babel-plugin-transform-react-jsx'), { pragma: 'j.createElement' }],
       ]
     });
   }
@@ -135,7 +134,6 @@ function run(data) {
             {
               j: jscodeshift,
               jscodeshift: jscodeshift,
-              jsx: jsx,
               stats: options.dry ? stats : empty
             },
             options

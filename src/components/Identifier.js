@@ -1,5 +1,5 @@
-const j = require('../../core');
-const PropTypes = require('../PropTypes');
+const recast = require('recast');
+const PropTypes = require('./PropTypes');
 
 module.exports = class Identifier {
 
@@ -8,7 +8,7 @@ module.exports = class Identifier {
   };
 
   static toAST = ({ name }) => {
-    return j.identifier(name);
+    return recast.types.builders.identifier(name);
   }
 
 }

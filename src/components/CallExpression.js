@@ -1,5 +1,5 @@
-const j = require('../../core');
-const PropTypes = require('../PropTypes');
+const recast = require('recast');
+const PropTypes = require('./PropTypes');
 
 module.exports = class CallExpression {
 
@@ -10,7 +10,7 @@ module.exports = class CallExpression {
 
   static toAST = (props) => {
     const children = props.children;
-    return j.callExpression(
+    return recast.types.builders.callExpression(
       children[0].constructor.toAST(children[0].props),
       props.arguments
     );

@@ -11,12 +11,12 @@
  * Example jsx transformer. Simply reverses the names of all
  * identifiers.
  */
-function transformer(file, { jsx }) {
-  const { Identifier } = jsx;
+function transformer(file, { j }) {
+  const { Identifier } = j.components;
   const reverse = str => str.split('').reverse().join('');
-  return jsx(file.source)
+  return j(file.source)
     .find(<Identifier />)
-    .replaceWith(node => <Identifier name={reverse(node.prop('name'))} />)
+    .replaceWith(path => <Identifier name={reverse(path.value.name)} />)
     .toSource();
 }
 

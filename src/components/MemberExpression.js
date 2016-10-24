@@ -1,5 +1,5 @@
-const j = require('../../core');
-const PropTypes = require('../PropTypes');
+const recast = require('recast');
+const PropTypes = require('./PropTypes');
 
 module.exports = class MemberExpression {
 
@@ -8,7 +8,7 @@ module.exports = class MemberExpression {
   };
 
   static toAST = ({ children }) => {
-    return j.memberExpression(
+    return recast.types.builders.memberExpression(
       children[0].constructor.toAST(children[0].props),
       children[1].constructor.toAST(children[1].props),
     );
