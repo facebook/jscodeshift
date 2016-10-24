@@ -5,12 +5,32 @@
     "comma-dangle": 0,
     "no-underscore-dangle": 0,
     "quotes": [2, "single", "avoid-escape"],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
     "strict": 0
   },
+  "settings": {
+    "react": {
+      "createClass": "createElement",
+      "pragma": "jsx"
+    }
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": [
+    "react"
+  ],
   "env": {
     "node": true
   },
   "globals": {
-    "Promise": true
+    "Promise": true,
+    "expect": true,
+    "it": true,
+    "describe": true,
+    "jest": true
   }
 }

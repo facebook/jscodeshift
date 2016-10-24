@@ -61,6 +61,7 @@ function runTest(dirName, transformName, options, testFilePrefix) {
     {path: inputPath, source},
     {
       jscodeshift,
+      j: jscodeshift,
       stats: () => {},
     },
     options || {}

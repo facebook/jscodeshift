@@ -60,6 +60,7 @@ function setup(tr, babel) {
       ],
       plugins: [
         require('babel-plugin-transform-flow-strip-types'),
+        [require('babel-plugin-transform-react-jsx'), { pragma: 'j.createElement' }],
       ]
     });
   }

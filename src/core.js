@@ -10,7 +10,7 @@
 
 'use strict';
 var Collection = require('./Collection');
-
+var components = require('./components');
 var collections = require('./collections');
 var getParser = require('./getParser');
 var matchNode = require('./matchNode');
@@ -123,6 +123,25 @@ function use(plugin) {
   }
 }
 
+/*
+ * This is what the jsx parser uses. We have to pass in the props,
+ * even though our components have no constructor, to allow for
+ * custom functional components.
+ * From - <Identifier name="_" />
+ * To   - j.createElement(Identifier, { name: '_' }, child1, child2, ...)
+ *
+ * @augments core
+ * @static
+ * @param {}
+ */
+function createElement(Component, props, ...children) {
+  const finalProps = Object.assign(props || {}, { children });
+  const astNode = new Component(finalProps);
+  astNode.__IS_JSX__ = true;
+  astNode.props = finalProps;
+  return astNode;
+}
+
 /**
  * Returns a version of the core jscodeshift function "bound" to a specific
  * parser.
@@ -165,6 +184,8 @@ function enrichCore(core, parser) {
   core.types = recast.types;
   core.match = match;
   core.template = template(parser);
+  core.components = components;
+  core.createElement = createElement;
 
   // add mappings and filters to function
   core.filters = {};

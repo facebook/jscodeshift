@@ -14,10 +14,13 @@ var _ = require('lodash');
 var Collection = require('../Collection');
 
 var matchNode = require('../matchNode');
+var jsxUtil = require('../jsxUtil');
 var recast = require('recast');
 
 var Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
+var matchJSX = jsxUtil.matchJSX;
+var jsxToAst = jsxUtil.jsxToAst;
 
 /**
 * @mixin
@@ -32,6 +35,9 @@ var traversalMethods = {
    * @return {Collection}
    */
   find: function(type, filter) {
+    if (type.__IS_JSX__) {
+      return this.find(types[type.constructor.name], matchJSX(type));
+    }
     var paths = [];
     var visitorMethodName = 'visit' + type;
 
@@ -142,6 +148,9 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof nodes === 'function') ? nodes.call(path, path, i) : nodes;
+      if (newNodes.__IS_JSX__) {
+        newNodes = jsxToAst(newNodes);
+      }
       path.replace.apply(path, toArray(newNodes));
     });
   },
@@ -156,6 +165,9 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
+      if (newNodes.__IS_JSX__) {
+        newNodes = jsxToAst(newNodes);
+      }
       path.insertBefore.apply(path, toArray(newNodes));
     });
   },
@@ -170,6 +182,9 @@ var mutationMethods = {
     return this.forEach(function(path, i) {
       var newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
+      if (newNodes.__IS_JSX__) {
+        newNodes = jsxToAst(newNodes);
+      }
       path.insertAfter.apply(path, toArray(newNodes));
     });
   },
