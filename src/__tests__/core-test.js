@@ -12,10 +12,10 @@
 
 /*global jest, describe, it, expect*/
 
-var core = require('../core');
-var recast = require('recast');
-var b = recast.types.builders;
-var NodePath = recast.types.NodePath;
+const core = require('../core');
+const recast = require('recast');
+const b = recast.types.builders;
+const NodePath = recast.types.NodePath;
 
 describe('core API', function() {
   it('returns a Collection from a source string', function() {
@@ -23,22 +23,22 @@ describe('core API', function() {
   });
 
   it('returns a Collection from an AST node', function() {
-    var node = b.identifier('foo');
+    const node = b.identifier('foo');
     expect(core(node).constructor.name).toContain('Collection');
   });
 
   it('returns a Collection from an array of AST nodes', function() {
-    var node = b.identifier('foo');
+    const node = b.identifier('foo');
     expect(core([node]).constructor.name).toContain('Collection');
   });
 
   it('returns a Collection from a path', function() {
-    var path = new NodePath(b.identifier('foo'));
+    const path = new NodePath(b.identifier('foo'));
     expect(core(path).constructor.name).toContain('Collection');
   });
 
   it('returns a Collection from an array of paths', function() {
-    var path = new NodePath(b.identifier('foo'));
+    const path = new NodePath(b.identifier('foo'));
     expect(core([path]).constructor.name).toContain('Collection');
   });
 
@@ -52,7 +52,7 @@ describe('core API', function() {
   });
 
   it('returns the source as is if nothing was modified', function () {
-    var source = '\nvar foo;\n';
+    const source = '\nvar foo;\n';
     expect(core(source).toSource()).toEqual(source);
   });
 
@@ -64,7 +64,7 @@ describe('core API', function() {
   });
 
   it('plugins are only registered once', function () {
-    var ct = 0;
+    let ct = 0;
 
     function plugin() {
       ct++;

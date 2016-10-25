@@ -11,7 +11,7 @@
 
 'use strict';
 
-var matchNode = require('../matchNode');
+const matchNode = require('../matchNode');
 
 describe('matchNode', function() {
   beforeEach(function() {
@@ -80,8 +80,8 @@ describe('matchNode', function() {
   });
 
   it('matches with a function', function() {
-    var haystack = {name: 'foo'};
-    var needle = jest.genMockFunction();
+    const haystack = {name: 'foo'};
+    const needle = jest.genMockFunction();
 
     needle.mockReturnValue(true);
     expect(haystack).toMatchNode(needle);
@@ -92,8 +92,8 @@ describe('matchNode', function() {
   });
 
   it('matches nested value with a function', function() {
-    var haystack = {name: 'foo', value: 'bar'};
-    var needle = {
+    const haystack = {name: 'foo', value: 'bar'};
+    const needle = {
       name: jest.genMockFunction(),
       value: jest.genMockFunction(),
     };

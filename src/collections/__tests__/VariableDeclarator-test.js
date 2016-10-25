@@ -10,15 +10,15 @@
 
 'use strict';
 
-var babel = require('babel-core');
-var recast = require('recast');
-var types = recast.types.namedTypes;
-var b = recast.types.builders;
+const babel = require('babel-core');
+const recast = require('recast');
+const types = recast.types.namedTypes;
+const b = recast.types.builders;
 
 describe('VariableDeclarators', function() {
-  var nodes;
-  var Collection;
-  var VariableDeclaratorCollection;
+  let nodes;
+  let Collection;
+  let VariableDeclaratorCollection;
 
   beforeEach(function() {
     jest.resetModuleRegistry();
@@ -62,13 +62,13 @@ describe('VariableDeclarators', function() {
     });
 
     it('finds all variable declarators', function() {
-      var declarators = Collection.fromNodes(nodes).findVariableDeclarators();
+      const declarators = Collection.fromNodes(nodes).findVariableDeclarators();
       expect(declarators.getTypes()).toContain('VariableDeclarator');
       expect(declarators.length).toBe(7);
     });
 
     it('finds variable declarators by name', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators('bar');
       expect(declarators.length).toBe(2);
     });
@@ -76,7 +76,7 @@ describe('VariableDeclarators', function() {
 
   describe('Filters', function() {
     it('finds module imports (require)', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule());
 
@@ -84,7 +84,7 @@ describe('VariableDeclarators', function() {
     });
 
     it('finds module imports (require) by module name', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule('module'));
 
@@ -92,7 +92,7 @@ describe('VariableDeclarators', function() {
     });
 
     it('accepts multiple module names', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule(
           ['module', 'module2']
@@ -104,12 +104,12 @@ describe('VariableDeclarators', function() {
 
   describe('Transform', function() {
     it('renames variable declarations considering scope', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule('module'))
         .renameTo('xyz');
 
-      var identifiers =
+      const identifiers =
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'xyz'});
 
@@ -117,11 +117,11 @@ describe('VariableDeclarators', function() {
     });
 
     it('does not rename things that are not variables', function() {
-      var declarators = Collection.fromNodes(nodes)
+      const declarators = Collection.fromNodes(nodes)
         .findVariableDeclarators('blah')
         .renameTo('blarg');
 
-      var identifiers =
+      const identifiers =
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'blarg'});
 

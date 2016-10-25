@@ -10,14 +10,14 @@
 
 'use strict';
 
-var assert = require('assert');
-var recast = require('recast');
-var _ = require('lodash');
+const assert = require('assert');
+const recast = require('recast');
+const _ = require('lodash');
 
-var astTypes = recast.types;
+const astTypes = recast.types;
 var types = astTypes.namedTypes;
-var NodePath = astTypes.NodePath;
-var Node = types.Node;
+const NodePath = astTypes.NodePath;
+const Node = types.Node;
 
 /**
  * This represents a generic collection of node paths. It only has a generic
@@ -92,15 +92,15 @@ class Collection {
    * @param {Type} type Force the new collection to be of a specific type
    */
   map(callback, type) {
-    var paths = [];
+    const paths = [];
     this.forEach(function(path) {
       /*jshint eqnull:true*/
-      var result = callback.apply(path, arguments);
+      let result = callback.apply(path, arguments);
       if (result == null) return;
       if (!Array.isArray(result)) {
         result = [result];
       }
-      for (var i = 0; i < result.length; i++) {
+      for (let i = 0; i < result.length; i++) {
         if (paths.indexOf(result[i]) === -1) {
           paths.push(result[i]);
         }
@@ -185,7 +185,7 @@ class Collection {
    * @param {string|number} ...fields
    */
   get() {
-    var path = this.__paths[0];
+    const path = this.__paths[0];
     if (!path) {
       throw Error(
         'You cannot call "get" on a collection with no paths. ' +
@@ -223,11 +223,11 @@ class Collection {
  * @return {Type} type An AST type
  */
 function _inferTypes(paths) {
-  var _types = [];
+  let _types = [];
 
   if (paths.length > 0 && Node.check(paths[0].node)) {
-    var nodeType = types[paths[0].node.type];
-    var sameType = paths.length === 1 ||
+    const nodeType = types[paths[0].node.type];
+    const sameType = paths.length === 1 ||
       paths.every(path => nodeType.check(path.node));
 
     if (sameType) {
@@ -308,7 +308,7 @@ function fromNodes(nodes, parent, type) {
   );
 }
 
-var CPt = Collection.prototype;
+const CPt = Collection.prototype;
 
 /**
  * This function adds the provided methods to the prototype of the corresponding
@@ -319,12 +319,12 @@ var CPt = Collection.prototype;
  * @param {Type=} type Optional type to add the methods to
  */
 function registerMethods(methods, type) {
-  for (var methodName in methods) {
+  for (const methodName in methods) {
     if (!methods.hasOwnProperty(methodName)) {
       return;
     }
     if (hasConflictingRegistration(methodName, type)) {
-      var msg = `There is a conflicting registration for method with name "${methodName}".\nYou tried to register an additional method with `;
+      let msg = `There is a conflicting registration for method with name "${methodName}".\nYou tried to register an additional method with `;
 
       if (type) {
         msg += `type "${type.toString()}".`
@@ -334,7 +334,7 @@ function registerMethods(methods, type) {
 
       msg += '\nThere are existing registrations for that method with ';
 
-      var conflictingRegistrations = CPt[methodName].typedRegistrations;
+      const conflictingRegistrations = CPt[methodName].typedRegistrations;
 
       if (conflictingRegistrations) {
         msg += `type ${Object.keys(conflictingRegistrations).join(', ')}.`;
@@ -365,13 +365,13 @@ function installTypedMethod(methodName) {
     throw new Error(`Internal Error: "${methodName}" method is already installed`);
   }
 
-  var registrations = {};
+  const registrations = {};
 
   function typedMethod() {
-    var types = Object.keys(registrations);
+    const types = Object.keys(registrations);
 
-    for (var i = 0; i < types.length; i++) {
-      var currentType = types[i];
+    for (let i = 0; i < types.length; i++) {
+      const currentType = types[i];
       if (registrations[currentType] && this.isOfType(currentType)) {
         return registrations[currentType].apply(this, arguments);
       }
@@ -397,7 +397,7 @@ function hasConflictingRegistration(methodName, type) {
     return false;
   }
 
-  var registrations = CPt[methodName] && CPt[methodName].typedRegistrations;
+  const registrations = CPt[methodName] && CPt[methodName].typedRegistrations;
 
   if (!registrations) {
     return true;

@@ -40,12 +40,12 @@ describe('Worker API', () => {
   });
 
   it('passes j as argument', done => {
-    var transformPath = createTempFileWith(
+    const transformPath = createTempFileWith(
       `module.exports = function (file, api) {
         return api.j(file.source).toSource() + ' changed';
        }`
     );
-    var sourcePath = createTempFileWith('const x = 10;');
+    const sourcePath = createTempFileWith('const x = 10;');
 
     const emitter = worker([transformPath]);
     emitter.send({files: [sourcePath]});

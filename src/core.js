@@ -9,16 +9,16 @@
  */
 
 'use strict';
-var Collection = require('./Collection');
+const Collection = require('./Collection');
 
-var collections = require('./collections');
-var getParser = require('./getParser');
-var matchNode = require('./matchNode');
-var recast = require('recast');
-var template = require('./template');
+const collections = require('./collections');
+const getParser = require('./getParser');
+const matchNode = require('./matchNode');
+const recast = require('recast');
+const template = require('./template');
 
-var Node = recast.types.namedTypes.Node;
-var NodePath = recast.types.NodePath;
+const Node = recast.types.namedTypes.Node;
+const NodePath = recast.types.NodePath;
 
 // Register all built-in collections
 for (var name in collections) {
@@ -103,7 +103,7 @@ function match(path, filter) {
   return matchNode(path.value, filter);
 }
 
-var plugins = [];
+const plugins = [];
 
 /**
  * Utility function for registering plugins.
@@ -169,7 +169,7 @@ function enrichCore(core, parser) {
   // add mappings and filters to function
   core.filters = {};
   core.mappings = {};
-  for (var name in collections) {
+  for (const name in collections) {
     if (collections[name].filters) {
       core.filters[name] = collections[name].filters;
     }
