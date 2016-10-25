@@ -14,6 +14,7 @@ const EventEmitter = require('events').EventEmitter;
 
 const async = require('async');
 const fs = require('fs');
+const writeFileAtomic = require('write-file-atomic');
 const getParser = require('./getParser');
 
 const jscodeshift = require('./core');
@@ -146,7 +147,7 @@ function run(data) {
             console.log(out); // eslint-disable-line no-console
           }
           if (!options.dry) {
-            fs.writeFile(file, out, function(err) {
+            writeFileAtomic(file, out, function(err) {
               if (err) {
                 updateStatus('error', file, 'File writer error: ' + err);
               } else {
