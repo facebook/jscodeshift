@@ -34,8 +34,7 @@ function ensureStatement(node) {
     builders.expressionStatement(node);
 }
 
-function getVistor(varName, nodes) {
-  let counter = 0;
+function getVistor(varNames, nodes) {
   return {
     visitIdentifier: function(path) {
       this.traverse(path);
@@ -43,11 +42,13 @@ function getVistor(varName, nodes) {
       const parent = path.parent.node;
 
       // If this identifier is not one of our generated ones, do nothing
-      if (node.name !== varName) {
+      const varIndex = varNames.indexOf(node.name);
+      if (varIndex === -1) {
         return;
       }
 
-      let replacement = nodes[counter++];
+      let replacement = nodes[varIndex];
+      nodes[varIndex] = null;
 
       // If the replacement is an array, we need to explode the nodes in context
       if (Array.isArray(replacement)) {
@@ -96,9 +97,9 @@ function getVistor(varName, nodes) {
   };
 }
 
-function replaceNodes(src, varName, nodes, parser) {
+function replaceNodes(src, varNames, nodes, parser) {
   const ast = recast.parse(src, {parser});
-  recast.visit(ast, getVistor(varName, nodes));
+  recast.visit(ast, getVistor(varNames, nodes));
   return ast;
 }
 
@@ -110,12 +111,16 @@ function getRandomVarName() {
 module.exports = function withParser(parser) {
   function statements(template/*, ...nodes*/) {
     template = Array.from(template);
-    let varName = getRandomVarName();
-    let src = template.join(varName);
+    const nodes = Array.from(arguments).slice(1);
+    const varNames = nodes.map(n => getRandomVarName());
+    const src = template.reduce(
+      (result, elem, i) => result + varNames[i - 1] + elem
+    );
+
     return replaceNodes(
       src,
-      varName,
-      Array.from(arguments).slice(1),
+      varNames,
+      nodes,
       parser
     ).program.body;
   }
