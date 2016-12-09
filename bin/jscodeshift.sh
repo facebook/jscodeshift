@@ -28,7 +28,7 @@ const opts = require('nomnom')
     transform: {
       abbr: 't',
       default: ['./transform.js'],
-      help: 'Path to the transform file. Can be either a local path or url',
+      help: 'Path to a transform file. Can be either a local path or url. Can be given multiple times to run several transforms in order',
       list: true,
       metavar: 'FILE'
     },
