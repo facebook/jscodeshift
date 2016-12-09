@@ -77,6 +77,25 @@ describe('jscodeshift CLI', () => {
     ]);
   });
 
+  it('calls multiple transforms in order', () => {
+    var sourceA = createTempFileWith('a');
+    var sourceB = createTempFileWith('b');
+    var transformA = createTransformWith(
+      'return "first" + fileInfo.source;'
+    );
+    var transformB = createTransformWith(
+      'return "second" + fileInfo.source;'
+    );
+
+    return run(['-t', transformA, '-t', transformB, sourceA, sourceB]).then(
+      out => {
+        expect(out[1]).toBe('');
+        expect(fs.readFileSync(sourceA).toString()).toBe('secondfirsta');
+        expect(fs.readFileSync(sourceB).toString()).toBe('secondfirstb');
+      }
+    );
+  });
+
   it('does not transform files in a dry run', () => {
     var source = createTempFileWith('a');
     var transform = createTransformWith(
