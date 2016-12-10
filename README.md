@@ -48,7 +48,20 @@ Options:
 
 This passes the source of all passed through the transform modules specified
 with `-t` or `--transform` (they default to the current directory). The next
-section explains the structure of transform modules.
+section explains how transform modules are located, and the section after that
+explains the structure of transform modules.
+
+## Transform location algorithm
+The default transform is the current directory if no `--transform` flag is given.
+
+1. If URL, return file at URL
+2. If file, return file
+3. If directory
+  1. If contains directory named `transforms`, return files in that directory
+  2. If contains file named `transform.js`, return file
+  3. Else, return files in directory
+4. If npm package, find its directory (with `require.resolve()`) and go to step 3
+5. Else, error
 
 ## Transform module
 
