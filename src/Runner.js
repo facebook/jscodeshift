@@ -137,6 +137,7 @@ function getAllFiles(paths, filter) {
 
 function getTransform(transform) {
   if (/^http/.test(transform)) {
+    // handle url
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
       (transform.indexOf('https') !== 0 ?  http : https).get(transform, (res) => {
@@ -160,10 +161,35 @@ function getTransform(transform) {
         reject(e.message);
       });
     });
-  } else if (!fs.existsSync(transform)) {
-    return Promise.reject('Transform file ' + transform + ' does not exist');
-  } else {
-    return transform;
+  } else if (fs.existsSync(transform)) {
+    let stats = fs.lstat(transform);
+
+    if (stats.isFile(transform)) {
+      // handle file
+      return transform;
+    } else if (stats.isDirectory(transform)) {
+      let directory = path.join(transform, 'transforms');
+      let file = path.join(transform, 'transformjs');
+
+      // handle directory
+      if (fs.existsSync(directory) && fs.lstat(directory).isDirectory()) {
+        return fs.readdirSync(directory);
+      } else if (fs.existsSync(file) && fs.lstat(file).isFile()) {
+        return file;
+      } else {
+        return fs.readdirSync(transform);
+      }
+    }
+
+    // if it's something other than a file or directory, keep going
+  }
+
+  try {
+    // handle npm package as directory
+    return getTransform(require.resolve(transform));
+  } catch () {
+    // error
+    return Promise.reject('Transform ' + transform + ' does not exist');
   }
 }
 
@@ -180,11 +206,15 @@ function run(transforms, paths, options) {
 
   transforms = Array.isArray(transforms) ? transforms : [transformfiles]
 
-  return Promise.all(transforms.map(getTransform)).catch(reason => {
-    // If there's an error, log it but continue to reject
-    process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
-    return Promise.reject(reason);
-  }).then(transform);
+  return Promise
+    .all(transforms.map(getTransform))
+    .catch(reason => {
+      // if there's an error, log it but continue to reject
+      process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
+      return Promise.reject(reason);
+    })
+    .then(Array.prototype.concat) // flatten nested Arrays
+    .then(transform);
 
   function transform(transformFiles) {
     return getAllFiles(
