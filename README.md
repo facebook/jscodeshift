@@ -31,7 +31,7 @@ Usage: jscodeshift <path>... [options]
 path     Files or directory to transform
 
 Options:
-   -t FILE, --transform FILE   Path to a transform file. Can be either a local path or url. Can be given multiple times to run several transforms in order  [./transform.js]
+   -t NAME, --transform NAME   Path to a transform url, file, directory, or npm package. Can be given multiple times to run several transforms in order  [.]
    -c, --cpus                  (all by default) Determines the number of processes started.
    -v, --verbose               Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
@@ -47,8 +47,8 @@ Options:
 ```
 
 This passes the source of all passed through the transform modules specified
-with `-t` or `--transform` (they default to a `transform.js` file in the current
-directory). The next section explains the structure of transform modules.
+with `-t` or `--transform` (they default to the current directory). The next
+section explains the structure of transform modules.
 
 ## Transform module
 
