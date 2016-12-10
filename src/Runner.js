@@ -164,10 +164,10 @@ function getTransform(transform) {
   } else if (fs.existsSync(transform)) {
     let stats = fs.lstat(transform);
 
-    if (stats.isFile(transform)) {
+    if (stats && stats.isFile(transform)) {
       // handle file
       return transform;
-    } else if (stats.isDirectory(transform)) {
+    } else if (stats && stats.isDirectory(transform)) {
       let directory = path.join(transform, 'transforms');
       let file = path.join(transform, 'transformjs');
 
@@ -179,15 +179,16 @@ function getTransform(transform) {
       } else {
         return fs.readdirSync(transform);
       }
+    } else {
+      // handle other fs objects
+      return transform;
     }
-
-    // if it's something other than a file or directory, keep going
   }
 
   try {
     // handle npm package as directory
     return getTransform(require.resolve(transform));
-  } catch () {
+  } catch (e) {
     // error
     return Promise.reject('Transform ' + transform + ' does not exist');
   }
