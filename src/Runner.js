@@ -135,7 +135,7 @@ function getAllFiles(paths, filter) {
   ).then(concatAll);
 }
 
-function run(transformFile, paths, options) {
+function run(transformFiles, paths, options) {
   let usedRemoteScript = false;
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
@@ -147,6 +147,9 @@ function run(transformFile, paths, options) {
   ignores.add(options.ignorePattern);
   ignores.addFromFile(options.ignoreConfig);
 
+  transformFiles = Array.isArray(transformFiles) ? transformFiles : [transformfiles]
+
+  let transformFilePromises = transformFiles.map(transformFile => {
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
     return new Promise((resolve, reject) => {
@@ -163,7 +166,7 @@ function run(transformFile, paths, options) {
               fs.write(info.fd, contents);
               fs.close(info.fd, function(err) {
                 reject(err);
-                transform(info.path).then(resolve, reject);
+                  resolve(info.path);
               });
             });
         })
@@ -176,12 +179,15 @@ function run(transformFile, paths, options) {
     process.stderr.write(
       colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
-    return;
+      return Promise.reject();
   } else {
-    return transform(transformFile);
+      return transformFile;
   }
+  })
+  
+  return Promise.all(transformFilePromises).then(transform);
 
-  function transform(transformFile) {
+  function transform(transformFiles) {
     return getAllFiles(
       paths,
       name => !extensions || extensions.indexOf(path.extname(name)) != -1
@@ -225,7 +231,10 @@ function run(transformFile, paths, options) {
           }
         }
 
-        const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
+        const args = [transformFiles, options.babel ? 'babel' : 'no-babel'];
+        if (!options.runInBand) {
+          args[0] = JSON.stringify(args[0])
+        }
 
         const workers = [];
         for (let i = 0; i < processes; i++) {

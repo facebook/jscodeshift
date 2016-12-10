@@ -108,13 +108,8 @@ const opts = require('nomnom')
   })
   .parse();
 
-// Force transforms to run in order with Promise chaining
-opts.transform.reduce((promise, transform) => {
-  return promise.then(() => {
-    return Runner.run(
-      /^https?/.test(transform) ? transform : path.resolve(transform),
-      opts.path,
-      opts
-    );
-  });
-}, Promise.resolve());
+const transforms = opts.transform.map(transform => {
+  return /^https?/.test(transform) ? transform : path.resolve(transform);
+});
+
+Runner.run(transforms, opts.path, opts);
