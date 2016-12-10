@@ -135,23 +135,8 @@ function getAllFiles(paths, filter) {
   ).then(concatAll);
 }
 
-function run(transformFiles, paths, options) {
-  let usedRemoteScript = false;
-  const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
-  const extensions =
-    options.extensions && options.extensions.split(',').map(ext => '.' + ext);
-  const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
-  const statsCounter = {};
-  const startTime = process.hrtime();
-
-  ignores.add(options.ignorePattern);
-  ignores.addFromFile(options.ignoreConfig);
-
-  transformFiles = Array.isArray(transformFiles) ? transformFiles : [transformfiles]
-
-  let transformFilePromises = transformFiles.map(transformFile => {
+function getTransform(transformFile) {
   if (/^http/.test(transformFile)) {
-    usedRemoteScript = true;
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
       (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
@@ -166,7 +151,7 @@ function run(transformFiles, paths, options) {
               fs.write(info.fd, contents);
               fs.close(info.fd, function(err) {
                 reject(err);
-                  resolve(info.path);
+                resolve(info.path);
               });
             });
         })
@@ -176,16 +161,30 @@ function run(transformFiles, paths, options) {
       });
     });
   } else if (!fs.existsSync(transformFile)) {
-    process.stderr.write(
-      colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
-    );
-      return Promise.reject();
+    return Promise.reject('Transform file ' + transformFile + ' does not exist');
   } else {
-      return transformFile;
+    return transformFile;
   }
-  })
-  
-  return Promise.all(transformFilePromises).then(transform);
+}
+
+function run(transformFiles, paths, options) {
+  const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
+  const extensions =
+    options.extensions && options.extensions.split(',').map(ext => '.' + ext);
+  const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
+  const statsCounter = {};
+  const startTime = process.hrtime();
+
+  ignores.add(options.ignorePattern);
+  ignores.addFromFile(options.ignoreConfig);
+
+  transformFiles = Array.isArray(transformFiles) ? transformFiles : [transformfiles]
+
+  return Promise.all(transformFiles.map(getTransform)).catch(reason => {
+    // If there's an error, log it but continue to reject
+    process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
+    return Promise.reject(reason);
+  }).then(transform);
 
   function transform(transformFiles) {
     return getAllFiles(
@@ -278,9 +277,7 @@ function run(transformFiles, paths, options) {
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
           }
-          if (usedRemoteScript) {
-            temp.cleanupSync();
-          }
+          temp.cleanupSync();
           return Object.assign({
             stats: statsCounter,
             timeElapsed: timeElapsed
