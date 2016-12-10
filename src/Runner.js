@@ -135,11 +135,11 @@ function getAllFiles(paths, filter) {
   ).then(concatAll);
 }
 
-function getTransform(transformFile) {
-  if (/^http/.test(transformFile)) {
+function getTransform(transform) {
+  if (/^http/.test(transform)) {
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
-      (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
+      (transform.indexOf('https') !== 0 ?  http : https).get(transform, (res) => {
         let contents = '';
         res
           .on('data', (d) => {
@@ -160,14 +160,14 @@ function getTransform(transformFile) {
         reject(e.message);
       });
     });
-  } else if (!fs.existsSync(transformFile)) {
-    return Promise.reject('Transform file ' + transformFile + ' does not exist');
+  } else if (!fs.existsSync(transform)) {
+    return Promise.reject('Transform file ' + transform + ' does not exist');
   } else {
-    return transformFile;
+    return transform;
   }
 }
 
-function run(transformFiles, paths, options) {
+function run(transforms, paths, options) {
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
@@ -178,9 +178,9 @@ function run(transformFiles, paths, options) {
   ignores.add(options.ignorePattern);
   ignores.addFromFile(options.ignoreConfig);
 
-  transformFiles = Array.isArray(transformFiles) ? transformFiles : [transformfiles]
+  transforms = Array.isArray(transforms) ? transforms : [transformfiles]
 
-  return Promise.all(transformFiles.map(getTransform)).catch(reason => {
+  return Promise.all(transforms.map(getTransform)).catch(reason => {
     // If there's an error, log it but continue to reject
     process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
     return Promise.reject(reason);
