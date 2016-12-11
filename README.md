@@ -345,7 +345,7 @@ To define a test, use `defineTest` from the `testUtils` module:
 
 ```js
 jest.autoMockOff();
-const defineTest = require('jscodeshift/dist/testUtils').defineTest;
+const defineTest = require('jscodeshift/src/testUtils').defineTest;
 defineTest(__dirname, 'MyTransform');
 ```
 
