@@ -162,7 +162,7 @@ function getTransform(transform) {
       });
     });
   } else if (fs.existsSync(transform)) {
-    let stats = fs.lstat(transform);
+    let stats = fs.lstatSync(transform);
 
     if (stats && stats.isFile(transform)) {
       // handle file
@@ -172,9 +172,9 @@ function getTransform(transform) {
       let file = path.join(transform, 'transformjs');
 
       // handle directory
-      if (fs.existsSync(directory) && fs.lstat(directory).isDirectory()) {
+      if (fs.existsSync(directory) && fs.lstatSync(directory).isDirectory()) {
         return fs.readdirSync(directory);
-      } else if (fs.existsSync(file) && fs.lstat(file).isFile()) {
+      } else if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
         return file;
       } else {
         return fs.readdirSync(transform);
@@ -214,7 +214,7 @@ function run(transforms, paths, options) {
       process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
       return Promise.reject(reason);
     })
-    .then(Array.prototype.concat) // flatten nested Arrays
+    .then(Array.prototype.concat.bind([])) // flatten nested Arrays
     .then(transform);
 
   function transform(transformFiles) {
