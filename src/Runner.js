@@ -318,4 +318,5 @@ function run(transforms, paths, options) {
   }
 }
 
+exports.getTransform = getTransform;
 exports.run = run;
