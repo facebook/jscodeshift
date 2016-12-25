@@ -12,16 +12,22 @@ const getTransform = require('../Runner').getTransform;
 
 describe('Runner API', () => {
   describe('getTransform', () => {
-    it('finds a URL');
+    it('finds a file given a URL');
     it('finds a file');
-    it('finds a directory\'s transforms subdirectory');
-    it('finds a directory\'s transform.js file');
-    it('finds a directory\'s transforms');
-    it('finds a package\'s transforms subdirectory');
-    it('finds a package\'s transform.js file');
-    it('finds a package\'s transforms');
 
-    it('errors on failure', () => {
+    describe('given a directory', () => {
+      it('finds a transforms subdirectory');
+      it('finds a transform.js file');
+      it('finds transforms');
+    });
+
+    describe('given a package', () => {
+      it('finds a transforms subdirectory');
+      it('finds a transform.js file');
+      it('finds transforms');
+    });
+
+    it('rejects a Promise given an invalid identifier', () => {
       function expectError(error) {
         expect(error).toBe('Transform not valid does not exist');
       }
