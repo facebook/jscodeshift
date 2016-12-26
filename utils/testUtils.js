@@ -13,7 +13,7 @@
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const temp = require('temp');
+const temp = require('temp').track();
 
 function renameFileTo(oldPath, newFilename) {
   const projectPath = path.dirname(oldPath);

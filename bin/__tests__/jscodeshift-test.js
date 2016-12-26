@@ -19,7 +19,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000; // 10 minutes
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
-var temp = require('temp');
+var temp = require('temp').track();
 var mkdirp = require('mkdirp');
 var testUtils = require('../../utils/testUtils');
 

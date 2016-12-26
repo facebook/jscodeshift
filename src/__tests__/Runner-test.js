@@ -9,9 +9,13 @@
  */
 
 const getTransform = require('../Runner').getTransform;
+const temp = require('temp').track();
 
 describe('Runner API', () => {
   describe('getTransform', () => {
+    beforeAll(temp.cleanupSync);
+    afterEach(temp.cleanupSync);
+
     it('finds a file given a URL');
     it('finds a file');
 

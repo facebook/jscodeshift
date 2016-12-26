@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const temp = require('temp');
+const temp = require('temp').track();
 const ignores = require('./ignoreFiles');
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
