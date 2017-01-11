@@ -81,7 +81,7 @@ describe('Collection API', function() {
   describe('Method extensions', function() {
     it('handles method extensions for types', function() {
       const Collection = require('../Collection');
-      const getNames = jest.genMockFunction().mockImpl(function() {
+      const getNames = jest.fn(function() {
         expect(this.nodes()).toEqual(nodes);
       });
       Collection.registerMethods({getNames: getNames}, types.Identifier);
@@ -205,7 +205,7 @@ describe('Collection API', function() {
   describe('Processing functions', function() {
     describe('filter', function() {
       it('lets you filter with custom logic', function() {
-        const filter = jest.genMockFunction().mockImplementation(function(path) {
+        const filter = jest.fn(function(path) {
           return path.value.name === 'foo';
         });
         const fooVariables = Collection.fromNodes(nodes).filter(filter);
