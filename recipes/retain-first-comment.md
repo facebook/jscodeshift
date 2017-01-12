@@ -47,16 +47,26 @@ foo();
 export default function transformer(file, api) {
   const j = api.jscodeshift;
   const root = j(file.source);
-  
-  const { comments } = root.find(j.Program).get('body', 0).node;
+
+  const getFirstNode = () => root.find(j.Program).get('body', 0).node;
+
+  // Save the comments attached to the first node
+  const firstNode = getFirstNode();
+  const { comments } = firstNode;
+
   root.find(j.VariableDeclaration).replaceWith(
     j.expressionStatement(j.callExpression(
         j.identifier('foo'),
         []
     ))
   );
-  root.get().node.comments = comments;
-  
+
+  // If the first node has been modified or deleted, reattach the comments
+  const firstNode2 = getFirstNode();
+  if (firstNode2 !== firstNode) {
+    firstNode2.comments = comments;
+  }
+
   return root.toSource();
 };
 ```
