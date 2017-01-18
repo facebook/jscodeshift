@@ -9,9 +9,8 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "build": "cp -R src/ dist/",
+    "prepublish": "cp -R src/ dist/",
     "test": "jest --bail",
-    "prepublish": "npm run build && npm run test",
     "docs": "rm -rf docs && jsdoc -d docs -R README.md src/collections/* src/core.js src/Collection.js"
   },
   "bin": {
