@@ -8,4 +8,4 @@
  *
  */
 
-module.exports = require('./dist/core');
+module.exports = require('./src/core');

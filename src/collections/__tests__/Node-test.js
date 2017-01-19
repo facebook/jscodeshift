@@ -256,7 +256,7 @@ describe('Collection API', function() {
         const expectedArgs = [b.identifier('foo'), b.identifier('bar')];
         const receivedArgs = [];
         const replaceFunction =
-          jest.genMockFunction().mockImplementation(function(path, i) {
+          jest.fn(function(path, i) {
             // We have to keep a reference to the argument before it gets
             // replaced
             receivedArgs.push(path.value);
