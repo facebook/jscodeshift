@@ -33,12 +33,14 @@ describe('JSXCollection API', function() {
 
     nodes = [recast.parse([
       'var FooBar = require("XYZ");',
+      'import Default from "default";',
+      'import { InternalName as Named } from "named";',
       '<FooBar foo="bar" bar="foo">',
-      '  <Child id="1" foo="bar">',
+      '  <Default id="1" foo="bar">',
       '     <Child />',
       '     <Baz.Bar />',
-      '  </Child>',
-      '  <Child id="2" foo="baz"/>',
+      '  </Default>',
+      '  <Named id="2" foo="baz"/>',
       '</FooBar>'
     ].join('\n'), {parser: babel}).program];
   });
@@ -51,13 +53,29 @@ describe('JSXCollection API', function() {
     });
 
     it('lets us find JSXElements by name conveniently', function() {
-      const jsx = Collection.fromNodes(nodes).findJSXElements('Child');
+      const jsx = Collection.fromNodes(nodes).findJSXElements('Default');
 
-      expect(jsx.length).toBe(3);
+      expect(jsx.length).toBe(1);
     });
 
     it('finds JSXElements by module name', function() {
       const jsx = Collection.fromNodes(nodes).findJSXElementsByModuleName('XYZ');
+
+      expect(jsx.length).toBe(1);
+    });
+
+    it('finds JSXElements by package name', function() {
+      const jsx = Collection
+        .fromNodes(nodes)
+        .findJSXElementsByImport('default');
+
+      expect(jsx.length).toBe(1);
+    });
+
+    it('finds JSXElements by named export and package name', function() {
+      const jsx = Collection
+        .fromNodes(nodes)
+        .findJSXElementsByNamedImport('named', 'InternalName');
 
       expect(jsx.length).toBe(1);
     });
@@ -112,8 +130,8 @@ describe('JSXCollection API', function() {
     it('filters elements by children', function() {
       const jsx = Collection.fromNodes(nodes)
         .findJSXElements()
-        .filter(JSXElementCollection.filters.hasChildren('Child'));
-      expect(jsx.length).toBe(2);
+        .filter(JSXElementCollection.filters.hasChildren('Default'));
+      expect(jsx.length).toBe(1);
     });
   });
 
