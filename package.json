@@ -34,7 +34,6 @@
     "babel-register": "^6.9.0",
     "babylon": "^6.8.1",
     "colors": "^1.1.2",
-    "es6-promise": "^3.0.0",
     "flow-parser": "^0.*",
     "lodash": "^4.13.1",
     "micromatch": "^2.3.7",
@@ -47,8 +46,8 @@
   "devDependencies": {
     "babel-eslint": "^6.1.2",
     "eslint": "^3.1.1",
-    "jsdoc": "^3.4.0",
     "jest": "^18.1.0",
+    "jsdoc": "^3.4.0",
     "mkdirp": "^0.5.1"
   },
   "jest": {
