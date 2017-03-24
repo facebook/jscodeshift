@@ -16,6 +16,7 @@ const getParser = require('./getParser');
 const matchNode = require('./matchNode');
 const recast = require('recast');
 const template = require('./template');
+const run = require('./Runner').run;
 
 const Node = recast.types.namedTypes.Node;
 const NodePath = recast.types.NodePath;
@@ -178,6 +179,7 @@ function enrichCore(core, parser) {
     }
   }
   core.use = use;
+  core.run = run;
   core.withParser = withParser;
   return core;
 }
