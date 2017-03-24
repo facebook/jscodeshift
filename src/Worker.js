@@ -143,6 +143,11 @@ function run(data) {
             callback();
             return;
           }
+          if (options.result) {
+            notify({action: 'result', result: out });
+            callback();
+            return;
+          }
           if (options.print) {
             console.log(out); // eslint-disable-line no-console
           }

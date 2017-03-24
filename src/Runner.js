@@ -142,6 +142,7 @@ function run(transformFile, paths, options) {
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
   const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
   const statsCounter = {};
+  const results = [];
   const startTime = process.hrtime();
 
   ignores.add(options.ignorePattern);
@@ -249,6 +250,9 @@ function run(transformFile, paths, options) {
                 }
                 statsCounter[message.name] += message.quantity;
                 break;
+              case 'result': 
+                results.push(message.result);
+                break;
               case 'free':
                 child.send({files: next(), options});
                 break;
@@ -274,6 +278,7 @@ function run(transformFile, paths, options) {
           }
           return Object.assign({
             stats: statsCounter,
+            results: results,
             timeElapsed: timeElapsed
           }, fileCounters);
         })
