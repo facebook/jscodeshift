@@ -234,6 +234,15 @@ describe('Collection API', function() {
       });
     });
 
+    describe('done', function() {
+      it('lets you get notified with callback', function() {
+        const cb = jest.genMockFunction();
+        Collection.fromNodes(nodes).done(cb);
+
+        expect(cb.mock.calls.length).toBe(1);
+      });
+    });
+
     describe('map', function() {
       it('returns a new collection with mapped values', function() {
         const root = Collection.fromNodes(nodes);

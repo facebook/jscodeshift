@@ -119,6 +119,15 @@ class Collection {
   }
 
   /**
+   * Provides a callback mechanism to be notified when done with previous steps.
+   *
+   * @param {function} callback
+   */
+  done(cb) {
+    return cb.call(this);
+  }
+
+  /**
    * Returns the number of elements in this collection.
    *
    * @return {number}
