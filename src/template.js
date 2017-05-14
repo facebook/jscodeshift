@@ -132,11 +132,9 @@ module.exports = function withParser(parser) {
   function expression(template/*, ...nodes*/) {
     // wrap code in `(...)` to force evaluation as expression
     template = Array.from(template);
-    if (template.length > 1) {
+    if (template.length > 0) {
       template[0] = '(' + template[0];
       template[template.length - 1] += ')';
-    } else if (template.length === 0) {
-      template[0] = '(' + template[0] + ')';
     }
 
     return statement.apply(
