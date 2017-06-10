@@ -105,7 +105,7 @@ describe('Collection API', function() {
       expect(() => collection.getNames()).toThrow();
     });
 
-    it('ads "global" methods to all types', function() {
+    it('adds "global" methods to all types', function() {
       const Collection = require('../Collection');
       const getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames});
