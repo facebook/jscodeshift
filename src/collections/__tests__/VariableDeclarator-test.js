@@ -13,7 +13,6 @@
 const babel = require('babel-core');
 const recast = require('recast');
 const types = recast.types.namedTypes;
-const b = recast.types.builders;
 
 describe('VariableDeclarators', function() {
   let nodes;
@@ -104,7 +103,7 @@ describe('VariableDeclarators', function() {
 
   describe('Transform', function() {
     it('renames variable declarations considering scope', function() {
-      const declarators = Collection.fromNodes(nodes)
+      Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule('module'))
         .renameTo('xyz');
@@ -117,7 +116,7 @@ describe('VariableDeclarators', function() {
     });
 
     it('does not rename things that are not variables', function() {
-      const declarators = Collection.fromNodes(nodes)
+      Collection.fromNodes(nodes)
         .findVariableDeclarators('blah')
         .renameTo('blarg');
 

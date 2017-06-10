@@ -144,7 +144,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      const children = Collection.fromNodes([ast])
+      Collection.fromNodes([ast])
         .childElements().at(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);

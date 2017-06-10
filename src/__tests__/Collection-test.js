@@ -219,7 +219,7 @@ describe('Collection API', function() {
     describe('forEach', function() {
       it('lets you iterate over each element of an collection', function() {
         const each = jest.genMockFunction();
-        const fVariables = Collection.fromNodes(nodes).forEach(each);
+        Collection.fromNodes(nodes).forEach(each);
 
         expect(each.mock.calls.length).toBe(2);
         expect(each.mock.calls[0][0].value).toBe(nodes[0]);
@@ -248,7 +248,7 @@ describe('Collection API', function() {
       it('dedupes elements', function() {
         const path = new NodePath(nodes[0]);
         const root = Collection.fromNodes(nodes);
-        const mapped = root.map(_ => path);
+        const mapped = root.map(() => path);
 
         expect(root).not.toBe(mapped);
         expect(mapped.length).toBe(1);
