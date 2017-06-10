@@ -110,9 +110,9 @@ describe('Collection API', function() {
       const getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames});
 
-      expect(Collection.fromNodes([b.blockStatement([])])).toBeDefined();
-      expect(Collection.fromNodes(nodes)).toBeDefined();
-      expect(Collection.fromNodes([])).toBeDefined();
+      expect(Collection.fromNodes([b.blockStatement([])]).getNames).toBeDefined();
+      expect(Collection.fromNodes(nodes).getNames).toBeDefined();
+      expect(Collection.fromNodes([]).getNames).toBeDefined();
     });
 
     it('handles type inheritance chains', function() {
