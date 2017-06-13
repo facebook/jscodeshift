@@ -10,8 +10,6 @@
 
 'use strict';
 
-require('es6-promise').polyfill();
-
 const child_process = require('child_process');
 const colors = require('colors/safe');
 const fs = require('fs');
