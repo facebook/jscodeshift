@@ -5,3 +5,4 @@
 .jshintrc
 .module-cache
 __tests__
+yarn.lock
