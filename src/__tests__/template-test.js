@@ -111,6 +111,18 @@ while (i < 10) {
     .toEqual(expected);
   });
 
+  it('correctly parses expressions without any interpolation', () => {
+    const expected = 'function() {}';
+
+    expect(
+      jscodeshift(
+        expression`function() {}`
+      )
+      .toSource()
+    )
+    .toEqual(expected);
+  });
+
   describe('explode arrays', () => {
 
     it('explodes arrays in function definitions', () => {
