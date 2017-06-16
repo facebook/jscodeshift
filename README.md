@@ -341,8 +341,9 @@ This results in a directory structure like this:
 /__testfixtures__/MyTransform.output.js
 ```
 
-To define a test, use `defineTest` from the `testUtils` module:
+To define a test, use `defineTest` or `defineInlineTest` from the `testUtils` module. A simple example is bundled in the [sample directory](sample).
 
+#### `defineTest`
 ```js
 jest.autoMockOff();
 const defineTest = require('jscodeshift/dist/testUtils').defineTest;
@@ -356,9 +357,11 @@ defineTest(__dirname, 'MyTransform', null, 'SecondFixture');
 ```
 This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and one for `__testfixtures__/SecondFixture.input.js`
 
-
-A simple example is bundled in the [sample directory](sample).
-
+#### `defineInlineTest`
+```js
+const transform = require('../myTransform');
+defineInlineTest(transform, {}, 'input', 'expected output');
+```
 
 ### Example Codemods
 

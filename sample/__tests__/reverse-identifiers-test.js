@@ -9,7 +9,7 @@
 
 /**
  * An example of writing a unit test for a jscodeshift script using the
- * `runTest` helper bundled with jscodeshift. This will run the
+ * `defineTest` helper bundled with jscodeshift. This will run the
  * reverse-identifiers.js transform with the input specified in the
  * reverse-identifiers-input file, and expect the output to be the same as that
  * in reverse-identifiers-output.
@@ -19,5 +19,18 @@
 
 jest.autoMockOff();
 const defineTest = require('../../src/testUtils').defineTest;
+const defineInlineTest = require('../../src/testUtils').defineInlineTest;
+const transform = require('../reverse-identifiers');
 
 defineTest(__dirname, 'reverse-identifiers');
+
+describe('reverse-identifiers', () => {
+  defineInlineTest(transform, {}, `
+var firstWord = 'Hello ';
+var secondWord = 'world';
+var message = firstWord + secondWord;`,`
+var droWtsrif = 'Hello ';
+var droWdnoces = 'world';
+var egassem = droWtsrif + droWdnoces;
+  `);
+});
