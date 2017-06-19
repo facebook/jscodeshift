@@ -15,7 +15,11 @@ const fs = require('fs');
 const path = require('path');
 
 function runInlineTest(module, options, input, expectedOutput) {
+  // Handle ES6 modules using default export for the transform
   const transform = module.default ? module.default : module;
+
+  // Jest resets the module registry after each test, so we need to always get
+  // a fresh copy of jscodeshift on every test run.
   let jscodeshift = require('./core');
   if (module.parser) {
     jscodeshift = jscodeshift.withParser(module.parser);
