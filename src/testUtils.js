@@ -14,6 +14,29 @@
 const fs = require('fs');
 const path = require('path');
 
+function runInlineTest(module, options, input, expectedOutput) {
+  // Handle ES6 modules using default export for the transform
+  const transform = module.default ? module.default : module;
+
+  // Jest resets the module registry after each test, so we need to always get
+  // a fresh copy of jscodeshift on every test run.
+  let jscodeshift = require('./core');
+  if (module.parser) {
+    jscodeshift = jscodeshift.withParser(module.parser);
+  }
+
+  const output = transform(
+    input,
+    {
+      jscodeshift,
+      stats: () => {},
+    },
+    options || {}
+  );
+  expect((output || '').trim()).toEqual(expectedOutput.trim());
+}
+exports.runInlineTest = runInlineTest;
+
 /**
  * Utility function to run a jscodeshift script within a unit test. This makes
  * several assumptions about the environment:
@@ -47,25 +70,10 @@ function runTest(dirName, transformName, options, testFilePrefix) {
   );
   // Assumes transform is one level up from __tests__ directory
   const module = require(path.join(dirName, '..', transformName + '.js'));
-  // Handle ES6 modules using default export for the transform
-  const transform = module.default ? module.default : module;
-
-  // Jest resets the module registry after each test, so we need to always get
-  // a fresh copy of jscodeshift on every test run.
-  let jscodeshift = require('./core');
-  if (module.parser) {
-    jscodeshift = jscodeshift.withParser(module.parser);
-  }
-
-  const output = transform(
-    {path: inputPath, source},
-    {
-      jscodeshift,
-      stats: () => {},
-    },
-    options || {}
-  );
-  expect((output || '').trim()).toEqual(expectedOutput.trim());
+  runInlineTest(module, options, {
+    path: inputPath,
+    source
+  }, expectedOutput);
 }
 exports.runTest = runTest;
 
@@ -84,3 +92,12 @@ function defineTest(dirName, transformName, options, testFilePrefix) {
   });
 }
 exports.defineTest = defineTest;
+
+function defineInlineTest(module, options, input, expectedOutput) {
+  it('transforms correctly', () => {
+    runInlineTest(module, options, {
+      source: input
+    }, expectedOutput);
+  });
+}
+exports.defineInlineTest = defineInlineTest;
