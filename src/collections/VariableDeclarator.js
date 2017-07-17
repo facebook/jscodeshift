@@ -126,6 +126,17 @@ const transformMethods = {
             scope = scope.parent;
           }
           if (scope) { // identifier must refer to declared variable
+
+            const parent = path.parent.node;
+            if (
+              types.Property.check(parent) &&
+              parent.shorthand &&
+              !parent.method
+            )  {
+
+              path.parent.get('shorthand').replace(false);
+            }
+
             path.get('name').replace(newName);
           }
         });
