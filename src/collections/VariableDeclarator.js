@@ -62,6 +62,56 @@ const filterMethods = {
           n => astNodesAreEquivalent(node.init.arguments[0], b.literal(n))
         );
     };
+  },
+
+  /**
+   * Returns a function that returns true if the provided path is a variable occurrence.
+   *
+   * @return {Function}
+   */
+  isVariableOccurrence: function() {
+    return function(path) {
+      // ignore non-variables
+      const parent = path.parent.node;
+
+      if (
+        types.MemberExpression.check(parent) &&
+        parent.property === path.node &&
+        !parent.computed
+      ) {
+        // obj.oldName
+        return false;
+      }
+
+      if (
+        types.Property.check(parent) &&
+        parent.key === path.node &&
+        !parent.computed
+      ) {
+        // { oldName: 3 }
+        return false;
+      }
+
+      if (
+        types.MethodDefinition.check(parent) &&
+        parent.key === path.node &&
+        !parent.computed
+      ) {
+        // class A { oldName() {} }
+        return false;
+      }
+
+      if (
+        types.JSXAttribute.check(parent) &&
+        parent.name === path.node &&
+        !parent.computed
+      ) {
+        // <Foo oldName={oldName} />
+        return false;
+      }
+
+      return true;
+    }
   }
 };
 
@@ -84,47 +134,7 @@ const transformMethods = {
       const rootPath = rootScope.path;
       Collection.fromPaths([rootPath])
         .find(types.Identifier, {name: oldName})
-        .filter(function(path) { // ignore non-variables
-          const parent = path.parent.node;
-
-          if (
-            types.MemberExpression.check(parent) &&
-            parent.property === path.node &&
-            !parent.computed
-          ) {
-            // obj.oldName
-            return false;
-          }
-
-          if (
-            types.Property.check(parent) &&
-            parent.key === path.node &&
-            !parent.computed
-          ) {
-            // { oldName: 3 }
-            return false;
-          }
-
-          if (
-            types.MethodDefinition.check(parent) &&
-            parent.key === path.node &&
-            !parent.computed
-          ) {
-            // class A { oldName() {} }
-            return false;
-          }
-
-          if (
-            types.JSXAttribute.check(parent) &&
-            parent.name === path.node &&
-            !parent.computed
-          ) {
-            // <Foo oldName={oldName} />
-            return false;
-          }
-
-          return true;
-        })
+        .filter(filterMethods.isVariableOccurrence())
         .forEach(function(path) {
           let scope = path.scope;
           while (scope && scope !== rootScope) {
@@ -134,8 +144,8 @@ const transformMethods = {
             scope = scope.parent;
           }
           if (scope) { // identifier must refer to declared variable
-            
-            // It may look like we filtered out properties, 
+
+            // It may look like we filtered out properties,
             // but the filter only ignored property "keys", not "value"s
             // In shorthand properties, "key" and "value" both have an
             // Identifier with the same structure.

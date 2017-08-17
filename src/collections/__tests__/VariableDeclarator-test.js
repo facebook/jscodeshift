@@ -101,6 +101,14 @@ describe('VariableDeclarators', function() {
 
       expect(declarators.length).toBe(2);
     });
+
+    it('finds variable occurrences', function() {
+      const occurrences = Collection.fromNodes(nodes)
+        .find(types.Identifier, {name: 'foo'})
+        .filter(VariableDeclaratorCollection.filters.isVariableOccurrence());
+
+      expect(occurrences.length).toBe(4);
+    });
   });
 
   describe('Transform', function() {
@@ -128,7 +136,7 @@ describe('VariableDeclarators', function() {
 
       expect(identifiers.length).toBe(1);
     });
-    
+
     it('properly renames a shorthand property that was using the old variable name', function() {
       nodes = [recast.parse([
         'var foo = 42;',
