@@ -360,7 +360,7 @@ This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and on
 #### `defineInlineTest`
 ```js
 const transform = require('../myTransform');
-defineInlineTest(transform, {}, 'input', 'expected output');
+defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional)');
 ```
 
 ### Example Codemods
