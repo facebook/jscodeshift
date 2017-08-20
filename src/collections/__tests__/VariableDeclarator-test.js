@@ -53,6 +53,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
+      '<Component foo={foo} />',
     ].join('\n'), {parser: babel}).program];
   });
 
@@ -124,6 +125,17 @@ describe('VariableDeclarators', function() {
       const identifiers =
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'blarg'});
+
+      expect(identifiers.length).toBe(1);
+    });
+
+    it('does not rename React component prop name', function () {
+      const declarators = Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo')
+        .renameTo('xyz');
+
+      const identifiers = Collection.fromNodes(nodes)
+        .find(types.JSXIdentifier, { name: 'foo' });
 
       expect(identifiers.length).toBe(1);
     });
