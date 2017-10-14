@@ -56,7 +56,7 @@ function setup(tr, babel) {
     require('babel-register')({
       babelrc: false,
       presets: [
-        require('babel-preset-es2015'),
+        require('babel-preset-env'),
         require('babel-preset-stage-1'),
       ],
       plugins: [
