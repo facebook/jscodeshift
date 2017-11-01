@@ -143,9 +143,9 @@ ast-types@0.8.12:
   version "0.8.12"
   resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.8.12.tgz#a0d90e4351bb887716c83fd637ebf818af4adfcc"
 
-ast-types@0.9.11:
-  version "0.9.11"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.9.11.tgz#371177bb59232ff5ceaa1d09ee5cad705b1a5aa9"
+ast-types@0.9.14:
+  version "0.9.14"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.9.14.tgz#d34ba5dffb9d15a44351fd2a9d82e4ab2838b5ba"
 
 ast-types@0.9.6:
   version "0.9.6"
@@ -1439,6 +1439,10 @@ esprima@^3.1.1, esprima@~3.1.0:
 esprima@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.0.0.tgz#53cf247acda77313e551c3aa2e73342d3fb4f7d9"
+
+esprima@~4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
 esquery@^1.0.0:
   version "1.0.0"
@@ -2862,15 +2866,15 @@ recast@^0.11.17:
     private "~0.1.5"
     source-map "~0.5.0"
 
-recast@^0.12.5:
-  version "0.12.5"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.12.5.tgz#1f21a04f0ffd8dea35c222492ffcfe3201c1e977"
+recast@^0.12.8:
+  version "0.12.8"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.12.8.tgz#bb5dc9501dfa0cd075686e1daf9d67797cc5499f"
   dependencies:
-    ast-types "0.9.11"
+    ast-types "0.9.14"
     core-js "^2.4.1"
-    esprima "~3.1.0"
+    esprima "~4.0.0"
     private "~0.1.5"
-    source-map "~0.5.0"
+    source-map "~0.6.1"
 
 rechoir@^0.6.2:
   version "0.6.2"
@@ -3167,6 +3171,10 @@ source-map@~0.2.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.2.0.tgz#dab73fbcfc2ba819b4de03bd6f6eaa48164b3f9d"
   dependencies:
     amdefine ">=0.0.4"
+
+source-map@~0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
 spdx-correct@~1.0.0:
   version "1.0.2"
