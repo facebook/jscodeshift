@@ -22,7 +22,6 @@ const options = {
   allowReturnOutsideFunction: true,
   plugins: [
     'estree',
-    'flow',
     'jsx',
     'asyncGenerators',
     'classProperties',
