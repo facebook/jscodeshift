@@ -10,7 +10,8 @@
 
 'use strict';
 
-const babel = require('babel-core');
+const getParser = require('./../../getParser');
+
 const recast = require('recast');
 const types = recast.types.namedTypes;
 const b = recast.types.builders;
@@ -53,7 +54,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
-    ].join('\n'), {parser: babel}).program];
+    ].join('\n'), {parser: getParser()}).program];
   });
 
   describe('Traversal', function() {
