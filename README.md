@@ -1,4 +1,4 @@
-# jscodeshift [![Build Status](https://travis-ci.org/facebook/jscodeshift.svg?branch=master)](https://travis-ci.org/facebook/jscodeshift)
+# jscodeshift [![Build Status](https://travis-ci.org/facebook/jscodeshift.svg?branch=master)](https://travis-ci.org/facebook/jscodeshift) [![Help Contribute to Open Source](https://www.codetriage.com/facebook/jscodeshift/badges/users.svg)](https://www.codetriage.com/facebook/jscodeshift)
 
 jscodeshift is a toolkit for running codemods over multiple JS files.
 It provides:
