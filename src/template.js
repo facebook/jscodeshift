@@ -112,7 +112,7 @@ module.exports = function withParser(parser) {
   function statements(template/*, ...nodes*/) {
     template = Array.from(template);
     const nodes = Array.from(arguments).slice(1);
-    const varNames = nodes.map(n => getRandomVarName());
+    const varNames = nodes.map(() => getRandomVarName());
     const src = template.reduce(
       (result, elem, i) => result + varNames[i - 1] + elem
     );
