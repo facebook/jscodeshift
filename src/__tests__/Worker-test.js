@@ -39,6 +39,23 @@ describe('Worker API', () => {
     });
   });
 
+  it('transforms files with multiple transforms', done => {
+    const transformPath1 =
+      createTransformWith('return fileInfo.source + " changed";');
+    const transformPath2 =
+      createTransformWith('return fileInfo.source + " again";');
+    const sourcePath = createTempFileWith('foo');
+    const emitter = worker([[transformPath1, transformPath2]]);
+
+    emitter.send({files: [sourcePath]});
+    emitter.once('message', (data) => {
+      expect(data.status).toBe('ok');
+      expect(data.msg).toBe(sourcePath);
+      expect(getFileContent(sourcePath)).toBe('foo changed again');
+      done();
+    });
+  });
+
   it('passes j as argument', done => {
     const transformPath = createTempFileWith(
       `module.exports = function (file, api) {

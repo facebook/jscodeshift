@@ -22,8 +22,8 @@ const jscodeshift = require('./core');
 let emitter;
 let finish;
 let notify;
-let transform;
-let parser;
+let transforms;
+let parsers;
 
 if (module.parent) {
   emitter = new EventEmitter();
@@ -38,16 +38,19 @@ if (module.parent) {
   finish = () => setImmediate(() => process.disconnect());
   notify = (data) => { process.send(data); };
   process.on('message', (data) => { run(data); });
-  setup(process.argv[2], process.argv[3]);
+  setup(parseTransformArg(process.argv[2]), process.argv[3]);
 }
 
-function prepareJscodeshift(options) {
-  if (parser) {
-    return jscodeshift.withParser(parser);
-  } else if (options.parser) {
-    return jscodeshift.withParser(getParser(options.parser));
-  } else {
-    return jscodeshift;
+function prepareJscodeshift(parser) {
+  return parser ? jscodeshift.withParser(parser) : jscodeshift;
+}
+
+// Parse the transform argument for child processes from a nested JSON Array
+function parseTransformArg(transform) {
+  try {
+    return JSON.parse(transform);
+  } catch (e) {
+    return transform;
   }
 }
 
@@ -64,15 +67,18 @@ function setup(tr, babel) {
       ]
     });
   }
-  const module = require(tr);
-  transform = typeof module.default === 'function' ?
-    module.default :
-    module;
-  if (module.parser) {
-    parser = typeof module.parser === 'string' ?
-      getParser(module.parser) :
-      module.parser;
-  }
+  tr = Array.isArray(tr) ? tr : [tr]
+  const modules = tr.map(require);
+  transforms = modules.map(module => {
+    return typeof module.default === 'function' ?
+           module.default :
+           module;    
+  })
+  parsers = modules.map(module => {
+    return typeof module.parser === 'string' ?
+           getParser(module.parser) :
+           module.parser;
+  })
 }
 
 function free() {
@@ -125,19 +131,21 @@ function run(data) {
         }
         source = source.toString();
         try {
-          const jscodeshift = prepareJscodeshift(options);
-          const out = transform(
-            {
-              path: file,
-              source: source,
-            },
-            {
-              j: jscodeshift,
-              jscodeshift: jscodeshift,
-              stats: options.dry ? stats : empty
-            },
-            options
-          );
+          let out = transforms.reduce((source, transform, index) => {
+            const jscodeshift = prepareJscodeshift(parsers[index] || options.parser);
+            return transform(
+              {
+                path: file,
+                source: source,
+              },
+              {
+                j: jscodeshift,
+                jscodeshift: jscodeshift,
+                stats: options.dry ? stats : empty
+              },
+              options
+            );
+          }, source);
           if (!out || out === source) {
             updateStatus(out ? 'nochange' : 'skip', file);
             callback();

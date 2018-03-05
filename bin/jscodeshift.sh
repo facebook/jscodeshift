@@ -27,9 +27,10 @@ const opts = require('nomnom')
     },
     transform: {
       abbr: 't',
-      default: './transform.js',
-      help: 'Path to the transform file. Can be either a local path or url',
-      metavar: 'FILE'
+      default: ['.'],
+      help: 'Path to a transform url, file, directory, or npm package. Can be given multiple times to run several transforms in order',
+      list: true,
+      metavar: 'NAME'
     },
     cpus: {
       abbr: 'c',
@@ -107,8 +108,8 @@ const opts = require('nomnom')
   })
   .parse();
 
-Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
-  opts.path,
-  opts
-);
+const transforms = opts.transform.map(transform => {
+  return /^https?/.test(transform) ? transform : path.resolve(transform);
+});
+
+Runner.run(transforms, opts.path, opts);

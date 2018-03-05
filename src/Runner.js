@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const temp = require('temp');
+const temp = require('temp').track();
 const ignores = require('./ignoreFiles');
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
@@ -133,23 +133,12 @@ function getAllFiles(paths, filter) {
   ).then(concatAll);
 }
 
-function run(transformFile, paths, options) {
-  let usedRemoteScript = false;
-  const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
-  const extensions =
-    options.extensions && options.extensions.split(',').map(ext => '.' + ext);
-  const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
-  const statsCounter = {};
-  const startTime = process.hrtime();
-
-  ignores.add(options.ignorePattern);
-  ignores.addFromFile(options.ignoreConfig);
-
-  if (/^http/.test(transformFile)) {
-    usedRemoteScript = true;
+function getTransform(transform) {
+  if (/^http/.test(transform)) {
+    // handle url
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
-      (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
+      (transform.indexOf('https') !== 0 ?  http : https).get(transform, (res) => {
         let contents = '';
         res
           .on('data', (d) => {
@@ -161,7 +150,7 @@ function run(transformFile, paths, options) {
               fs.write(info.fd, contents);
               fs.close(info.fd, function(err) {
                 reject(err);
-                transform(info.path).then(resolve, reject);
+                resolve(info.path);
               });
             });
         })
@@ -170,16 +159,63 @@ function run(transformFile, paths, options) {
         reject(e.message);
       });
     });
-  } else if (!fs.existsSync(transformFile)) {
-    process.stderr.write(
-      colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
-    );
-    return;
-  } else {
-    return transform(transformFile);
+  } else if (fs.existsSync(transform)) {
+    let stats = fs.lstatSync(transform);
+
+    if (stats && stats.isFile(transform)) {
+      // handle file
+      return transform;
+    } else if (stats && stats.isDirectory(transform)) {
+      let directory = path.join(transform, 'transforms');
+      let file = path.join(transform, 'transformjs');
+
+      // handle directory
+      if (fs.existsSync(directory) && fs.lstatSync(directory).isDirectory()) {
+        return fs.readdirSync(directory);
+      } else if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
+        return file;
+      } else {
+        return fs.readdirSync(transform);
+      }
+    } else {
+      // handle other fs objects
+      return transform;
+    }
   }
 
-  function transform(transformFile) {
+  try {
+    // handle npm package as directory
+    return getTransform(require.resolve(transform));
+  } catch (e) {
+    // error
+    return Promise.reject('Transform ' + transform + ' does not exist');
+  }
+}
+
+function run(transforms, paths, options) {
+  const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
+  const extensions =
+    options.extensions && options.extensions.split(',').map(ext => '.' + ext);
+  const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
+  const statsCounter = {};
+  const startTime = process.hrtime();
+
+  ignores.add(options.ignorePattern);
+  ignores.addFromFile(options.ignoreConfig);
+
+  transforms = Array.isArray(transforms) ? transforms : [transformfiles]
+
+  return Promise
+    .all(transforms.map(getTransform))
+    .catch(reason => {
+      // if there's an error, log it but continue to reject
+      process.stderr.write(colors.white.bgRed('ERROR') + ' ' + reason + '\n');
+      return Promise.reject(reason);
+    })
+    .then(Array.prototype.concat.bind([])) // flatten nested Arrays
+    .then(transform);
+
+  function transform(transformFiles) {
     return getAllFiles(
       paths,
       name => !extensions || extensions.indexOf(path.extname(name)) != -1
@@ -223,7 +259,10 @@ function run(transformFile, paths, options) {
           }
         }
 
-        const args = [transformFile, options.babel ? 'babel' : 'no-babel'];
+        const args = [transformFiles, options.babel ? 'babel' : 'no-babel'];
+        if (!options.runInBand) {
+          args[0] = JSON.stringify(args[0])
+        }
 
         const workers = [];
         for (let i = 0; i < processes; i++) {
@@ -267,9 +306,7 @@ function run(transformFile, paths, options) {
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
           }
-          if (usedRemoteScript) {
-            temp.cleanupSync();
-          }
+          temp.cleanupSync();
           return Object.assign({
             stats: statsCounter,
             timeElapsed: timeElapsed
@@ -279,4 +316,5 @@ function run(transformFile, paths, options) {
   }
 }
 
+exports.getTransform = getTransform;
 exports.run = run;

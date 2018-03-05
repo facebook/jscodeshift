@@ -19,7 +19,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000; // 10 minutes
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
-var temp = require('temp');
+var temp = require('temp').track();
 var mkdirp = require('mkdirp');
 var testUtils = require('../../utils/testUtils');
 
@@ -75,6 +75,25 @@ describe('jscodeshift CLI', () => {
         }
       )
     ]);
+  });
+
+  it('calls multiple transforms in order', () => {
+    var sourceA = createTempFileWith('a');
+    var sourceB = createTempFileWith('b');
+    var transformA = createTransformWith(
+      'return "first" + fileInfo.source;'
+    );
+    var transformB = createTransformWith(
+      'return "second" + fileInfo.source;'
+    );
+
+    return run(['-t', transformA, '-t', transformB, sourceA, sourceB]).then(
+      out => {
+        expect(out[1]).toBe('');
+        expect(fs.readFileSync(sourceA).toString()).toBe('secondfirsta');
+        expect(fs.readFileSync(sourceB).toString()).toBe('secondfirstb');
+      }
+    );
   });
 
   it('does not transform files in a dry run', () => {

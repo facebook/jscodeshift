@@ -31,7 +31,7 @@ Usage: jscodeshift <path>... [options]
 path     Files or directory to transform
 
 Options:
-   -t FILE, --transform FILE   Path to the transform file. Can be either a local path or url  [./transform.js]
+   -t NAME, --transform NAME   Path to a transform url, file, directory, or npm package. Can be given multiple times to run several transforms in order  [.]
    -c, --cpus                  (all by default) Determines the number of processes started.
    -v, --verbose               Show more information about the transform process  [0]
    -d, --dry                   Dry run (no changes are made to files)
@@ -46,13 +46,26 @@ Options:
    --version                   print version and exit
 ```
 
-This passes the source of all passed through the transform module specified
-with `-t` or `--transform` (defaults to `transform.js` in the current
-directory). The next section explains the structure of the transform module.
+This passes the source of all passed through the transform modules specified
+with `-t` or `--transform` (they default to the current directory). The next
+section explains how transform modules are located, and the section after that
+explains the structure of transform modules.
+
+## Transform location algorithm
+The default transform is the current directory if no `--transform` flag is given.
+
+1. If URL, return file at URL
+2. If file, return file
+3. If directory
+  1. If contains directory named `transforms`, return files in that directory
+  2. If contains file named `transform.js`, return file
+  3. Else, return files in directory
+4. If npm package, find its directory (with `require.resolve()`) and go to step 3
+5. Else, error
 
 ## Transform module
 
-The transform is simply a module that exports a function of the form:
+A transform is simply a module that exports a function of the form:
 
 ```js
 module.exports = function(fileInfo, api, options) {
