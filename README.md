@@ -100,7 +100,7 @@ module.exports = function(fileInfo, api) {
 }
 ```
 
-**Note:** This api is exposed for convenience, but you don't have to use it.
+**Note:** This API is exposed for convenience, but you don't have to use it.
 You can use any tool to modify the source.
 
 `stats` is a function that only works when the `--dry` options is set. It accepts
@@ -360,7 +360,7 @@ This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and on
 #### `defineInlineTest`
 ```js
 const transform = require('../myTransform');
-defineInlineTest(transform, {}, 'input', 'expected output');
+defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional)');
 ```
 
 ### Example Codemods

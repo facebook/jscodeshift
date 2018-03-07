@@ -53,6 +53,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
+      '<Component foo={foo} />',
     ].join('\n'), {parser: getParser()}).program];
   });
 
@@ -124,6 +125,48 @@ describe('VariableDeclarators', function() {
       const identifiers =
         Collection.fromNodes(nodes)
         .find(types.Identifier, {name: 'blarg'});
+
+      expect(identifiers.length).toBe(1);
+    });
+    
+    it('properly renames a shorthand property that was using the old variable name', function() {
+      nodes = [recast.parse([
+        'var foo = 42;',
+        'var obj2 = {',
+        '  foo,',
+        '};',
+      ].join('\n'), {parser: getParser()}).program];
+
+      // Outputs:
+      // var newFoo = 42;
+      // var obj2 = {
+      //   foo: newFoo,
+      // };
+      Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo').renameTo('newFoo');
+
+      expect(
+        Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+      ).toBe(2);
+      expect(
+        Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+      ).toBe(1);
+
+      expect(
+        Collection.fromNodes(nodes).find(types.Property).filter(prop => !prop.value.shorthand).length
+      ).toBe(1);
+      expect(
+        Collection.fromNodes(nodes).find(types.Property).filter(prop => prop.value.shorthand).length
+      ).toBe(0);
+    });
+
+    it('does not rename React component prop name', function () {
+      const declarators = Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo')
+        .renameTo('xyz');
+
+      const identifiers = Collection.fromNodes(nodes)
+        .find(types.JSXIdentifier, { name: 'foo' });
 
       expect(identifiers.length).toBe(1);
     });

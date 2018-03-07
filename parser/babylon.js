@@ -31,6 +31,7 @@ const options = {
     'asyncGenerators',
     'functionBind',
     'functionSent',
+    'dynamicImport',
   ],
 };
 

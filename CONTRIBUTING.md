@@ -2,6 +2,9 @@
 We want to make contributing to this project as easy and transparent as
 possible.
 
+## Code of Conduct
+The code of conduct is described in [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+
 ## Our Development Process
 The majority of development on jscodeshift will occur through GitHub. Accordingly,
 the process for contributing will follow standard GitHub protocol.

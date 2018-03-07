@@ -93,8 +93,8 @@ function defineTest(dirName, transformName, options, testFilePrefix) {
 }
 exports.defineTest = defineTest;
 
-function defineInlineTest(module, options, input, expectedOutput) {
-  it('transforms correctly', () => {
+function defineInlineTest(module, options, input, expectedOutput, testName) {
+  it(testName || 'transforms correctly', () => {
     runInlineTest(module, options, {
       source: input
     }, expectedOutput);

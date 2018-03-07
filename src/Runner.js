@@ -157,17 +157,19 @@ function run(transformFile, paths, options) {
           })
           .on('end', () => {
             temp.open('jscodeshift', (err, info) => {
-              reject(err);
-              fs.write(info.fd, contents);
-              fs.close(info.fd, function(err) {
-                reject(err);
-                transform(info.path).then(resolve, reject);
+              if (err) return reject(err);
+              fs.write(info.fd, contents, function (err) {
+                if (err) return reject(err);
+                fs.close(info.fd, function(err) {
+                  if (err) return reject(err);
+                  transform(info.path).then(resolve, reject);
+                });
               });
             });
         })
       })
       .on('error', (e) => {
-        reject(e.message);
+        reject(e);
       });
     });
   } else if (!fs.existsSync(transformFile)) {
