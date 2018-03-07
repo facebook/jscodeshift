@@ -134,6 +134,21 @@ const transformMethods = {
             scope = scope.parent;
           }
           if (scope) { // identifier must refer to declared variable
+            
+            // It may look like we filtered out properties, 
+            // but the filter only ignored property "keys", not "value"s
+            // In shorthand properties, "key" and "value" both have an
+            // Identifier with the same structure.
+            const parent = path.parent.node;
+            if (
+              types.Property.check(parent) &&
+              parent.shorthand &&
+              !parent.method
+            )  {
+
+              path.parent.get('shorthand').replace(false);
+            }
+
             path.get('name').replace(newName);
           }
         });
