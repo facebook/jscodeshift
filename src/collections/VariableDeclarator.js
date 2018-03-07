@@ -114,6 +114,15 @@ const transformMethods = {
             return false;
           }
 
+          if (
+            types.JSXAttribute.check(parent) &&
+            parent.name === path.node &&
+            !parent.computed
+          ) {
+            // <Foo oldName={oldName} />
+            return false;
+          }
+
           return true;
         })
         .forEach(function(path) {
