@@ -92,8 +92,8 @@ while (i < 10) {
   });
 
   it('handles out-of-order traversal', () => {
-    const input = `var x`;
-    const expected = `class X extends a {f(b) {}}`;
+    const input = 'var x';
+    const expected = 'class X extends a {f(b) {}}';
 
     const a = jscodeshift.identifier('a');
     const b = jscodeshift.identifier('b');
@@ -126,8 +126,8 @@ while (i < 10) {
   describe('explode arrays', () => {
 
     it('explodes arrays in function definitions', () => {
-      let input = `var foo = [a, b];`;
-      let expected = `var foo = function foo(a, b, c) {};`;
+      let input = 'var foo = [a, b];';
+      let expected = 'var foo = function foo(a, b, c) {};';
 
       expect(
         jscodeshift(input)
@@ -139,7 +139,7 @@ while (i < 10) {
       )
       .toEqual(expected);
 
-      expected = `var foo = function(a, b, c) {};`;
+      expected = 'var foo = function(a, b, c) {};';
 
       expect(
         jscodeshift(input)
@@ -151,7 +151,7 @@ while (i < 10) {
       )
       .toEqual(expected);
 
-      expected = `var foo = (a, b) => {};`;
+      expected = 'var foo = (a, b) => {};';
 
       expect(
         jscodeshift(input)
@@ -163,7 +163,7 @@ while (i < 10) {
       )
       .toEqual(expected);
 
-      expected = `var foo = (a, b, c) => {};`;
+      expected = 'var foo = (a, b, c) => {};';
 
       expect(
         jscodeshift(input)
@@ -177,8 +177,8 @@ while (i < 10) {
     });
 
     it('explodes arrays in variable declarations', () => {
-      let input = `var foo = [a, b];`;
-      let expected = `var foo, a, b;`;
+      let input = 'var foo = [a, b];';
+      let expected = 'var foo, a, b;';
       expect(
         jscodeshift(input)
           .find('VariableDeclaration')
@@ -195,8 +195,8 @@ while (i < 10) {
     });
 
     it('explodes arrays in array expressions', () => {
-      let input = `var foo = [a, b];`;
-      let expected = `var foo = [a, b, c];`;
+      let input = 'var foo = [a, b];';
+      let expected = 'var foo = [a, b, c];';
       expect(
         jscodeshift(input)
           .find('ArrayExpression')
@@ -207,7 +207,7 @@ while (i < 10) {
     });
 
     it('explodes arrays in object expressions', () => {
-      let input = `var foo = {a, b};`;
+      let input = 'var foo = {a, b};';
       let expected = /var foo = \{\s*a,\s*b,\s*c: 42\s*};/;
       expect(
         jscodeshift(input)
@@ -219,8 +219,8 @@ while (i < 10) {
     });
 
     it('explodes arrays in call expressions', () => {
-      let input = `var foo = [a, b];`;
-      let expected = `var foo = bar(a, b, c);`;
+      let input = 'var foo = [a, b];';
+      let expected = 'var foo = bar(a, b, c);';
 
       expect(
         jscodeshift(input)

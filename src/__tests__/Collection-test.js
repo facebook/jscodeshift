@@ -105,14 +105,14 @@ describe('Collection API', function() {
       expect(() => collection.getNames()).toThrow();
     });
 
-    it('ads "global" methods to all types', function() {
+    it('adds "global" methods to all types', function() {
       const Collection = require('../Collection');
       const getNames = jest.genMockFunction();
       Collection.registerMethods({getNames: getNames});
 
-      expect(Collection.fromNodes([b.blockStatement([])])).toBeDefined();
-      expect(Collection.fromNodes(nodes)).toBeDefined();
-      expect(Collection.fromNodes([])).toBeDefined();
+      expect(Collection.fromNodes([b.blockStatement([])]).getNames).toBeDefined();
+      expect(Collection.fromNodes(nodes).getNames).toBeDefined();
+      expect(Collection.fromNodes([]).getNames).toBeDefined();
     });
 
     it('handles type inheritance chains', function() {
@@ -219,7 +219,7 @@ describe('Collection API', function() {
     describe('forEach', function() {
       it('lets you iterate over each element of an collection', function() {
         const each = jest.genMockFunction();
-        const fVariables = Collection.fromNodes(nodes).forEach(each);
+        Collection.fromNodes(nodes).forEach(each);
 
         expect(each.mock.calls.length).toBe(2);
         expect(each.mock.calls[0][0].value).toBe(nodes[0]);
@@ -248,7 +248,7 @@ describe('Collection API', function() {
       it('dedupes elements', function() {
         const path = new NodePath(nodes[0]);
         const root = Collection.fromNodes(nodes);
-        const mapped = root.map(_ => path);
+        const mapped = root.map(() => path);
 
         expect(root).not.toBe(mapped);
         expect(mapped.length).toBe(1);

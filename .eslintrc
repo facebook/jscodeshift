@@ -8,6 +8,7 @@
     "strict": 0
   },
   "env": {
+    "jest": true,
     "node": true
   },
   "globals": {

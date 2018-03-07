@@ -18,6 +18,6 @@ module.exports = function getParser(parserName) {
       return require('../parser/flow');
     case 'babel':
     default:
-      return require('babel-core');
+      return require('../parser/babel5Compat');
   }
 };
