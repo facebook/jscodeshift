@@ -234,6 +234,46 @@ describe('Collection API', function() {
       });
     });
 
+    describe('some', function() {
+      it('lets you test each element of a collection and stops when one passes the test', function() {
+        const each = jest.genMockFunction().mockImplementation(() => true);
+        Collection.fromNodes(nodes).some(each);
+
+        expect(each.mock.calls.length).toBe(1);
+        expect(each.mock.calls[0][0].value).toBe(nodes[0]);
+      });
+
+      it('returns true if at least one element passes the test', function() {
+        const result = Collection.fromNodes(nodes).some((_, i) => i === 1);
+        expect(result).toBe(true);
+      });
+
+      it('returns false if no elements pass the test', function() {
+        const result = Collection.fromNodes(nodes).some(() => false);
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('every', function() {
+      it('lets you test each element of a collection and stops when one fails the test', function() {
+        const each = jest.genMockFunction().mockImplementation(() => false);
+        Collection.fromNodes(nodes).every(each);
+
+        expect(each.mock.calls.length).toBe(1);
+        expect(each.mock.calls[0][0].value).toBe(nodes[0]);
+      });
+
+      it('returns true if all elements pass the test', function() {
+        const result = Collection.fromNodes(nodes).every(() => true);
+        expect(result).toBe(true);
+      });
+
+      it('returns false if at least one element does not pass the test', function() {
+        const result = Collection.fromNodes(nodes).every((_, i) => i === 1);
+        expect(result).toBe(false);
+      });
+    });
+
     describe('map', function() {
       it('returns a new collection with mapped values', function() {
         const root = Collection.fromNodes(nodes);

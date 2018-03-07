@@ -79,6 +79,30 @@ class Collection {
   }
 
   /**
+   * Tests whether at-least one path passes the test implemented by the provided callback.
+   *
+   * @param {function} callback
+   * @return {boolean}
+   */
+  some(callback) {
+    return this.__paths.some(
+      (path, i, paths) => callback.call(path, path, i, paths)
+    );
+  }
+
+  /**
+   * Tests whether all paths pass the test implemented by the provided callback.
+   *
+   * @param {function} callback
+   * @return {boolean}
+   */
+  every(callback) {
+    return this.__paths.every(
+      (path, i, paths) => callback.call(path, path, i, paths)
+    );
+  }
+
+  /**
    * Executes the callback for every path in the collection and returns a new
    * collection from the return values (which must be paths).
    *
