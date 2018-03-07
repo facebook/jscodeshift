@@ -135,7 +135,7 @@ describe('VariableDeclarators', function() {
         'var obj2 = {',
         '  foo,',
         '};',
-      ].join('\n'), {parser: babel}).program];
+      ].join('\n'), {parser: getParser()}).program];
 
       // Outputs:
       // var newFoo = 42;
