@@ -33,4 +33,9 @@ var droWtsrif = 'Hello ';
 var droWdnoces = 'world';
 var egassem = droWtsrif + droWdnoces;
   `);
+  defineInlineTest(transform, {},
+    'function aFunction() {};',
+    'function noitcnuFa() {};',
+    'Reverses function names'
+  );
 });

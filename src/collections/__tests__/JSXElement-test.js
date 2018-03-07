@@ -10,7 +10,7 @@
 
 'use strict';
 
-const babel = require('babel-core');
+const getParser = require('./../../getParser');
 
 describe('JSXCollection API', function() {
   let nodes;
@@ -40,7 +40,7 @@ describe('JSXCollection API', function() {
       '  </Child>',
       '  <Child id="2" foo="baz"/>',
       '</FooBar>'
-    ].join('\n'), {parser: babel}).program];
+    ].join('\n'), {parser: getParser()}).program];
   });
 
   describe('Traversal', function() {
@@ -144,7 +144,7 @@ describe('JSXCollection API', function() {
         [literal, childElement, literal, childElement, b.literal('\n')]
       );
 
-      const children = Collection.fromNodes([ast])
+      Collection.fromNodes([ast])
         .childElements().at(1).insertBefore(newChildElement);
 
       expect(ast.children.length).toBe(6);

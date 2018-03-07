@@ -10,10 +10,10 @@
 
 'use strict';
 
-const babel = require('babel-core');
+const getParser = require('./../../getParser');
+
 const recast = require('recast');
 const types = recast.types.namedTypes;
-const b = recast.types.builders;
 
 describe('VariableDeclarators', function() {
   let nodes;
@@ -53,7 +53,8 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
-    ].join('\n'), {parser: babel}).program];
+      '<Component foo={foo} />',
+    ].join('\n'), {parser: getParser()}).program];
   });
 
   describe('Traversal', function() {
@@ -104,7 +105,7 @@ describe('VariableDeclarators', function() {
 
   describe('Transform', function() {
     it('renames variable declarations considering scope', function() {
-      const declarators = Collection.fromNodes(nodes)
+      Collection.fromNodes(nodes)
         .findVariableDeclarators()
         .filter(VariableDeclaratorCollection.filters.requiresModule('module'))
         .renameTo('xyz');
@@ -117,7 +118,7 @@ describe('VariableDeclarators', function() {
     });
 
     it('does not rename things that are not variables', function() {
-      const declarators = Collection.fromNodes(nodes)
+      Collection.fromNodes(nodes)
         .findVariableDeclarators('blah')
         .renameTo('blarg');
 
@@ -127,7 +128,7 @@ describe('VariableDeclarators', function() {
 
       expect(identifiers.length).toBe(1);
     });
-
+    
     it('properly renames a shorthand property that was using the old variable name', function() {
       nodes = [recast.parse([
         'var foo = 42;',
@@ -159,6 +160,16 @@ describe('VariableDeclarators', function() {
       ).toBe(0);
     });
 
+    it('does not rename React component prop name', function () {
+      const declarators = Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo')
+        .renameTo('xyz');
+
+      const identifiers = Collection.fromNodes(nodes)
+        .find(types.JSXIdentifier, { name: 'foo' });
+
+      expect(identifiers.length).toBe(1);
+    });
   });
 
 });

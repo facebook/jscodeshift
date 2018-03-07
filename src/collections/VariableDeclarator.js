@@ -13,7 +13,6 @@
 const _ = require('lodash');
 const Collection = require('../Collection');
 const NodeCollection = require('./Node');
-const matchNode = require('../matchNode');
 const recast = require('recast');
 
 const astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
@@ -112,6 +111,15 @@ const transformMethods = {
             !parent.computed
           ) {
             // class A { oldName() {} }
+            return false;
+          }
+
+          if (
+            types.JSXAttribute.check(parent) &&
+            parent.name === path.node &&
+            !parent.computed
+          ) {
+            // <Foo oldName={oldName} />
             return false;
           }
 
