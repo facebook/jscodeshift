@@ -26,7 +26,6 @@
   "author": "Felix Kling",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "async": "^1.5.0",
     "babel-plugin-transform-flow-strip-types": "^6.8.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-1": "^6.5.0",
@@ -36,6 +35,7 @@
     "flow-parser": "^0.*",
     "lodash": "^4.13.1",
     "micromatch": "^2.3.7",
+    "neo-async": "^2.5.0",
     "node-dir": "0.1.8",
     "nomnom": "^1.8.1",
     "recast": "^0.14.1",
