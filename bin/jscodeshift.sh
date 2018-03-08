@@ -15,7 +15,7 @@ const Runner = require('../src/Runner.js');
 
 const path = require('path');
 const pkg = require('../package.json');
-const opts = require('nomnom')
+const opts = require('@gerhobbelt/nomnom')
   .script('jscodeshift')
   .options({
     path: {
@@ -108,7 +108,7 @@ const opts = require('nomnom')
   .parse();
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
+  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
   opts.path,
   opts
 );
