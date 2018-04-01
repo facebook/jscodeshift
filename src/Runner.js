@@ -18,6 +18,7 @@ const http = require('http');
 const https = require('https');
 const temp = require('temp');
 const ignores = require('./ignoreFiles');
+const createTempFileWith = require('../utils/createTempFileWith');
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
 const CHUNK_SIZE = 50;
@@ -48,6 +49,31 @@ function concatAll(arrays) {
   );
 }
 
+function getStdin() {
+  return new Promise(resolve => {
+    const stdin = process.stdin;
+    if (!stdin || stdin.isTTY) {
+      resolve(null);
+    } else {
+      // parse stdin to string content
+      let rst = '';
+
+      stdin.setEncoding('utf8');
+
+      stdin.on('readable', () => {
+        let chunk;
+        while ((chunk = stdin.read())) {
+          rst += chunk;
+        }
+      });
+
+      stdin.on('end', () => {
+        resolve(rst);
+      });
+    }
+  });
+}
+
 function showFileStats(fileStats) {
   process.stdout.write(
     'Results: \n'+
@@ -66,7 +92,7 @@ function showStats(stats) {
   names.forEach(name => process.stdout.write(name + ': ' + stats[name] + '\n'));
 }
 
-function dirFiles (dir, callback, acc) {
+function dirFiles(dir, callback, acc) {
   // acc stores files found so far and counts remaining paths to be processed
   acc = acc || { files: [], remaining: 1 };
 
@@ -178,14 +204,23 @@ function run(transformFile, paths, options) {
     );
     return;
   } else {
-    return transform(transformFile);
+    return getStdin().then(str => transform(transformFile, str));
   }
 
-  function transform(transformFile) {
+  function transform(transformFile, strFromStdin) {
     return getAllFiles(
-      paths,
+      paths || [],
       name => !extensions || extensions.indexOf(path.extname(name)) != -1
-    ).then(files => {
+    )
+      .then(fileList => {
+        let files = fileList;
+        if (strFromStdin) {
+          // only print stdin content to stdout
+          options.runInBand = true;
+          options.print = true;
+          options.silent = true;
+          files.push(createTempFileWith(strFromStdin));
+        }
         const numFiles = files.length;
 
         if (numFiles === 0) {
@@ -269,7 +304,7 @@ function run(transformFile, paths, options) {
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
           }
-          if (usedRemoteScript) {
+          if (usedRemoteScript || strFromStdin) {
             temp.cleanupSync();
           }
           return Object.assign({
