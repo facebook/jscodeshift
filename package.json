@@ -27,7 +27,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "babel-plugin-transform-flow-strip-types": "^6.8.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-stage-1": "^6.5.0",
     "babel-register": "^6.9.0",
     "babylon": "^7.0.0-beta.47",
