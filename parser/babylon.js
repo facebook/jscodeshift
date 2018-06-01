@@ -34,6 +34,7 @@ const options = {
     'dynamicImport',
     'nullishCoalescingOperator',
     'optionalChaining',
+    'numericSeparator',
   ],
 };
 
