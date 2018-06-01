@@ -31,6 +31,8 @@ const options = {
     'functionSent',
     'objectRestSpread',
     'dynamicImport',
+    'nullishCoalescingOperator',
+    'optionalChaining',
   ],
 };
 

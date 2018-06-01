@@ -32,6 +32,8 @@ const options = {
     'functionBind',
     'functionSent',
     'dynamicImport',
+    'nullishCoalescingOperator',
+    'optionalChaining',
   ],
 };
 
