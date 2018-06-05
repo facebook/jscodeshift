@@ -9,7 +9,7 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "prepublish": "cp -R src/ dist/",
+    "prepare": "cp -R src/ dist/",
     "test": "jest --bail",
     "docs": "rm -rf docs && jsdoc -d docs -R README.md src/collections/* src/core.js src/Collection.js"
   },
