@@ -23,7 +23,7 @@ const opts = require('nomnom')
       help: 'Files or directory to transform',
       list: true,
       metavar: 'FILE',
-      required: true
+      required: false
     },
     transform: {
       abbr: 't',
@@ -108,7 +108,7 @@ const opts = require('nomnom')
   .parse();
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
+  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
   opts.path,
   opts
 );

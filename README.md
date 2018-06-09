@@ -46,9 +46,11 @@ Options:
    --version                   print version and exit
 ```
 
-This passes the source of all passed through the transform module specified
+This passes the source of all passed or code from stdin through the transform module specified
 with `-t` or `--transform` (defaults to `transform.js` in the current
 directory). The next section explains the structure of the transform module.
+
+**Note:** if code from stdin is provided, the CLI will apply `--run-in-band` `-s` `-p` options automatically;
 
 ## Transform module
 
@@ -140,11 +142,11 @@ You can collect even more stats via the `stats` function as explained above.
 
 ### Parser
 
-The transform can let jscodeshift know with which parser to parse the source 
+The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
-To do that, the transform module can export `parser`, which can either be one 
-of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
+To do that, the transform module can export `parser`, which can either be one
+of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser
 object that is compatible with recast.
 
 For example:
@@ -317,7 +319,7 @@ This can be done by passing config options to [recast].
 .toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
 ```
 
-You can also pass options to recast's `parse` method by passing an object to 
+You can also pass options to recast's `parse` method by passing an object to
 jscodeshift as second argument:
 
 ```js

@@ -22,11 +22,12 @@ var path = require('path');
 var temp = require('temp');
 var mkdirp = require('mkdirp');
 var testUtils = require('../../utils/testUtils');
+var createTempFileWith = require('../../utils/createTempFileWith');
+var runner = require('../../src/Runner');
 
 var createTransformWith = testUtils.createTransformWith;
-var createTempFileWith = testUtils.createTempFileWith;
 
-function run(args, stdin, cwd) {
+function run(args, chunk, cwd) {
   return new Promise(resolve => {
     var jscodeshift = child_process.spawn(
       path.join(__dirname, '../jscodeshift.sh'),
@@ -40,8 +41,8 @@ function run(args, stdin, cwd) {
     jscodeshift.stdout.on('data', data => stdout += data);
     jscodeshift.stderr.on('data', data => stderr += data);
     jscodeshift.on('close', () => resolve([stdout, stderr]));
-    if (stdin) {
-      jscodeshift.stdin.write(stdin);
+    if (chunk) {
+      jscodeshift.stdin.write(chunk);
     }
     jscodeshift.stdin.end();
   });
@@ -61,19 +62,33 @@ describe('jscodeshift CLI', () => {
     );
 
     return Promise.all([
-      run(['-t', transformA, sourceA, sourceB]).then(
+      run(['-t', transformA, sourceA, sourceB]).then(out => {
+        expect(out[1]).toBe('');
+        expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
+        expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
+      }),
+      run(['-t', transformB, sourceC]).then(out => {
+        expect(out[1]).toBe('');
+        expect(fs.readFileSync(sourceC).toString()).toBe(sourceC);
+      }),
+    ]);
+  });
+
+  it('accept code from stdin', () => {
+    var source = createTempFileWith('a');
+    var target = createTempFileWith('b');
+    var transform = createTransformWith(
+      'return "transform" + fileInfo.source;'
+    );
+    var chunk = child_process.execSync('cat ' + source);
+
+    return Promise.all([
+      run(['-t', transform], chunk).then(
         out => {
           expect(out[1]).toBe('');
-          expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
-          expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
+          expect(out[0]).toBe('transforma\n');
         }
       ),
-      run(['-t', transformB, sourceC]).then(
-        out => {
-          expect(out[1]).toBe('');
-          expect(fs.readFileSync(sourceC).toString()).toBe(sourceC);
-        }
-      )
     ]);
   });
 

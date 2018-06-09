@@ -11,9 +11,9 @@
 'use strict';
 
 const testUtils = require('../../utils/testUtils');
+const createTempFileWith = require('../../utils/createTempFileWith');
 
 const createTransformWith = testUtils.createTransformWith;
-const createTempFileWith = testUtils.createTempFileWith;
 const getFileContent = testUtils.getFileContent;
 
 describe('Worker API', () => {
