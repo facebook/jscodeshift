@@ -128,7 +128,7 @@ function getAllFiles(paths, filter) {
         } else {
           resolve([file]);
         }
-      })
+      });
     }))
   ).then(concatAll);
 }
