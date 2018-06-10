@@ -299,5 +299,5 @@ describe('jscodeshift CLI', () => {
         }
       );
     });
-  })
+  });
 });

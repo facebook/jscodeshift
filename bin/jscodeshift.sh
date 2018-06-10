@@ -11,104 +11,46 @@
 
 'use strict';
 
+const list = function(val, memo) {
+  memo.push(val);
+  return memo;
+}
+
 const Runner = require('../src/Runner.js');
 
 const path = require('path');
 const pkg = require('../package.json');
-const opts = require('nomnom')
-  .script('jscodeshift')
-  .options({
-    path: {
-      position: 0,
-      help: 'Files or directory to transform',
-      list: true,
-      metavar: 'FILE',
-      required: true
-    },
-    transform: {
-      abbr: 't',
-      default: './transform.js',
-      help: 'Path to the transform file. Can be either a local path or url',
-      metavar: 'FILE'
-    },
-    cpus: {
-      abbr: 'c',
-      help: '(all by default) Determines the number of processes started.'
-    },
-    verbose: {
-      abbr: 'v',
-      choices: [0, 1, 2],
-      default: 0,
-      help: 'Show more information about the transform process'
-    },
-    dry: {
-      abbr: 'd',
-      flag: true,
-      help: 'Dry run (no changes are made to files)'
-    },
-    print: {
-      abbr: 'p',
-      flag: true,
-      help: 'Print output, useful for development'
-    },
-    babel: {
-      flag: true,
-      default: true,
-      help: 'Apply Babel to transform files'
-    },
-    extensions: {
-      default: 'js',
-      help: 'File extensions the transform file should be applied to'
-    },
-    ignorePattern: {
-      full: 'ignore-pattern',
-      list: true,
-      help: 'Ignore files that match a provided glob expression'
-    },
-    ignoreConfig: {
-      full: 'ignore-config',
-      list: true,
-      help: 'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)',
-      metavar: 'FILE'
-    },
-    runInBand: {
-      flag: true,
-      default: false,
-      full: 'run-in-band',
-      help: 'Run serially in the current process'
-    },
-    silent: {
-      abbr: 's',
-      flag: true,
-      default: false,
-      full: 'silent',
-      help: 'No output'
-    },
-    parser: {
-      choices: ['babel', 'babylon', 'flow'],
-      default: 'babel',
-      full: 'parser',
-      help: 'The parser to use for parsing your source files (babel | babylon | flow)'
-    },
-    version: {
-      flag: true,
-      help: 'print version and exit',
-      callback: function() {
-        const requirePackage = require('../utils/requirePackage');
-        return [
-          `jscodeshift: ${pkg.version}`,
-          ` - babel: ${require('babel-core').version}`,
-          ` - babylon: ${requirePackage('babylon').version}`,
-          ` - flow: ${requirePackage('flow-parser').version}`,
-          ` - recast: ${requirePackage('recast').version}`,
-        ].join('\n');
-      },
-    },
+const opts = require('commander')
+  .version(function() {
+    const requirePackage = require('../utils/requirePackage');
+    return [
+      `jscodeshift: ${pkg.version}`,
+      ` - babel: ${require('babel-core').version}`,
+      ` - babylon: ${requirePackage('babylon').version}`,
+      ` - flow: ${requirePackage('flow-parser').version}`,
+      ` - recast: ${requirePackage('recast').version}`,
+    ].join('\n');
   })
-  .parse();
+  //.command('jscodeshift')
+  //.allowUnknownOption()
+  .arguments('<FILE...>')
+  .option('-t, --transform <FILE>', 'Path to the transform file. Can be either a local path or url', './transform.js')
+  .option('-c, --cpus <num>', '(all by default) Determines the number of processes started.')
+  .option('-v, --verbose [level]', 'Show more information about the transform process', /^(0|1|2)$/i, 0)
+  .option('-d, --dry', 'Dry run (no changes are made to files)', false)
+  .option('-p, --print', 'Print output, useful for development', false)
+  .option('--babel', 'Apply Babel to transform files')
+  .option('--no-babel', 'Do not apply Babel to transform files')
+  .option('--extensions <extensions>', 'File extensions the transform file should be applied to', 'js')
+  .option('--ignore-pattern <pattern>', 'Ignore files that match a provided glob expression', list, [])
+  .option('--ignore-config <FILE>',  'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)', list, [])
+  .option('--run-in-band', 'Run serially in the current process', 'false') // Might need false default
+  .option('-s, --silent',  'No output', false)
+  .option('--parser', 'The parser to use for parsing your source files (babel | babylon | flow)', /^(babel|babylon|flow)$/, 'babel')
+  .parse(process.argv);
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
-  opts.path,
+  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
+  opts.args,
   opts
 );
