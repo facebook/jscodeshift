@@ -16,7 +16,6 @@ const list = function(val, memo) {
   return memo;
 }
 
-
 const Runner = require('../src/Runner.js');
 
 const path = require('path');
@@ -33,6 +32,7 @@ const opts = require('commander')
     ].join('\n');
   })
   //.command('jscodeshift')
+  //.allowUnknownOption()
   .arguments('<FILE...>')
   .option('-t, --transform <FILE>', 'Path to the transform file. Can be either a local path or url', './transform.js')
   .option('-c, --cpus <num>', '(all by default) Determines the number of processes started.')
