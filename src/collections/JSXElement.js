@@ -65,7 +65,64 @@ const globalMethods = {
             .paths();
         }
       });
-  }
+  },
+
+  /**
+   * Finds all JSXElements by package name. Given
+   *
+   *     import Bar from 'Foo';
+   *     <Bar />
+   *
+   * findJSXElementsByImport('Foo') will find <Bar />, without having to
+   * know the variable name.
+   */
+  findJSXElementsByImport: function(importName) {
+    assert.ok(
+      importName && typeof importName === 'string',
+      'findJSXElementsByImport(...) needs a name to look for'
+    );
+
+    return this.find(types.ImportDeclaration, { source: { value: importName } })
+      .find(types.ImportDefaultSpecifier)
+      .map(path => {
+        const id = path.node.local.name;
+        if (id) {
+          return Collection.fromPaths([path])
+            .closestScope()
+            .findJSXElements(id)
+            .paths();
+        }
+      });
+  },
+
+  /**
+   * Finds all JSXElements by named import. Given
+   *
+   *     import { Foo as Bar } from 'foo';
+   *     <Bar />
+   *
+   * findJSXElementsByModuleName('foo', 'Foo') will find <Bar />, without having
+   * to know the variable name.
+   */
+  findJSXElementsByNamedImport: function(importName, exportName) {
+    assert.ok(
+      importName && typeof importName === 'string' &&
+      exportName && typeof exportName === 'string',
+      'findJSXElementsByNamedImport(...) needs a name to look for'
+    );
+
+    return this.find(types.ImportDeclaration, { source: { value: importName } })
+      .find(types.ImportSpecifier, { imported: { name: exportName }})
+      .map(path => {
+        const id = path.node.local.name;
+        if (id) {
+          return Collection.fromPaths([path])
+            .closestScope()
+            .findJSXElements(id)
+            .paths();
+        }
+      });
+  },
 };
 
 const filterMethods = {
