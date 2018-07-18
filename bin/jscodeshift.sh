@@ -85,10 +85,10 @@ const opts = require('nomnom')
       help: 'No output'
     },
     parser: {
-      choices: ['babel', 'babylon', 'flow'],
+      choices: ['babel', 'babylon', 'flow', 'typescript'],
       default: 'babel',
       full: 'parser',
-      help: 'The parser to use for parsing your source files (babel | babylon | flow)'
+      help: 'The parser to use for parsing your source files (babel | babylon | flow | typescript)'
     },
     version: {
       flag: true,
@@ -108,7 +108,7 @@ const opts = require('nomnom')
   .parse();
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
+  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
   opts.path,
   opts
 );

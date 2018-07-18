@@ -16,6 +16,8 @@ module.exports = function getParser(parserName) {
       return require('../parser/babylon');
     case 'flow':
       return require('../parser/flow');
+    case 'typescript':
+      return require('../parser/typescript');
     case 'babel':
     default:
       return require('../parser/babel5Compat');
