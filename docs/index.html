@@ -19,11 +19,11 @@
 
     <h1 class="page-title">Home</h1>
 
-    
 
 
 
-    
+
+
 
 
     <h3> </h3>
@@ -37,7 +37,7 @@
 
 
 
-    
+
 
 
 
@@ -142,7 +142,7 @@ developing the transform, e.g. to find out how often a certain construct
 appears in the source(s).</p>
 <h4><code>options</code></h4><p>Contains all options that have been passed to runner. This allows you to pass
 additional options to the transform. For example, if the CLI is called with</p>
-<pre class="prettyprint source"><code>$ jscodeshift -t myTransforms fileA fileB --foo=bar</code></pre><p><code>options</code> would contain <code>{foo: 'bar'}</code>. jscodeshift uses <a href="https://www.npmjs.com/package/nomnom">nomnom</a> to parse
+<pre class="prettyprint source"><code>$ jscodeshift -t myTransforms fileA fileB --foo=bar</code></pre><p><code>options</code> would contain <code>{foo: 'bar'}</code>. jscodeshift uses <a href="https://www.npmjs.com/package/@gerhobbelt/nomnom">nomnom</a> to parse
 command line options.</p>
 <h3>Return value</h3><p>The return value of the function determines the status of the transformation:</p>
 <ul>
@@ -156,10 +156,10 @@ ok).</li>
 <p>The CLI provides a summary of the transformation at the end. You can get more
 detailed information by setting the <code>-v</code> option to <code>1</code> or <code>2</code>.</p>
 <p>You can collect even more stats via the <code>stats</code> function as explained above.</p>
-<h3>Parser</h3><p>The transform can let jscodeshift know with which parser to parse the source 
+<h3>Parser</h3><p>The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).</p>
-<p>To do that, the transform module can export <code>parser</code>, which can either be one 
-of the strings <code>&quot;babel&quot;</code>, <code>&quot;babylon&quot;</code>, or <code>&quot;flow&quot;</code>, or it can be a parser 
+<p>To do that, the transform module can export <code>parser</code>, which can either be one
+of the strings <code>&quot;babel&quot;</code>, <code>&quot;babylon&quot;</code>, or <code>&quot;flow&quot;</code>, or it can be a parser
 object that is compatible with with recast.</p>
 <p>For example:</p>
 <pre class="prettyprint source lang-js"><code>module.exports.parser = 'flow'; // use the flow parser
@@ -264,7 +264,7 @@ jscodeshift.registerMethods({
 jscodeshift(ast).findIdentifiers().logNames();
 jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier nodes</code></pre><h3>Passing options to <a href="https://github.com/benjamn/recast">recast</a></h3><p>You may want to change some of the output settings (like setting <code>'</code> instead of <code>&quot;</code>).
 This can be done by passing config options to <a href="https://github.com/benjamn/recast">recast</a>.</p>
-<pre class="prettyprint source lang-js"><code>.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.</code></pre><p>You can also pass options to recast's <code>parse</code> method by passing an object to 
+<pre class="prettyprint source lang-js"><code>.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.</code></pre><p>You can also pass options to recast's <code>parse</code> method by passing an object to
 jscodeshift as second argument:</p>
 <pre class="prettyprint source lang-js"><code>jscodeshift(source, {...})</code></pre><p>More on config options <a href="https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61">here</a></p>
 <h3>Unit Testing</h3><p>jscodeshift comes with a simple utility to allow easy unit testing with <a href="https://facebook.github.io/jest/">Jest</a>, without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:</p>

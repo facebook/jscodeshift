@@ -140,11 +140,11 @@ You can collect even more stats via the `stats` function as explained above.
 
 ### Parser
 
-The transform can let jscodeshift know with which parser to parse the source 
+The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
-To do that, the transform module can export `parser`, which can either be one 
-of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
+To do that, the transform module can export `parser`, which can either be one
+of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser
 object that is compatible with recast.
 
 For example:
@@ -317,7 +317,7 @@ This can be done by passing config options to [recast].
 .toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
 ```
 
-You can also pass options to recast's `parse` method by passing an object to 
+You can also pass options to recast's `parse` method by passing an object to
 jscodeshift as second argument:
 
 ```js
@@ -382,4 +382,4 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 [recast]: https://github.com/benjamn/recast
 [ast-types]: https://github.com/benjamn/ast-types
 [ast-explorer]: http://astexplorer.net/
-[nomnom]: https://www.npmjs.com/package/nomnom
+[nomnom]: https://www.npmjs.com/package/@gerhobbelt/nomnom
