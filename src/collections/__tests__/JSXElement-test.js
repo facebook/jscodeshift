@@ -34,11 +34,11 @@ describe('JSXCollection API', function() {
     nodes = [recast.parse([
       'var FooBar = require("XYZ");',
       '<FooBar foo="bar" bar="foo">',
-      '  <Child id="1" foo="bar">',
+      '  <Child id="1" foo="bar" baz>',
       '     <Child />',
       '     <Baz.Bar />',
       '  </Child>',
-      '  <Child id="2" foo="baz"/>',
+      '  <Child id="2" foo="baz" baz/>',
       '</FooBar>'
     ].join('\n'), {parser: getParser()}).program];
   });
@@ -104,9 +104,12 @@ describe('JSXCollection API', function() {
       const jsx = Collection.fromNodes(nodes)
         .findJSXElements()
         .filter(JSXElementCollection.filters.hasAttributes(
-            {foo: v => ['bar', 'baz'].indexOf(v) > -1}
+            {
+              foo: v => ['bar', 'baz'].indexOf(v) > -1,
+              baz: v => v === null
+            },
         ));
-      expect(jsx.length).toBe(3);
+      expect(jsx.length).toBe(2);
     });
 
     it('filters elements by children', function() {
