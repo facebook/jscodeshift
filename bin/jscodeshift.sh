@@ -98,7 +98,7 @@ const opts = require('nomnom')
         return [
           `jscodeshift: ${pkg.version}`,
           ` - babel: ${require('babel-core').version}`,
-          ` - babylon: ${requirePackage('babylon').version}`,
+          ` - babylon: ${requirePackage('@babel/parser').version}`,
           ` - flow: ${requirePackage('flow-parser').version}`,
           ` - recast: ${requirePackage('recast').version}`,
         ].join('\n');
@@ -108,7 +108,7 @@ const opts = require('nomnom')
   .parse();
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform), 
+  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
   opts.path,
   opts
 );

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const babylon = require('babylon');
+const babylon = require('@babel/parser');
 
 const options = {
   sourceType: 'module',
@@ -18,13 +18,13 @@ const options = {
   allowReturnOutsideFunction: true,
   plugins: [
     'jsx',
-    'flow',
+    ['flow': {all: true}],
     'asyncFunctions',
     'classConstructorCall',
     'doExpressions',
     'trailingFunctionCommas',
     'objectRestSpread',
-    'decorators',
+    ['decorators', {decoratorsBeforeExport: false, legacy: true}],
     'classProperties',
     'exportExtensions',
     'exponentiationOperator',
