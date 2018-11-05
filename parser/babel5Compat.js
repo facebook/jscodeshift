@@ -23,6 +23,7 @@ const options = {
   plugins: [
     'estree',
     'jsx',
+    'decorators-legacy',
     'asyncGenerators',
     'classProperties',
     'doExpressions',
@@ -33,7 +34,9 @@ const options = {
     'dynamicImport',
     'nullishCoalescingOperator',
     'optionalChaining',
-  ],
+    'exportDefaultFrom',
+    'exportNamespaceFrom',
+  ]
 };
 
 /**
