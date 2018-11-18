@@ -81,7 +81,7 @@ describe('matchNode', function() {
 
   it('matches with a function', function() {
     const haystack = {name: 'foo'};
-    const needle = jest.genMockFunction();
+    const needle = jest.fn();
 
     needle.mockReturnValue(true);
     expect(haystack).toMatchNode(needle);
@@ -94,8 +94,8 @@ describe('matchNode', function() {
   it('matches nested value with a function', function() {
     const haystack = {name: 'foo', value: 'bar'};
     const needle = {
-      name: jest.genMockFunction(),
-      value: jest.genMockFunction(),
+      name: jest.fn(),
+      value: jest.fn(),
     };
 
     needle.name.mockReturnValue(true);

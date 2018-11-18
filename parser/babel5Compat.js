@@ -10,7 +10,7 @@
 
 'use strict';
 
-const babylon = require('babylon');
+const babel = require('@babel/parser');
 
 // These are the options that were the default of the Babel5 parse function
 // see https://github.com/babel/babel/blob/5.x/packages/babel/src/api/node.js#L81
@@ -40,5 +40,5 @@ const options = {
  * Wrapper to set default options
  */
 exports.parse = function parse (code) {
-  return babylon.parse(code, options);
+  return babel.parse(code, options);
 };

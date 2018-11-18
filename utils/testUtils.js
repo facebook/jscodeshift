@@ -23,8 +23,8 @@ function renameFileTo(oldPath, newFilename) {
   return newPath;
 }
 
-function createTempFileWith(content, filename) {
-  const info = temp.openSync();
+function createTempFileWith(content, filename, extension) {
+  const info = temp.openSync({ suffix: extension });
   let filePath = info.path;
   fs.writeSync(info.fd, content);
   fs.closeSync(info.fd);
@@ -35,10 +35,12 @@ function createTempFileWith(content, filename) {
 }
 exports.createTempFileWith = createTempFileWith;
 
-function createTransformWith(content, fileName) {
+function createTransformWith(content) {
   return createTempFileWith(
     'module.exports = function(fileInfo, api, options) { ' + content + ' }',
-    fileName
+    undefined,
+    // Test transform files need a js extension to work with @babel/register
+    '.js'
   );
 }
 exports.createTransformWith = createTransformWith;

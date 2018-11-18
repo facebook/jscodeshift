@@ -161,7 +161,7 @@ describe('VariableDeclarators', function() {
     });
 
     it('does not rename React component prop name', function () {
-      const declarators = Collection.fromNodes(nodes)
+      Collection.fromNodes(nodes)
         .findVariableDeclarators('foo')
         .renameTo('xyz');
 
