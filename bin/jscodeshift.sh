@@ -85,10 +85,10 @@ const opts = require('nomnom')
       help: 'No output'
     },
     parser: {
-      choices: ['babel', 'babylon', 'flow'],
+      choices: ['babel', 'babylon', 'flow', 'ts', 'tsx'],
       default: 'babel',
       full: 'parser',
-      help: 'The parser to use for parsing your source files (babel | babylon | flow)'
+      help: 'The parser to use for parsing your source files (babel | babylon | flow | ts | tsx)'
     },
     version: {
       flag: true,
