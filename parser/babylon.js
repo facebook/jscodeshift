@@ -20,7 +20,6 @@ const options = {
     'flow',
     'flowComments',
     'jsx',
-    'typescript',
 
     'asyncGenerators',
     'bigInt',
