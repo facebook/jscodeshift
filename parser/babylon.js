@@ -10,14 +10,14 @@
 
 'use strict';
 
-const babylon = require('babylon');
+const babylon = require('@babel/parser');
 
 const options = {
   sourceType: 'module',
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
   plugins: [
-    'flow',
+    ['flow': {all: true}],
     'flowComments',
     'jsx',
 
@@ -26,7 +26,7 @@ const options = {
     'classProperties',
     'classPrivateProperties',
     'classPrivateMethods',
-    'decorators',
+    ['decorators', {decoratorsBeforeExport: false, legacy: true}],
     'doExpressions',
     'dynamicImport',
     'exportDefaultFrom',
