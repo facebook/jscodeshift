@@ -17,7 +17,7 @@ const options = {
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
   plugins: [
-    ['flow': {all: true}],
+    ['flow', {all: true}],
     'flowComments',
     'jsx',
 
@@ -26,7 +26,7 @@ const options = {
     'classProperties',
     'classPrivateProperties',
     'classPrivateMethods',
-    ['decorators', {decoratorsBeforeExport: false, legacy: true}],
+    ['decorators', {decoratorsBeforeExport: false}],
     'doExpressions',
     'dynamicImport',
     'exportDefaultFrom',
@@ -40,7 +40,7 @@ const options = {
     'objectRestSpread',
     'optionalCatchBinding',
     'optionalChaining',
-    'pipelineOperator',
+    ['pipelineOperator', {proposal: 'minimal'}],
     'throwExpressions',
   ],
 };
