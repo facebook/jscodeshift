@@ -42,7 +42,7 @@ Options:
    --ignore-config FILE        Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)
    --run-in-band               Run serially in the current process  [false]
    -s, --silent                No output  [false]
-   --parser                    The parser to use for parsing your source files (babel | babylon | flow)  [babel]
+   --parser                    The parser to use for parsing your source files (babel | babylon | flow | ts | tsx)  [babel]
    --version                   print version and exit
 ```
 
@@ -144,8 +144,8 @@ The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
 To do that, the transform module can export `parser`, which can either be one 
-of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
-object that is compatible with recast.
+of the strings `"babel"`, `"babylon"`, `"flow"`, `"ts"`, or `"tsx"`,
+or it can be a parser object that is compatible with recast.
 
 For example:
 
