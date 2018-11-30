@@ -15,83 +15,80 @@ const Runner = require('../src/Runner.js');
 
 const path = require('path');
 const pkg = require('../package.json');
-const opts = require('nomnom')
-  .script('jscodeshift')
+const parser = require('../src/argsParser')
   .options({
-    path: {
-      position: 0,
-      help: 'Files or directory to transform',
-      list: true,
-      metavar: 'FILE',
-      required: true
-    },
     transform: {
       abbr: 't',
       default: './transform.js',
-      help: 'Path to the transform file. Can be either a local path or url',
-      metavar: 'FILE'
+      help: 'path to the transform file. Can be either a local path or url',
+      metavar: 'FILE',
+      required: true
     },
     cpus: {
       abbr: 'c',
-      help: '(all by default) Determines the number of processes started.'
+      help: 'start at most N child processes to process source files',
+      defaultHelp: 'max(all - 1, 1)',
+      metavar: 'N',
     },
     verbose: {
       abbr: 'v',
       choices: [0, 1, 2],
       default: 0,
-      help: 'Show more information about the transform process'
+      help: 'show more information about the transform process',
+      metavar: 'N',
     },
     dry: {
       abbr: 'd',
       flag: true,
-      help: 'Dry run (no changes are made to files)'
+      default: false,
+      help: 'dry run (no changes are made to files)'
     },
     print: {
       abbr: 'p',
       flag: true,
-      help: 'Print output, useful for development'
+      default: false,
+      help: 'print transformed files to stdout, useful for development'
     },
     babel: {
       flag: true,
       default: true,
-      help: 'Apply Babel to transform files'
+      help: 'apply babeljs to the transform file'
     },
     extensions: {
       default: 'js',
-      help: 'File extensions the transform file should be applied to'
+      help: 'transform files with these file extensions (comma separated list)',
+      metavar: 'EXT',
     },
     ignorePattern: {
       full: 'ignore-pattern',
       list: true,
-      help: 'Ignore files that match a provided glob expression'
+      help: 'ignore files that match a provided glob expression',
+      metavar: 'GLOB',
     },
     ignoreConfig: {
       full: 'ignore-config',
       list: true,
-      help: 'Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)',
+      help: 'ignore files if they match patterns sourced from a configuration file (e.g. a .gitignore)',
       metavar: 'FILE'
     },
     runInBand: {
       flag: true,
       default: false,
       full: 'run-in-band',
-      help: 'Run serially in the current process'
+      help: 'run serially in the current process'
     },
     silent: {
       abbr: 's',
       flag: true,
       default: false,
-      full: 'silent',
-      help: 'No output'
+      help: 'do not write to stdout or stderr'
     },
     parser: {
       choices: ['babel', 'babylon', 'flow', 'ts', 'tsx'],
       default: 'babel',
-      full: 'parser',
-      help: 'The parser to use for parsing your source files (babel | babylon | flow | ts | tsx)'
+      help: 'the parser to use for parsing the source files'
     },
     version: {
-      flag: true,
       help: 'print version and exit',
       callback: function() {
         const requirePackage = require('../utils/requirePackage');
@@ -100,15 +97,31 @@ const opts = require('nomnom')
           ` - babel: ${require('babel-core').version}`,
           ` - babylon: ${requirePackage('@babel/parser').version}`,
           ` - flow: ${requirePackage('flow-parser').version}`,
-          ` - recast: ${requirePackage('recast').version}`,
+          ` - recast: ${requirePackage('recast').version}\n`,
         ].join('\n');
       },
     },
-  })
-  .parse();
+  });
+
+let options, positionalArguments;
+try {
+  ({options, positionalArguments} = parser.parse());
+  if (positionalArguments.length === 0) {
+    process.stderr.write(
+      'Error: You have to provide at least one file/directory to transform.' +
+      '\n\n---\n\n' +
+      parser.getHelpText()
+    );
+    process.exit(1);
+  }
+} catch(e) {
+  const exitCode = e.exitCode === undefined ? 1 : e.exitCode;
+  (exitCode ? process.stderr : process.stdout).write(e.message);
+  process.exit(exitCode);
+}
 
 Runner.run(
-  /^https?/.test(opts.transform) ? opts.transform : path.resolve(opts.transform),
-  opts.path,
-  opts
+  /^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
+  positionalArguments,
+  options
 );
