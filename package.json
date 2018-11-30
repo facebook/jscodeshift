@@ -14,7 +14,7 @@
     "docs": "rm -rf docs && jsdoc -d docs -R README.md src/collections/* src/core.js src/Collection.js"
   },
   "bin": {
-    "jscodeshift": "./bin/jscodeshift.sh"
+    "jscodeshift": "./bin/jscodeshift.js"
   },
   "engines": {
     "node": ">=4"
