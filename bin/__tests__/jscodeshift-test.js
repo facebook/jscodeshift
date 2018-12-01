@@ -26,6 +26,10 @@ var testUtils = require('../../utils/testUtils');
 var createTransformWith = testUtils.createTransformWith;
 var createTempFileWith = testUtils.createTempFileWith;
 
+function readFile(path) {
+  return fs.readFileSync(path).toString();
+}
+
 function run(args, stdin, cwd) {
   return new Promise(resolve => {
     var jscodeshift = child_process.spawn(
@@ -64,17 +68,35 @@ describe('jscodeshift CLI', () => {
       run(['-t', transformA, sourceA, sourceB]).then(
         out => {
           expect(out[1]).toBe('');
-          expect(fs.readFileSync(sourceA).toString()).toBe('transforma');
-          expect(fs.readFileSync(sourceB).toString()).toBe('transformb\n');
+          expect(readFile(sourceA)).toBe('transforma');
+          expect(readFile(sourceB)).toBe('transformb\n');
         }
       ),
       run(['-t', transformB, sourceC]).then(
         out => {
           expect(out[1]).toBe('');
-          expect(fs.readFileSync(sourceC).toString()).toBe(sourceC);
+          expect(readFile(sourceC)).toBe(sourceC);
         }
       )
     ]);
+  });
+
+  it('takes file list from stdin if --stdin is set', () => {
+    var sourceA = createTempFileWith('a');
+    var sourceB = createTempFileWith('b\n');
+    var sourceC = createTempFileWith('c');
+    var transformA = createTransformWith(
+      'return "transform" + fileInfo.source;'
+    );
+
+    return run(['--stdin', '-t', transformA], [sourceA, sourceB, sourceC].join('\n')).then(
+      out => {
+        expect(out[1]).toBe('');
+        expect(readFile(sourceA)).toBe('transforma');
+        expect(readFile(sourceB)).toBe('transformb\n');
+        expect(readFile(sourceC)).toBe('transformc');
+      }
+    );
   });
 
   it('does not transform files in a dry run', () => {
@@ -300,4 +322,5 @@ describe('jscodeshift CLI', () => {
       );
     });
   })
+
 });

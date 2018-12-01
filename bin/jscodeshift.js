@@ -101,12 +101,17 @@ const parser = require('../src/argsParser')
         ].join('\n');
       },
     },
+    stdin: {
+      help: 'read file/directory list from stdin',
+      flag: true,
+      default: false,
+    },
   });
 
 let options, positionalArguments;
 try {
   ({options, positionalArguments} = parser.parse());
-  if (positionalArguments.length === 0) {
+  if (positionalArguments.length === 0 && !options.stdin) {
     process.stderr.write(
       'Error: You have to provide at least one file/directory to transform.' +
       '\n\n---\n\n' +
@@ -120,8 +125,18 @@ try {
   process.exit(exitCode);
 }
 
-Runner.run(
-  /^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
-  positionalArguments,
-  options
-);
+function run(paths, options) {
+	Runner.run(
+		/^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
+		paths,
+		options
+	);
+}
+
+if (options.stdin) {
+  let buffer = '';
+  process.stdin.on('data', data => buffer += data);
+  process.stdin.on('end', () => run(buffer.split('\n'), options));
+} else {
+  run(positionalArguments, options);
+}

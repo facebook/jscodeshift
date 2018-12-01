@@ -56,8 +56,10 @@ function getHelpText(options) {
 Usage: jscodeshift [OPTION]... PATH...
   or:  jscodeshift [OPTION]... -t TRANSFORM_PATH PATH...
   or:  jscodeshift [OPTION]... -t URL PATH...
+  or:  jscodeshift [OPTION]... --stdin < file_list.txt
 
 Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
+If --stdin is set, each line of the standard input is used as a path.
 
 Options:
 "..." behind an option means that it can be supplied multiple times.
