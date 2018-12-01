@@ -12,7 +12,7 @@
 
 const child_process = require('child_process');
 const colors = require('colors/safe');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');

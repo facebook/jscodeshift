@@ -13,7 +13,7 @@
 const EventEmitter = require('events').EventEmitter;
 
 const async = require('neo-async');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const writeFileAtomic = require('write-file-atomic');
 const getParser = require('./getParser');
 
