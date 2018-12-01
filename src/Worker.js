@@ -163,7 +163,7 @@ function run(data) {
           updateStatus(
             'error',
             file,
-            'Transformation error\n' + trimStackTrace(err.stack)
+            'Transformation error ('+ err.message.replace(/\n/g, ' ') + ')\n' + trimStackTrace(err.stack)
           );
           callback();
         }
