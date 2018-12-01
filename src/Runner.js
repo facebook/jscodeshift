@@ -63,10 +63,13 @@ const log = {
 };
 
 function concatAll(arrays) {
-  return arrays.reduce(
-    (result, array) => (result.push.apply(result, array), result),
-    []
-  );
+  const result = [];
+  for (const array of arrays) {
+    for (const element of array) {
+      result.push(element);
+    }
+  }
+  return result;
 }
 
 function showFileStats(fileStats) {
