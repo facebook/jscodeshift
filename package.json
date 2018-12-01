@@ -16,9 +16,6 @@
   "bin": {
     "jscodeshift": "./bin/jscodeshift.js"
   },
-  "engines": {
-    "node": ">=4"
-  },
   "keywords": [
     "codemod",
     "recast"
