@@ -34,7 +34,6 @@
     "colors": "^1.1.2",
     "flow-parser": "^0.*",
     "graceful-fs": "^4.1.11",
-    "lodash": "^4.13.1",
     "micromatch": "^2.3.7",
     "neo-async": "^2.5.0",
     "node-dir": "^0.1.17",

@@ -10,11 +10,11 @@
 
 'use strict';
 
-const _ = require('lodash');
 const Collection = require('../Collection');
 const NodeCollection = require('./Node');
 
 const assert = require('assert');
+const once = require('../utils/once');
 const recast = require('recast');
 const requiresModule = require('./VariableDeclarator').filters.requiresModule;
 
@@ -199,6 +199,6 @@ function register() {
   Collection.registerMethods(traversalMethods, JSXElement);
 }
 
-exports.register = _.once(register);
+exports.register = once(register);
 exports.filters = filterMethods;
 exports.mappings = mappingMethods;

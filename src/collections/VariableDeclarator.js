@@ -10,9 +10,9 @@
 
 'use strict';
 
-const _ = require('lodash');
 const Collection = require('../Collection');
 const NodeCollection = require('./Node');
+const once = require('../utils/once');
 const recast = require('recast');
 
 const astNodesAreEquivalent = recast.types.astNodesAreEquivalent;
@@ -134,8 +134,8 @@ const transformMethods = {
             scope = scope.parent;
           }
           if (scope) { // identifier must refer to declared variable
-            
-            // It may look like we filtered out properties, 
+
+            // It may look like we filtered out properties,
             // but the filter only ignored property "keys", not "value"s
             // In shorthand properties, "key" and "value" both have an
             // Identifier with the same structure.
@@ -163,5 +163,5 @@ function register() {
   Collection.registerMethods(transformMethods, VariableDeclarator);
 }
 
-exports.register = _.once(register);
+exports.register = once(register);
 exports.filters = filterMethods;
