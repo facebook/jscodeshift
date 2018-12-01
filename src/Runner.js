@@ -62,6 +62,10 @@ const log = {
   },
 };
 
+function report({file, msg}) {
+  bufferedWrite(lineBreak(`${colors.white.bgBlue(' REP ')}${file} ${msg}`));
+}
+
 function concatAll(arrays) {
   const result = [];
   for (const array of arrays) {
@@ -275,6 +279,9 @@ function run(transformFile, paths, options) {
                 break;
               case 'free':
                 child.send({files: next(), options});
+                break;
+              case 'report':
+                report(message);
                 break;
             }
           });

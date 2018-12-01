@@ -64,6 +64,7 @@ function setup(tr, babel) {
       ]
     });
   }
+
   const module = require(tr);
   transform = typeof module.default === 'function' ?
     module.default :
@@ -80,8 +81,12 @@ function free() {
 }
 
 function updateStatus(status, file, msg) {
-  msg = msg  ?  file + ' ' + msg : file;
+  msg = msg ? file + ' ' + msg : file;
   notify({action: 'status', status: status, msg: msg});
+}
+
+function report(file, msg) {
+  notify({action: 'report', file, msg});
 }
 
 function empty() {}
@@ -134,7 +139,8 @@ function run(data) {
             {
               j: jscodeshift,
               jscodeshift: jscodeshift,
-              stats: options.dry ? stats : empty
+              stats: options.dry ? stats : empty,
+              report: msg => report(file, msg),
             },
             options
           );
