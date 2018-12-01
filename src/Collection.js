@@ -276,10 +276,26 @@ function _toTypeArray(value) {
   if (value.length > 1) {
     return _.union(value, _.intersection.apply(
       null,
-      value.map(type => astTypes.getSupertypeNames(type))
+      value.map(_getSupertypeNames)
     ));
   } else {
-    return value.concat(astTypes.getSupertypeNames(value[0]));
+    return value.concat(_getSupertypeNames(value[0]));
+  }
+}
+
+function _getSupertypeNames(type) {
+  try {
+    return astTypes.getSupertypeNames(type);
+  } catch(error) {
+    if (error.message === '') {
+      // Likely the case that the passed type wasn't found in the definition
+      // list. Maybe a typo. ast-types doesn't throw a useful error in that
+      // case :(
+      throw new Error(
+        '"' + type + '" is not a known AST node type. Maybe a typo?'
+      );
+    }
+    throw error;
   }
 }
 
