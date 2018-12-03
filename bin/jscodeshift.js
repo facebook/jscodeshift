@@ -13,6 +13,7 @@
 
 const Runner = require('../src/Runner.js');
 
+const fs = require('fs');
 const path = require('path');
 const pkg = require('../package.json');
 const parser = require('../src/argsParser')
@@ -29,6 +30,7 @@ const parser = require('../src/argsParser')
       help: 'start at most N child processes to process source files',
       defaultHelp: 'max(all - 1, 1)',
       metavar: 'N',
+      process: Number,
     },
     verbose: {
       abbr: 'v',
@@ -36,6 +38,7 @@ const parser = require('../src/argsParser')
       default: 0,
       help: 'show more information about the transform process',
       metavar: 'N',
+      process: Number,
     },
     dry: {
       abbr: 'd',
@@ -88,6 +91,12 @@ const parser = require('../src/argsParser')
       default: 'babel',
       help: 'the parser to use for parsing the source files'
     },
+    parserConfig: {
+      full: 'parser-config',
+      help: 'path to a JSON file containing a custom parser configuration for flow or babylon',
+      metavar: 'FILE',
+      process: file => JSON.parse(fs.readFileSync(file)),
+    },
     version: {
       help: 'print version and exit',
       callback: function() {
@@ -124,13 +133,12 @@ try {
   (exitCode ? process.stderr : process.stdout).write(e.message);
   process.exit(exitCode);
 }
-
 function run(paths, options) {
-	Runner.run(
-		/^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
-		paths,
-		options
-	);
+  Runner.run(
+    /^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
+    paths,
+    options
+  );
 }
 
 if (options.stdin) {

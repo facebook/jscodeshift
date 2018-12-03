@@ -47,7 +47,7 @@ describe('argsParser', function() {
     expect(parser.parse(['arg1', '--foo=1', 'arg2', '--bar', '--bay=1', 'arg3', 'arg4']))
       .toEqual({
         options: {
-          foo: 1,
+          foo: '1',
           bar: true,
           bay: true,
           baz: 'zab',
@@ -131,22 +131,27 @@ describe('argsParser', function() {
         },
       },
 
-      'converts numeric option values to numbers': {
+      'allows preprocessing values': {
         options: {
           foo: {},
           bar: {
             default: 456,
           },
+          bay: {
+            process: Number,
+          },
           baz: {
             abbr: 'b',
+            process: v => v+v,
           },
         },
-        args: [['--foo', '123'], ['-b', '789']],
+        args: [['--foo', '123'], ['--bay', '789'], ['-b', 'zab']],
         expected: {
           options: {
-            foo: 123,
+            foo: '123',
             bar: 456,
-            baz: 789,
+            bay: 789,
+            baz: 'zabzab',
           },
           positionalArguments: []
         },

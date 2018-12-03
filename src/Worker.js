@@ -23,7 +23,7 @@ let emitter;
 let finish;
 let notify;
 let transform;
-let parser;
+let parserFromTransform;
 
 if (module.parent) {
   emitter = new EventEmitter();
@@ -42,13 +42,9 @@ if (module.parent) {
 }
 
 function prepareJscodeshift(options) {
-  if (parser) {
-    return jscodeshift.withParser(parser);
-  } else if (options.parser) {
-    return jscodeshift.withParser(getParser(options.parser));
-  } else {
-    return jscodeshift;
-  }
+  const parser = parserFromTransform ||
+    getParser(options.parser, options.parserConfig);
+  return jscodeshift.withParser(parser);
 }
 
 function setup(tr, babel) {
@@ -70,7 +66,7 @@ function setup(tr, babel) {
     module.default :
     module;
   if (module.parser) {
-    parser = typeof module.parser === 'string' ?
+    parserFromTransform = typeof module.parser === 'string' ?
       getParser(module.parser) :
       module.parser;
   }

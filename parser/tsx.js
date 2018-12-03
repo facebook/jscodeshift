@@ -16,6 +16,14 @@ const baseOptions = require('./tsOptions');
 
 const options = _.merge(baseOptions, { plugins: ['jsx'] });
 
-exports.parse = function parse (code) {
-  return babylon.parse(code, options);
+/**
+ * Doesn't accept custom options because babylon should be used directly in
+ * that case.
+ */
+module.exports = function() {
+  return {
+    parse(code) {
+      return babylon.parse(code, options);
+    },
+  };
 };

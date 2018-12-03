@@ -12,7 +12,7 @@
 
 const babylon = require('@babel/parser');
 
-const options = {
+const defaultOptions = {
   sourceType: 'module',
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
@@ -48,6 +48,10 @@ const options = {
 /**
  * Wrapper to set default options
  */
-exports.parse = function parse (code) {
-  return babylon.parse(code, options);
+module.exports = function(options=defaultOptions) {
+  return {
+    parse(code) {
+      return babylon.parse(code, options);
+    },
+  };
 };

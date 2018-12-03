@@ -128,7 +128,7 @@ describe('VariableDeclarators', function() {
 
       expect(identifiers.length).toBe(1);
     });
-    
+
     it('properly renames a shorthand property that was using the old variable name', function() {
       nodes = [recast.parse([
         'var foo = 42;',

@@ -12,7 +12,7 @@
 
 const flowParser = require('flow-parser');
 
-const options = {
+const defaultOptions = {
   esproposal_class_instance_fields: true,
   esproposal_class_static_fields: true,
   esproposal_decorators: true,
@@ -26,7 +26,10 @@ const options = {
 /**
  * Wrapper to set default options
  */
-exports.parse = function parse(code) {
-  return flowParser.parse(code, options);
+module.exports = function(options=defaultOptions) {
+  return {
+    parse(code) {
+      return flowParser.parse(code, options);
+    },
+  };
 };
-

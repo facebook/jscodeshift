@@ -201,8 +201,8 @@ function parse(options, args=process.argv.slice(2)) {
           i += 1;
         }
         if (value !== null) {
-          if (/^\d+$/.test(value)) {
-            value = Number(value);
+          if (option.process) {
+            value = option.process(value);
           }
           if (option.list) {
             parsedOptions[option.key].push(value);
@@ -239,6 +239,21 @@ function parse(options, args=process.argv.slice(2)) {
 }
 
 module.exports = {
+  /**
+   * `options` is an object of object. Each option can have the following
+   * properties:
+   *
+   *   - full: The name of the option to be used in the command line (if
+   *           different than the property name.
+   *   - abbr: The short version of the option, a single character
+   *   - flag: Whether the option takes an argument or not.
+   *   - default: The default value to use if option is not supplied
+   *   - choices: Restrict possible values to these values
+   *   - help: The help text to print
+   *   - metavar: Value placeholder to use in the help
+   *   - callback: If option is supplied, call this function and exit
+   *   - process: Pre-process value before returning it
+   */
   options(options) {
     return {
       parse(args) {

@@ -37,8 +37,13 @@ const options = {
 };
 
 /**
- * Wrapper to set default options
+ * Wrapper to set default options. Doesn't accept custom options because in that
+ * case babylon should be used instead.
  */
-exports.parse = function parse (code) {
-  return babylon.parse(code, options);
+module.exports = function() {
+  return {
+    parse(code) {
+      return babylon.parse(code, options);
+    },
+  };
 };

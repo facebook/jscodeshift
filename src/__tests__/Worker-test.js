@@ -117,7 +117,6 @@ describe('Worker API', () => {
         done();
       });
     });
-
   });
 
 });
