@@ -38,7 +38,7 @@
     "neo-async": "^2.5.0",
     "node-dir": "0.1.8",
     "nomnom": "^1.8.1",
-    "recast": "^0.15.0",
+    "recast": "^0.16.1",
     "temp": "^0.8.1",
     "write-file-atomic": "^1.2.0"
   },
