@@ -16,6 +16,8 @@ const defaultOptions = {
   sourceType: 'module',
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
+  startLine: 1,
+  tokens: true,
   plugins: [
     ['flow', {all: true}],
     'flowComments',

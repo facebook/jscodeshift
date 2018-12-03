@@ -20,6 +20,8 @@ const options = {
   ecmaVersion: Infinity,
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
+  startLine: 1,
+  tokens: true,
   plugins: [
     'estree',
     'jsx',

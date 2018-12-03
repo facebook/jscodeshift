@@ -17,6 +17,8 @@ module.exports = {
   sourceType: 'module',
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
+  startLine: 1,
+  tokens: true,
   plugins: [
     'asyncGenerators',
     'bigInt',

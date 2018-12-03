@@ -330,6 +330,7 @@ describe('jscodeshift CLI', () => {
       const source = createTempFileWith('@foo\nexport class Bar {}');
       const parserConfig = createTempFileWith(JSON.stringify({
         sourceType: 'module',
+        tokens: true,
         plugins: [
           ['decorators', {decoratorsBeforeExport: true}],
         ],
