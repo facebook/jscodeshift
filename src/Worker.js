@@ -58,8 +58,7 @@ function setup(tr, babel) {
       babelrc: false,
       presets: [
         '@babel/preset-env',
-        '@babel/preset-flow',
-        '@babel/preset-typescript',
+        /\.tsx?$/.test(tr) ? '@babel/preset-typescript' : '@babel/preset-flow',
       ],
       plugins: [
         '@babel/proposal-class-properties',
