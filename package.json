@@ -18,7 +18,8 @@
   },
   "keywords": [
     "codemod",
-    "recast"
+    "recast",
+    "babel"
   ],
   "author": "Felix Kling",
   "license": "BSD-3-Clause",
