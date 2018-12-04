@@ -11,7 +11,7 @@
 'use strict';
 
 const _ = require('lodash');
-const babylon = require('babylon');
+const babylon = require('@babel/parser');
 const baseOptions = require('./tsOptions');
 
 const options = _.merge(baseOptions, { plugins: ['jsx'] });
