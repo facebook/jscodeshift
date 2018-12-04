@@ -23,27 +23,48 @@ This will install the runner as `jscodeshift`.
 
 The CLI provides the following options:
 
-```text
+```
 $ jscodeshift --help
 
-Usage: jscodeshift <path>... [options]
+Usage: jscodeshift [OPTION]... PATH...
+  or:  jscodeshift [OPTION]... -t TRANSFORM_PATH PATH...
+  or:  jscodeshift [OPTION]... -t URL PATH...
+  or:  jscodeshift [OPTION]... --stdin < file_list.txt
 
-path     Files or directory to transform
+Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
+If --stdin is set, each line of the standard input is used as a path.
 
 Options:
-   -t FILE, --transform FILE   Path to the transform file. Can be either a local path or url  [./transform.js]
-   -c, --cpus                  (all by default) Determines the number of processes started.
-   -v, --verbose               Show more information about the transform process  [0]
-   -d, --dry                   Dry run (no changes are made to files)
-   -p, --print                 Print output, useful for development
-   --babel                     Apply Babel to transform files  [true]
-   --extensions                File extensions the transform file should be applied to  [js]
-   --ignore-pattern            Ignore files that match a provided glob expression
-   --ignore-config FILE        Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)
-   --run-in-band               Run serially in the current process  [false]
-   -s, --silent                No output  [false]
-   --parser                    The parser to use for parsing your source files (babel | babylon | flow)  [babel]
-   --version                   print version and exit
+"..." behind an option means that it can be supplied multiple times.
+All options are also passed to the transformer, which means you can supply custom options that are not listed here.
+
+      --(no-)babel              apply babeljs to the transform file
+                                (default: true)
+  -c, --cpus=N                  start at most N child processes to process source files
+                                (default: max(all - 1, 1))
+  -d, --(no-)dry                dry run (no changes are made to files)
+                                (default: false)
+      --extensions=EXT          transform files with these file extensions (comma separated list)
+                                (default: js)
+  -h, --help                    print this help and exit
+      --ignore-config=FILE ...  ignore files if they match patterns sourced from a configuration file (e.g. a .gitignore)
+      --ignore-pattern=GLOB ...  ignore files that match a provided glob expression
+      --parser=babel|babylon|flow|ts|tsx  the parser to use for parsing the source files
+                                          (default: babel)
+      --parser-config=FILE      path to a JSON file containing a custom parser configuration for flow or babylon
+  -p, --(no-)print              print transformed files to stdout, useful for development
+                                (default: false)
+      --(no-)run-in-band        run serially in the current process
+                                (default: false)
+  -s, --(no-)silent             do not write to stdout or stderr
+                                (default: false)
+      --(no-)stdin              read file/directory list from stdin
+                                (default: false)
+  -t, --transform=FILE          path to the transform file. Can be either a local path or url
+                                (default: ./transform.js)
+  -v, --verbose=0|1|2           show more information about the transform process
+                                (default: 0)
+      --version                 print version and exit
 ```
 
 This passes the source of all passed through the transform module specified
@@ -83,6 +104,7 @@ Property    | Description
 ------------|------------
 jscodeshift | A reference to the jscodeshift library
 stats       | A function to collect statistics during `--dry` runs
+report      | Prints the passed string to stdout
 
 `jscodeshift` is a reference to the wrapper around recast and provides a
 jQuery-like API to navigate and transform the AST. Here is a quick example,
@@ -109,6 +131,11 @@ a string, and will simply count how often it was called with that value.
 At the end, the CLI will report those values. This can be useful while
 developing the transform, e.g. to find out how often a certain construct
 appears in the source(s).
+
+**`report`** allows you do print arbitrary strings to stdout. This can be
+useful when other tools consume the output of jscodeshift. The reason to not
+directly use `process.stdout` in transform code is to avoid mangled output when
+many files are processed.
 
 #### `options`
 
@@ -144,8 +171,8 @@ The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
 To do that, the transform module can export `parser`, which can either be one 
-of the strings `"babel"`, `"babylon"`, or `"flow"`, or it can be a parser 
-object that is compatible with recast.
+of the strings `"babel"`, `"babylon"`, `"flow"`, `"ts"`, or `"tsx"`,
+or it can be a parser object that is compatible with recast.
 
 For example:
 

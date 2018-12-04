@@ -12,7 +12,7 @@
 
 const child_process = require('child_process');
 const colors = require('colors/safe');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
@@ -26,26 +26,54 @@ function lineBreak(str) {
   return /\n$/.test(str) ? str : str + '\n';
 }
 
+const bufferedWrite = (function() {
+  const buffer = [];
+  let buffering = false;
+
+  process.stdout.on('drain', () => {
+    if (!buffering) return;
+    while (buffer.length > 0 && process.stdout.write(buffer.shift()) !== false);
+    if (buffer.length === 0) {
+      buffering = false;
+    }
+  });
+  return function write(msg) {
+    if (buffering) {
+      buffer.push(msg);
+    }
+    if (process.stdout.write(msg) === false) {
+      buffering = true;
+    }
+  };
+}());
+
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && process.stdout.write(colors.white.bgGreen(' OKK ') + msg);
+    verbose >= 2 && bufferedWrite(colors.white.bgGreen(' OKK ') + msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && process.stdout.write(colors.white.bgYellow(' NOC ') + msg);
+    verbose >= 1 && bufferedWrite(colors.white.bgYellow(' NOC ') + msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && process.stdout.write(colors.white.bgYellow(' SKIP ') + msg);
+    verbose >= 1 && bufferedWrite(colors.white.bgYellow(' SKIP ') + msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && process.stdout.write(colors.white.bgRed(' ERR ') + msg);
+    verbose >= 0 && bufferedWrite(colors.white.bgRed(' ERR ') + msg);
   },
 };
 
+function report({file, msg}) {
+  bufferedWrite(lineBreak(`${colors.white.bgBlue(' REP ')}${file} ${msg}`));
+}
+
 function concatAll(arrays) {
-  return arrays.reduce(
-    (result, array) => (result.push.apply(result, array), result),
-    []
-  );
+  const result = [];
+  for (const array of arrays) {
+    for (const element of array) {
+      result.push(element);
+    }
+  }
+  return result;
 }
 
 function showFileStats(fileStats) {
@@ -251,6 +279,9 @@ function run(transformFile, paths, options) {
                 break;
               case 'free':
                 child.send({files: next(), options});
+                break;
+              case 'report':
+                report(message);
                 break;
             }
           });

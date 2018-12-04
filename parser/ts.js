@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  *  Copyright (c) 2015-present, Facebook, Inc.
  *  All rights reserved.
@@ -11,4 +10,17 @@
 
 'use strict';
 
-require('./jscodeshift.js');
+const babylon = require('babylon');
+const options = require('./tsOptions');
+
+/**
+ * Doesn't accept custom options because babylon should be used directly in
+ * that case.
+ */
+module.exports = function() {
+  return {
+    parse(code) {
+      return babylon.parse(code, options);
+    },
+  };
+};

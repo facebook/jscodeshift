@@ -10,10 +10,10 @@
 
 'use strict';
 
-const _ = require('lodash');
 const Collection = require('../Collection');
 
 const matchNode = require('../matchNode');
+const once = require('../utils/once');
 const recast = require('recast');
 
 const Node = recast.types.namedTypes.Node;
@@ -186,4 +186,4 @@ function register() {
   Collection.setDefaultCollectionType(Node);
 }
 
-exports.register = _.once(register);
+exports.register = once(register);

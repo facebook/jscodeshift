@@ -92,32 +92,39 @@ describe('Worker API', () => {
       });
     });
 
-    it('uses babylon if configured as such', done => {
-      const transformPath = getTransformForParser('babylon');
-      const sourcePath = getSourceFile();
-      const emitter = worker([transformPath]);
+    ['flow', 'babylon'].forEach(parser => {
+      it(`uses ${parser} if configured as such`, done => {
+        const transformPath = getTransformForParser(parser);
+        const sourcePath = getSourceFile();
+        const emitter = worker([transformPath]);
 
-      emitter.send({files: [sourcePath]});
-      emitter.once('message', (data) => {
-        expect(data.status).toBe('ok');
-        expect(getFileContent(sourcePath)).toBe('changed');
-        done();
+        emitter.send({files: [sourcePath]});
+        emitter.once('message', (data) => {
+          expect(data.status).toBe('ok');
+          expect(getFileContent(sourcePath)).toBe('changed');
+          done();
+        });
       });
     });
 
-    it('uses flow if configured as such', done => {
-      const transformPath = getTransformForParser('flow');
-      const sourcePath = getSourceFile();
-      const emitter = worker([transformPath]);
+    ['babylon', 'flow', 'tsx'].forEach(parser => {
+      it(`can parse JSX with ${parser}`, done => {
+        const transformPath = getTransformForParser(parser);
+        const sourcePath = createTempFileWith(
+          'var component = <div>{foobar}</div>;'
+        );
+        const emitter = worker([transformPath]);
 
-      emitter.send({files: [sourcePath]});
-      emitter.once('message', (data) => {
-        expect(data.status).toBe('ok');
-        expect(getFileContent(sourcePath)).toBe('changed');
-        done();
+        emitter.send({files: [sourcePath]});
+        emitter.once('message', (data) => {
+          expect(data.status).toBe('ok');
+          expect(getFileContent(sourcePath)).toBe('changed');
+          done();
+        });
       });
     });
 
   });
+
 
 });

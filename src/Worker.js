@@ -13,7 +13,7 @@
 const EventEmitter = require('events').EventEmitter;
 
 const async = require('neo-async');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const writeFileAtomic = require('write-file-atomic');
 const { DEFAULT_EXTENSIONS } = require('@babel/core');
 const getParser = require('./getParser');
@@ -24,7 +24,7 @@ let emitter;
 let finish;
 let notify;
 let transform;
-let parser;
+let parserFromTransform;
 
 if (module.parent) {
   emitter = new EventEmitter();
@@ -43,13 +43,9 @@ if (module.parent) {
 }
 
 function prepareJscodeshift(options) {
-  if (parser) {
-    return jscodeshift.withParser(parser);
-  } else if (options.parser) {
-    return jscodeshift.withParser(getParser(options.parser));
-  } else {
-    return jscodeshift;
-  }
+  const parser = parserFromTransform ||
+    getParser(options.parser, options.parserConfig);
+  return jscodeshift.withParser(parser);
 }
 
 function setup(tr, babel) {
@@ -70,12 +66,13 @@ function setup(tr, babel) {
       ignore: []
     });
   }
+
   const module = require(tr);
   transform = typeof module.default === 'function' ?
     module.default :
     module;
   if (module.parser) {
-    parser = typeof module.parser === 'string' ?
+    parserFromTransform = typeof module.parser === 'string' ?
       getParser(module.parser) :
       module.parser;
   }
@@ -86,8 +83,12 @@ function free() {
 }
 
 function updateStatus(status, file, msg) {
-  msg = msg  ?  file + ' ' + msg : file;
+  msg = msg ? file + ' ' + msg : file;
   notify({action: 'status', status: status, msg: msg});
+}
+
+function report(file, msg) {
+  notify({action: 'report', file, msg});
 }
 
 function empty() {}
@@ -140,7 +141,8 @@ function run(data) {
             {
               j: jscodeshift,
               jscodeshift: jscodeshift,
-              stats: options.dry ? stats : empty
+              stats: options.dry ? stats : empty,
+              report: msg => report(file, msg),
             },
             options
           );
@@ -169,7 +171,7 @@ function run(data) {
           updateStatus(
             'error',
             file,
-            'Transformation error\n' + trimStackTrace(err.stack)
+            'Transformation error ('+ err.message.replace(/\n/g, ' ') + ')\n' + trimStackTrace(err.stack)
           );
           callback();
         }

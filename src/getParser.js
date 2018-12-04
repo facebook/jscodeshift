@@ -10,14 +10,18 @@
 
 'use strict';
 
-module.exports = function getParser(parserName) {
+module.exports = function getParser(parserName, options) {
   switch (parserName) {
     case 'babylon':
-      return require('../parser/babylon');
+      return require('../parser/babylon')(options);
     case 'flow':
-      return require('../parser/flow');
+      return require('../parser/flow')(options);
+    case 'ts':
+      return require('../parser/ts')(options);
+    case 'tsx':
+      return require('../parser/tsx')(options);
     case 'babel':
     default:
-      return require('../parser/babel5Compat');
+      return require('../parser/babel5Compat')(options);
   }
 };

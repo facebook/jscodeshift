@@ -11,8 +11,9 @@
 'use strict';
 
 const assert = require('assert');
+const intersection = require('./utils/intersection');
 const recast = require('recast');
-const _ = require('lodash');
+const union = require('./utils/union');
 
 const astTypes = recast.types;
 var types = astTypes.namedTypes;
@@ -260,8 +261,7 @@ function _inferTypes(paths) {
       );
     } else {
       // try to find a common type
-      _types = _.intersection.apply(
-        null,
+      _types = intersection(
         paths.map(path => astTypes.getSupertypeNames(path.node.type))
       );
     }
@@ -274,12 +274,27 @@ function _toTypeArray(value) {
   value = !Array.isArray(value) ? [value] : value;
   value = value.map(v => v.toString());
   if (value.length > 1) {
-    return _.union(value, _.intersection.apply(
-      null,
-      value.map(type => astTypes.getSupertypeNames(type))
-    ));
+    return union(
+      [value].concat(intersection(value.map(_getSupertypeNames)))
+    );
   } else {
-    return value.concat(astTypes.getSupertypeNames(value[0]));
+    return value.concat(_getSupertypeNames(value[0]));
+  }
+}
+
+function _getSupertypeNames(type) {
+  try {
+    return astTypes.getSupertypeNames(type);
+  } catch(error) {
+    if (error.message === '') {
+      // Likely the case that the passed type wasn't found in the definition
+      // list. Maybe a typo. ast-types doesn't throw a useful error in that
+      // case :(
+      throw new Error(
+        '"' + type + '" is not a known AST node type. Maybe a typo?'
+      );
+    }
+    throw error;
   }
 }
 

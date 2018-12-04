@@ -1,6 +1,6 @@
 {
   "name": "jscodeshift",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
@@ -9,19 +9,17 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "prepublish": "cp -R src/ dist/",
+    "prepare": "cp -R src/ dist/",
     "test": "jest --bail",
     "docs": "rm -rf docs && jsdoc -d docs -R README.md src/collections/* src/core.js src/Collection.js"
   },
   "bin": {
-    "jscodeshift": "./bin/jscodeshift.sh"
-  },
-  "engines": {
-    "node": ">=4"
+    "jscodeshift": "./bin/jscodeshift.js"
   },
   "keywords": [
     "codemod",
-    "recast"
+    "recast",
+    "babel"
   ],
   "author": "Felix Kling",
   "license": "BSD-3-Clause",
@@ -37,14 +35,13 @@
     "babel-core": "^7.0.0-bridge.0",
     "colors": "^1.1.2",
     "flow-parser": "^0.*",
-    "lodash": "^4.13.1",
+    "graceful-fs": "^4.1.11",
     "micromatch": "^2.3.7",
     "neo-async": "^2.5.0",
-    "node-dir": "0.1.8",
-    "nomnom": "^1.8.1",
-    "recast": "^0.15.0",
+    "node-dir": "^0.1.17",
+    "recast": "^0.16.1",
     "temp": "^0.8.1",
-    "write-file-atomic": "^1.2.0"
+    "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
