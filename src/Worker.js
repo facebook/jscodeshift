@@ -15,6 +15,7 @@ const EventEmitter = require('events').EventEmitter;
 const async = require('neo-async');
 const fs = require('graceful-fs');
 const writeFileAtomic = require('write-file-atomic');
+const { DEFAULT_EXTENSIONS } = require('@babel/core');
 const getParser = require('./getParser');
 
 const jscodeshift = require('./core');
@@ -49,15 +50,20 @@ function prepareJscodeshift(options) {
 
 function setup(tr, babel) {
   if (babel === 'babel') {
-    require('babel-register')({
+    require('@babel/register')({
       babelrc: false,
       presets: [
-        require('babel-preset-es2015'),
-        require('babel-preset-stage-1'),
+        '@babel/preset-env',
+        /\.tsx?$/.test(tr) ? '@babel/preset-typescript' : '@babel/preset-flow',
       ],
       plugins: [
-        require('babel-plugin-transform-flow-strip-types'),
-      ]
+        '@babel/proposal-class-properties',
+        '@babel/proposal-object-rest-spread'
+      ],
+      extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+      // By default, babel register only compiles things inside the current working directory.
+      // https://github.com/babel/babel/blob/2a4f16236656178e84b05b8915aab9261c55782c/packages/babel-register/src/node.js#L140-L157
+      ignore: []
     });
   }
 
