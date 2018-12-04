@@ -321,7 +321,27 @@ describe('jscodeshift CLI', () => {
         }
       );
     });
-  })
+  });
+
+  describe('--parser=ts', () => {
+    it('parses TypeScript sources', () => {
+      const source = createTempFileWith('type Foo = string | string[];');
+      const transform = createTransformWith(
+        'api.jscodeshift(fileInfo.source)\nreturn "changed";'
+      );
+      return run([
+        '-t', transform,
+        '--parser', 'ts',
+        '--run-in-band',
+        source,
+      ]).then(
+        out => {
+          expect(out[0]).not.toContain('Transformation error');
+          expect(readFile(source)).toEqual('changed');
+        }
+      );
+    });
+  });
 
   describe('--parser-config', () => {
     it('allows custom parser settings to be passed', () => {
