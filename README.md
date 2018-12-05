@@ -405,7 +405,7 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 
 ### Support
 
-* Discord - [#codemod](https://discordapp.com/channels/102860784329052160/103748721107292160) on [Reactiflux](http://www.reactiflux.com/)
+* Discord - [Reactiflux](http://www.reactiflux.com/)
 
 [npm]: https://www.npmjs.com/
 [Mozilla Parser API]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API
