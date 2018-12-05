@@ -101,6 +101,14 @@ describe('VariableDeclarators', function() {
 
       expect(declarators.length).toBe(2);
     });
+
+    it('finds variable occurrences', function() {
+      const occurrences = Collection.fromNodes(nodes)
+        .find(types.Identifier, {name: 'foo'})
+        .filter(VariableDeclaratorCollection.filters.isVariableOccurrence());
+
+      expect(occurrences.length).toBe(4);
+    });
   });
 
   describe('Transform', function() {
