@@ -107,7 +107,7 @@ describe('JSXCollection API', function() {
             {
               foo: v => ['bar', 'baz'].indexOf(v) > -1,
               baz: v => v === null
-            },
+            }
         ));
       expect(jsx.length).toBe(2);
     });
