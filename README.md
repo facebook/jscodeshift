@@ -149,8 +149,7 @@ additional options to the transform. For example, if the CLI is called with
 $ jscodeshift -t myTransforms fileA fileB --foo=bar
 ```
 
-`options` would contain `{foo: 'bar'}`. jscodeshift uses [nomnom][] to parse
-command line options.
+`options` would contain `{foo: 'bar'}`.
 
 ### Return value
 
@@ -412,4 +411,3 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 [recast]: https://github.com/benjamn/recast
 [ast-types]: https://github.com/benjamn/ast-types
 [ast-explorer]: http://astexplorer.net/
-[nomnom]: https://www.npmjs.com/package/nomnom
