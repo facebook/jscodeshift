@@ -1,6 +1,7 @@
 # jscodeshift [![Build Status](https://travis-ci.org/facebook/jscodeshift.svg?branch=master)](https://travis-ci.org/facebook/jscodeshift)
 
-jscodeshift is a toolkit for running codemods over multiple JS files.
+jscodeshift is a toolkit for running codemods over multiple JavaScript or 
+Typescript files.
 It provides:
 
 - A runner, which executes the provided transform for each file passed to it.
@@ -83,6 +84,8 @@ module.exports = function(fileInfo, api, options) {
   return source;
 };
 ```
+
+As of v0.6.1, this module can also be written in Typescript.
 
 ### Arguments
 
