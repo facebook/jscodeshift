@@ -53,17 +53,27 @@ function setup(tr, babel) {
     require('@babel/register')({
       babelrc: false,
       presets: [
-        '@babel/preset-env',
-        /\.tsx?$/.test(tr) ? '@babel/preset-typescript' : '@babel/preset-flow',
+        [
+          require('@babel/preset-env').default,
+          {targets: {node: true}},
+        ],
+        /\.tsx?$/.test(tr) ?
+          require('@babel/preset-typescript').default :
+          require('@babel/preset-flow').default,
       ],
       plugins: [
-        '@babel/proposal-class-properties',
-        '@babel/proposal-object-rest-spread'
+        require('@babel/plugin-proposal-class-properties').default,
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
       // https://github.com/babel/babel/blob/2a4f16236656178e84b05b8915aab9261c55782c/packages/babel-register/src/node.js#L140-L157
-      ignore: []
+      ignore: [
+        // Ignore parser related files
+        /@babel\/parser/,
+        /\/flow-parser\//,
+        /\/recast\//,
+        /\/ast-types\//,
+      ],
     });
   }
 

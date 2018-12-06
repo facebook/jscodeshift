@@ -35,12 +35,13 @@ function createTempFileWith(content, filename, extension) {
 }
 exports.createTempFileWith = createTempFileWith;
 
-function createTransformWith(content) {
+// Test transform files need a js extension to work with @babel/register
+// .ts or .tsx work as well
+function createTransformWith(content, ext='.js') {
   return createTempFileWith(
     'module.exports = function(fileInfo, api, options) { ' + content + ' }',
     undefined,
-    // Test transform files need a js extension to work with @babel/register
-    '.js'
+    ext
   );
 }
 exports.createTransformWith = createTransformWith;

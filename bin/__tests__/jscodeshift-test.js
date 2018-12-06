@@ -113,41 +113,50 @@ describe('jscodeshift CLI', () => {
 
   describe('Babel', () => {
 
-    it('loads transform files with Babel if not disabled', () => {
+    // Verifiers that ES6 features are supported either natively or via Babel
+    it('supports ES6 features in transform files', () => {
       const source = createTempFileWith('a');
       const transform = createTransformWith(
-        'return (function() { "use strict"; const a = 42; }).toString();'
+        'const a = 42; return a;'
       );
       return Promise.all([
         run(['-t', transform, source]).then(
           () => {
             expect(readFile(source).toString())
-              .toMatch(/var\s*a\s*=\s*42/);
-          }
-        ),
-        run(['-t', transform, '--no-babel', source]).then(
-          () => {
-            expect(readFile(source).toString())
-              .toMatch(/const\s*a\s*=\s*42/);
+              .toEqual('42');
           }
         ),
       ]);
     });
 
-    it('supports proposals in transform files', () => {
+    // Verifies that spread is supported, either natively over via Babel
+    it('supports property spread in transform files', () => {
       const source = createTempFileWith('a');
       const transform = createTransformWith(
-        'return (function() {' +
-        '  "use strict"; ' +
-        '  const spread = {}; ' +
-        '  ({...spread})' +
-        '}).toString();'
+        'const a = {...{foo: 42}, bar: 21}; return a.foo;'
       );
       return Promise.all([
         run(['-t', transform, source]).then(
           () => {
             expect(readFile(source).toString())
-              .toMatch(/\(\{\},\s*spread\)/);
+              .toEqual('42');
+          }
+        ),
+      ]);
+    });
+
+    it('supports class properties in transform files', () => {
+      const source = createTempFileWith('a');
+      const transform = createTransformWith(`
+        return (class {
+          x = 42;
+        }).toString();
+      `);
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          () => {
+            expect(readFile(source).toString())
+              .toMatch(/\(this,\s*['"]x['"]/);
           }
         ),
       ]);
@@ -162,25 +171,47 @@ describe('jscodeshift CLI', () => {
         run(['-t', transform, source]).then(
           () => {
             expect(readFile(source).toString())
-              .toMatch(/var\s*a\s*=\s*42/);
+              .toMatch(/a\s*=\s*42/);
           }
         ),
       ]);
     });
 
-    it('ignores .babelrc files in the directories of the source files', () => {
+    it('supports Typescript type annotations in transform files', () => {
+      const source = createTempFileWith('a');
       const transform = createTransformWith(
-        'return (function() { "use strict"; const a = 42; }).toString();'
+        'return (function() { "use strict"; function foo(x: string): x is string {}}).toString();',
+        '.ts'
       );
-      const babelrc = createTempFileWith(`{"ignore": ["${transform}"]}`, '.babelrc');
-      const source = createTempFileWith('a', 'source.js');
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          args => {
+            expect(readFile(source).toString())
+              .toMatch(/function\s+foo\(x\)\s*{}/);
+          }
+        ),
+      ]);
+    });
 
-      return run(['-t', transform, source]).then(
-        () => {
-          expect(readFile(source).toString())
-            .toMatch(/var\s*a\s*=\s*42/);
-        }
+    it('transpiles imported Typescript files in transform files', () => {
+      const source = createTempFileWith('a');
+      const helper = createTempFileWith(
+        'module.exports = function(x: string): x is string {};',
+        undefined,
+        '.ts'
       );
+      const transform = createTransformWith(
+        `return require('${helper}').toString();`,
+        '.ts'
+      );
+      return Promise.all([
+        run(['-t', transform, source]).then(
+          args => {
+            expect(readFile(source).toString())
+              .toMatch(/function\s*\(x\)\s*{}/);
+          }
+        ),
+      ]);
     });
 
   });
@@ -209,7 +240,6 @@ describe('jscodeshift CLI', () => {
       }
     );
   });
-
   it('does not stall with too many files', () => {
     const sources = [];
     for (let i = 0; i < 100; i++) {
