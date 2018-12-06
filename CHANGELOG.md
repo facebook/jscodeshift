@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] 2018-12-05
+### Changed
+- `@babel/register`/`@babel/preset-env` is configured to not transpile any 
+language features that the running Node process supports. That means if you use 
+features in your transform code supported by the Node version you are running, 
+they will be left as is. Most of ES2015 is actually supported since Node v6.
+- Do not transpile object rest/spread in transform code if supported by running 
+Node version.
+
+### Fixed
+- Presets and plugins passed to `@babel/register` are now properly named and 
+  loaded.
+
+
 ## [0.6.1] 2018-12-04
 ### Added
 - Tranform files can be written in Typescript. If the file extension of the 
