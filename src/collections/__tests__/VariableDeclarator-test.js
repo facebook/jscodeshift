@@ -50,6 +50,7 @@ describe('VariableDeclarators', function() {
       '  };',
       '  obj.blah = 3;',
       '  class A {',
+      '    blah = 10',
       '    blah() {}',
       '  }',
       '}',
