@@ -115,6 +115,15 @@ const transformMethods = {
           }
 
           if (
+            types.ClassProperty.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // class A { oldName = 3 }
+            return false;
+          }
+
+          if (
             types.JSXAttribute.check(parent) &&
             parent.name === path.node &&
             !parent.computed
