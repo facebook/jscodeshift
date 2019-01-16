@@ -218,7 +218,7 @@ function run(transformFile, paths, options) {
 
         if (numFiles === 0) {
           process.stdout.write('No files selected, nothing to do. \n');
-          return;
+          return [];
         }
 
         const processes = options.runInBand ? 1 : Math.min(numFiles, cpus);
