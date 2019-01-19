@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] 2019-01-18
+### Fixed
+- Don't throw an error when jscodeshift processes an empty set of files (#295, 
+@skovhus).
+- `renameTo` should not rename class properties (#296, @henryqdineen).
+- Custom/unknown CLI parameters are parsed as JSON, just like nomnom used to 
+do.
+
+
 ## [0.6.2] 2018-12-05
 ### Changed
 - `@babel/register`/`@babel/preset-env` is configured to not transpile any 
