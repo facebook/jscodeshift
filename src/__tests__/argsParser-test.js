@@ -280,6 +280,19 @@ describe('argsParser', function() {
           positionalArguments: ['foo', 'bar'],
         },
       },
+
+      'parses unkown options as JSON': {
+        options: {},
+        args: [
+          ['--foo', '{"foo": "bar"}'],
+        ],
+        expected: {
+          options: {
+            foo: {foo: 'bar'},
+          },
+          positionalArguments: [],
+        },
+      },
     });
   });
 

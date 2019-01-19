@@ -171,6 +171,13 @@ function parse(options, args=process.argv.slice(2)) {
                 value === null &&
                 isOption(args[i+1]),
           list: isList,
+          process(value) {
+            // Try to parse values as JSON to be compatible with nomnom
+            try {
+              return JSON.parse(value);
+            } catch(_e) {}
+            return value;
+          },
         };
 
         if (isList) {
@@ -195,7 +202,7 @@ function parse(options, args=process.argv.slice(2)) {
         }
         parsedOptions[option.key] = value;
       } else {
-        if (value === null && i <  args.length - 1 &&  !isOption(args[i+1])) {
+        if (value === null && i <  args.length - 1 && !isOption(args[i+1])) {
           // consume next value
           value = args[i+1];
           i += 1;
@@ -240,7 +247,7 @@ function parse(options, args=process.argv.slice(2)) {
 
 module.exports = {
   /**
-   * `options` is an object of object. Each option can have the following
+   * `options` is an object of objects. Each option can have the following
    * properties:
    *
    *   - full: The name of the option to be used in the command line (if
