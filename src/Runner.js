@@ -200,14 +200,14 @@ function run(transformFile, paths, options) {
         reject(e);
       });
     });
-  } else if (!fs.existsSync(transformFile)) {
+  }
+  if (!fs.existsSync(transformFile)) {
     process.stderr.write(
       colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
-  } else {
-    return transform(transformFile);
   }
+  return transform(transformFile);
 
   function transform(transformFile) {
     return getAllFiles(
