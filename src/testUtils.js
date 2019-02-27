@@ -69,7 +69,7 @@ function runTest(dirName, transformName, options, testFilePrefix) {
     'utf8'
   );
   // Assumes transform is one level up from __tests__ directory
-  const module = require(path.join(dirName, '..', transformName + '.js'));
+  const module = require(path.join(dirName, '..', transformName));
   runInlineTest(module, options, {
     path: inputPath,
     source
