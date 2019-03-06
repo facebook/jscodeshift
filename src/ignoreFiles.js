@@ -12,7 +12,7 @@ const matchers = [];
  * @see {@linkplain https://git-scm.com/docs/gitignore#_pattern_format}
  */
 function addIgnorePattern(val) {
-  if (val && typeof val === 'string') {
+  if (val && typeof val === 'string' && val[0] !== '#') {
     let pattern = val;
     if (pattern.indexOf('/') === -1) {
       matchers.push('**/' + pattern);
@@ -51,7 +51,7 @@ function addIgnoreFromFile(input) {
     const stats = fs.statSync(config);
     if (stats.isFile()) {
       const content = fs.readFileSync(config, 'utf8');
-      lines = lines.concat(content.split('\n'));
+      lines = lines.concat(content.split(/\r?\n/));
     }
   });
 
