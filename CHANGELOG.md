@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.4] 2019-04-30
+### Changed
+- Allow writing tests in TypeScript ([PR #308](https://github.com/facebook/jscodeshift/pull/308))
+- Better handling of `.gitingore` files: Ignore comments and support `\r\n` line breaks ([PR #306](https://github.com/facebook/jscodeshift/pull/306))
+
+
 ## [0.6.3] 2019-01-18
 ### Fixed
 - Don't throw an error when jscodeshift processes an empty set of files (#295, 
