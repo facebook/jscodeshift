@@ -63,6 +63,7 @@ function setup(tr, babel) {
       ],
       plugins: [
         require('@babel/plugin-proposal-class-properties').default,
+        require('@babel/plugin-syntax-dynamic-import').default,
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
