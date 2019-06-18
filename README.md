@@ -402,10 +402,6 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 
 - [Retain leading comment(s) in file when replacing/removing first statement](recipes/retain-first-comment.md)
 
-### Support
-
-* Discord - [Reactiflux](http://www.reactiflux.com/)
-
 [npm]: https://www.npmjs.com/
 [Mozilla Parser API]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API
 [recast]: https://github.com/benjamn/recast
