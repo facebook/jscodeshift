@@ -54,6 +54,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
+      'class Foo { @decorator\n*stuff() {} }',
       '<Component foo={foo} />',
     ].join('\n'), {parser: getParser()}).program];
   });

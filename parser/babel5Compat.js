@@ -35,6 +35,7 @@ const options = {
     'dynamicImport',
     'nullishCoalescingOperator',
     'optionalChaining',
+    ['decorators', {decoratorsBeforeExport: false}],
   ],
 };
 
