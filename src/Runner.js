@@ -141,7 +141,7 @@ function getAllFiles(paths, filter) {
       fs.lstat(file, (err, stat) => {
         if (err) {
           process.stderr.write('Skipping path ' + file + ' which does not exist. \n');
-          resolve();
+          resolve([]);
           return;
         }
 
