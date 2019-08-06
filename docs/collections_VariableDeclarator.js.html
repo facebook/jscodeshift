@@ -19,21 +19,19 @@
 
     <h1 class="page-title">Source: collections/VariableDeclarator.js</h1>
 
-    
 
 
 
-    
+
+
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/*
- *  Copyright (c) 2015-present, Facebook, Inc.
- *  All rights reserved.
+            <pre class="prettyprint source linenums"><code>
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -162,8 +160,8 @@ const transformMethods = {
             scope = scope.parent;
           }
           if (scope) { // identifier must refer to declared variable
-            
-            // It may look like we filtered out properties, 
+
+            // It may look like we filtered out properties,
             // but the filter only ignored property "keys", not "value"s
             // In shorthand properties, "key" and "value" both have an
             // Identifier with the same structure.
