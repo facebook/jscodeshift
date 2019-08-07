@@ -42,6 +42,6 @@ outlined on that page and do not file a public issue.
 * 80 character line length
 * "Attractive"
 
-## License
-By contributing to jscodeshift, you agree that your contributions will be licensed
-under its BSD license.
+### License
+
+jscodeshift is [MIT licensed](./LICENSE).
