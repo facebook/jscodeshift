@@ -67,8 +67,10 @@ function report({file, msg}) {
 function concatAll(arrays) {
   const result = [];
   for (const array of arrays) {
-    for (const element of array) {
-      result.push(element);
+    if (array) {
+      for (const element of array) {
+        result.push(element);
+      }
     }
   }
   return result;
