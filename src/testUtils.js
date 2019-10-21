@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function runInlineTest(module, options, input, expectedOutput) {
+function applyTransform(module, options, input) {
   // Handle ES6 modules using default export for the transform
   const transform = module.default ? module.default : module;
 
@@ -31,7 +31,22 @@ function runInlineTest(module, options, input, expectedOutput) {
     },
     options || {}
   );
-  expect((output || '').trim()).toEqual(expectedOutput.trim());
+
+  return (output || '').trim();
+}
+exports.applyTransform = applyTransform;
+
+function runSnapshotTest(module, options, input) {
+  const output = applyTransform(module, options, input);
+  expect(output).toMatchSnapshot();
+  return output;
+}
+exports.runSnapshotTest = runSnapshotTest;
+
+function runInlineTest(module, options, input, expectedOutput) {
+  const output = applyTransform(module, options, input);
+  expect(output).toEqual(expectedOutput.trim());
+  return output;
 }
 exports.runInlineTest = runInlineTest;
 
@@ -99,3 +114,12 @@ function defineInlineTest(module, options, input, expectedOutput, testName) {
   });
 }
 exports.defineInlineTest = defineInlineTest;
+
+function defineSnapshotTest(module, options, input, testName) {
+  it(testName || 'transforms correctly', () => {
+    runSnapshotTest(module, options, {
+      source: input
+    });
+  });
+}
+exports.defineSnapshotTest = defineSnapshotTest;

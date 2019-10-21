@@ -363,6 +363,7 @@ jscodeshift comes with a simple utility to allow easy unit testing with [Jest](h
  - Test fixtures are located in a `__testfixtures__` directory
 
 This results in a directory structure like this:
+
 ```
 /MyTransform.js
 /__tests__/MyTransform-test.js
@@ -370,26 +371,68 @@ This results in a directory structure like this:
 /__testfixtures__/MyTransform.output.js
 ```
 
-To define a test, use `defineTest` or `defineInlineTest` from the `testUtils` module. A simple example is bundled in the [sample directory](sample).
+A simple example of unit tests is bundled in the [sample directory](sample).
+
+The `testUtils` module exposes a number of useful helpers for unit testing.
 
 #### `defineTest`
+
+Defines a Jest/Jasmine test for a jscodeshift transform which depends on fixtures
+
 ```js
 jest.autoMockOff();
 const defineTest = require('jscodeshift/dist/testUtils').defineTest;
 defineTest(__dirname, 'MyTransform');
 ```
 
-An alternate fixture filename can be provided as the fourth argument to `defineTest`. This also means that multiple test fixtures can be provided:
+An alternate fixture filename can be provided as the fourth argument to `defineTest`.
+This also means that multiple test fixtures can be provided:
+
 ```js
 defineTest(__dirname, 'MyTransform', null, 'FirstFixture');
 defineTest(__dirname, 'MyTransform', null, 'SecondFixture');
 ```
-This will run two tests: One for `__testfixtures__/FirstFixture.input.js` and one for `__testfixtures__/SecondFixture.input.js`
+
+This will run two tests: 
+- `__testfixtures__/FirstFixture.input.js`
+- `__testfixtures__/SecondFixture.input.js`
 
 #### `defineInlineTest`
+
+Defines a Jest/Jasmine test suite for a jscodeshift transform which accepts inline values
+
+This is a more flexible alternative to `defineTest`, as this allows to also provide options to your transform
+
 ```js
+const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 const transform = require('../myTransform');
-defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional)');
+const transformOptions = {};
+defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test name (optional)');
+```
+
+#### `defineSnapshotTest`
+
+Similar to `defineInlineTest` but instead of requiring an output value, it uses Jest's `toMatchSnapshot()` 
+
+```js
+const defineSnapshotTest = require('jscodeshift/dist/testUtils').defineSnapshotTest;
+const transform = require('../myTransform');
+const transformOptions = {};
+defineSnapshotTest(transform, transformOptions, 'input', 'test name (optional)');
+```
+
+For more information on snapshots, check out [Jest's docs](https://jestjs.io/docs/en/snapshot-testing)
+
+#### `applyTransform`
+
+Executes your transform using the options and the input given and returns the result. 
+This function is used internally by the other helpers, but it can prove useful in other cases.
+
+```js
+const applyTransform = require('jscodeshift/dist/testUtils').applyTransform;
+const transform = require('../myTransform');
+const transformOptions = {};
+const output = applyTransform(transform, transformOptions, 'input');
 ```
 
 ### Example Codemods
