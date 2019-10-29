@@ -22,6 +22,8 @@ const transform = require('../reverse-identifiers');
 
 defineTest(__dirname, 'reverse-identifiers');
 
+defineTest(__dirname, 'reverse-identifiers', null, 'typescript/reverse-identifiers', { parser: 'ts' });
+
 describe('reverse-identifiers', () => {
   defineInlineTest(transform, {}, `
 var firstWord = 'Hello ';
