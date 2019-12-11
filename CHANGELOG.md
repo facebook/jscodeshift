@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] 2019-12-11
+### Changed
+- Moved from BSD to MIT license
+
+### Fixed
+- No longer throw an error when calling jscodeshift on a non-existent path (#334, @threepointone)
+- Preserve the original file extension in remote files (#317, @samselikoff)
+
 ## [0.6.4] 2019-04-30
 ### Changed
 - Allow writing tests in TypeScript ([PR #308](https://github.com/facebook/jscodeshift/pull/308))
