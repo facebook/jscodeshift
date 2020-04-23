@@ -15,6 +15,7 @@ function addIgnorePattern(val) {
   if (val && typeof val === 'string' && val[0] !== '#') {
     let pattern = val;
     if (pattern.indexOf('/') === -1) {
+      matchers.push('**/' + pattern + '/**');
       matchers.push('**/' + pattern);
     } else if (pattern[pattern.length-1] === '/') {
       matchers.push('**/' + pattern + '**');
