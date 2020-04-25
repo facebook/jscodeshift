@@ -59,7 +59,7 @@ function addIgnoreFromFile(input) {
 }
 
 function shouldIgnore(path) {
-  const matched = matchers.length ? mm.any(path, matchers, { dot:true }) : false;
+  const matched = matchers.length ? mm.isMatch(path, matchers, { dot:true }) : false;
   return matched;
 }
 
