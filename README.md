@@ -1,6 +1,6 @@
 # jscodeshift [![Build Status](https://travis-ci.org/facebook/jscodeshift.svg?branch=master)](https://travis-ci.org/facebook/jscodeshift)
 
-jscodeshift is a toolkit for running codemods over multiple JavaScript or 
+jscodeshift is a toolkit for running codemods over multiple JavaScript or
 TypeScript files.
 It provides:
 
@@ -169,10 +169,10 @@ You can collect even more stats via the `stats` function as explained above.
 
 ### Parser
 
-The transform can let jscodeshift know with which parser to parse the source 
+The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
-To do that, the transform module can export `parser`, which can either be one 
+To do that, the transform module can export `parser`, which can either be one
 of the strings `"babel"`, `"babylon"`, `"flow"`, `"ts"`, or `"tsx"`,
 or it can be a parser object that is compatible with recast.
 
@@ -346,7 +346,7 @@ This can be done by passing config options to [recast].
 .toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
 ```
 
-You can also pass options to recast's `parse` method by passing an object to 
+You can also pass options to recast's `parse` method by passing an object to
 jscodeshift as second argument:
 
 ```js
@@ -393,7 +393,7 @@ defineTest(__dirname, 'MyTransform', null, 'FirstFixture');
 defineTest(__dirname, 'MyTransform', null, 'SecondFixture');
 ```
 
-This will run two tests: 
+This will run two tests:
 - `__testfixtures__/FirstFixture.input.js`
 - `__testfixtures__/SecondFixture.input.js`
 
@@ -412,7 +412,7 @@ defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test 
 
 #### `defineSnapshotTest`
 
-Similar to `defineInlineTest` but instead of requiring an output value, it uses Jest's `toMatchSnapshot()` 
+Similar to `defineInlineTest` but instead of requiring an output value, it uses Jest's `toMatchSnapshot()`
 
 ```js
 const defineSnapshotTest = require('jscodeshift/dist/testUtils').defineSnapshotTest;
@@ -425,7 +425,7 @@ For more information on snapshots, check out [Jest's docs](https://jestjs.io/doc
 
 #### `applyTransform`
 
-Executes your transform using the options and the input given and returns the result. 
+Executes your transform using the options and the input given and returns the result.
 This function is used internally by the other helpers, but it can prove useful in other cases.
 
 ```js
@@ -440,6 +440,7 @@ const output = applyTransform(transform, transformOptions, 'input');
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
+- [fix-js](https://github.com/anshckr/fix-js) - Codemods to fix some ESLint issues
 
 ### Recipes
 
