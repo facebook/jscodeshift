@@ -117,11 +117,11 @@ function defineTest(dirName, transformName, options, testFilePrefix, testOptions
 }
 exports.defineTest = defineTest;
 
-function defineInlineTest(module, options, input, expectedOutput, testName) {
+function defineInlineTest(module, options, input, expectedOutput, testName, testOptions) {
   it(testName || 'transforms correctly', () => {
     runInlineTest(module, options, {
       source: input
-    }, expectedOutput);
+    }, expectedOutput, testOptions);
   });
 }
 exports.defineInlineTest = defineInlineTest;
