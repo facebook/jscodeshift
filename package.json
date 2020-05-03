@@ -43,7 +43,7 @@
     "temp": "^0.8.1",
     "write-file-atomic": "^2.3.0"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "@babel/preset-env": "^7.1.6"
   },
   "devDependencies": {
