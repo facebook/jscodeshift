@@ -18,6 +18,11 @@ const getParser = require('./getParser');
 
 const jscodeshift = require('./core');
 
+let presetEnv;
+try {
+  presetEnv = require('@babel/preset-env');
+} catch {}
+
 let emitter;
 let finish;
 let notify;
@@ -48,19 +53,27 @@ function prepareJscodeshift(options) {
 
 function setup(tr, babel) {
   if (babel === 'babel') {
+    const presets = [];
+    if (presetEnv) {
+      presets.push([
+        presetEnv.default,
+        {targets: {node: true}},
+      ]);
+    }
+    presets.push(
+      /\.tsx?$/.test(tr) ?
+        require('@babel/preset-typescript').default :
+        require('@babel/preset-flow').default
+    );
+
     require('@babel/register')({
       babelrc: false,
-      presets: [
-        [
-          require('@babel/preset-env').default,
-          {targets: {node: true}},
-        ],
-        /\.tsx?$/.test(tr) ?
-          require('@babel/preset-typescript').default :
-          require('@babel/preset-flow').default,
-      ],
+      presets,
       plugins: [
         require('@babel/plugin-proposal-class-properties').default,
+        require('@babel/plugin-proposal-nullish-coalescing-operator').default,
+        require('@babel/plugin-proposal-optional-chaining').default,
+        require('@babel/plugin-transform-modules-commonjs').default,
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
