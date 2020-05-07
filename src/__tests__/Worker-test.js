@@ -122,7 +122,19 @@ describe('Worker API', () => {
       });
     });
 
+    it(`can parse enums with flow`, done => {
+      const transformPath = getTransformForParser('flow');
+      const sourcePath = createTempFileWith(
+        'enum E {A, B}'
+      );
+      const emitter = worker([transformPath]);
+
+      emitter.send({files: [sourcePath]});
+      emitter.once('message', (data) => {
+        expect(data.status).toBe('ok');
+        expect(getFileContent(sourcePath)).toBe('changed');
+        done();
+      });
+    });
   });
-
-
 });
