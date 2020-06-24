@@ -46,6 +46,11 @@
   "peerDependencies": {
     "@babel/preset-env": "^7.1.6"
   },
+  "peerDependenciesMeta": {
+    "@babel/preset-env": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "eslint": "^5.9.0",
