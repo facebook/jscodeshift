@@ -108,7 +108,6 @@ while (i < 10) {
     )
     .toEqual(expected);
   });
-
   it('correctly parses expressions without any interpolation', () => {
     const expected = 'function() {}';
 
@@ -120,6 +119,15 @@ while (i < 10) {
     )
     .toEqual(expected);
   });
+
+  for (const parser of ['babel', 'babylon', 'flow', 'ts', 'tsx']) {
+    it(`asyncExpression correctly parses expressions with await -- ${parser}`, () => {
+      const expected = '{\n  bar: await baz\n}'
+      const j = jscodeshift.withParser(parser)
+
+      expect(j(j.template.asyncExpression`{\n  bar: await baz\n}`).toSource()).toEqual(expected)
+    })
+  }
 
   describe('explode arrays', () => {
 
