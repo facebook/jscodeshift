@@ -40,7 +40,7 @@
     "micromatch": "^3.1.10",
     "neo-async": "^2.5.0",
     "node-dir": "^0.1.17",
-    "recast": "^0.20.3",
+    "recast": "^0.20.4",
     "temp": "^0.8.1",
     "write-file-atomic": "^2.3.0"
   },
