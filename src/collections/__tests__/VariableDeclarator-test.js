@@ -29,7 +29,7 @@ describe('VariableDeclarators', function() {
       'var foo = 42;',
       'var bar = require("module");',
       'var baz = require("module2");',
-      'function func() {',
+      'function first() {',
       '  var x = bar;',
       '  bar.someMethod();',
       '  func1(bar);',
@@ -40,7 +40,7 @@ describe('VariableDeclarators', function() {
       'foo.bar();',
       'foo[bar]();',
       'bar.foo();',
-      'function func() {',
+      'function second() {',
       '  var blah;',
       '  var obj = {',
       '    blah: 4,',
@@ -52,6 +52,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
+      'class Foo { @decorator\n*stuff() {} }',
       '<Component foo={foo} />',
     ].join('\n'), {parser: getParser()}).program];
   });
