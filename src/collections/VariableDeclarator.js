@@ -104,7 +104,34 @@ const transformMethods = {
           }
 
           if (
+            types.ObjectProperty.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // { oldName: 3 }
+            return false;
+          }
+
+          if (
+            types.ObjectMethod.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // { oldName() {} }
+            return false;
+          }
+
+          if (
             types.MethodDefinition.check(parent) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // class A { oldName() {} }
+            return false;
+          }
+
+          if (
+            types.ClassMethod.check(parent) &&
             parent.key === path.node &&
             !parent.computed
           ) {
