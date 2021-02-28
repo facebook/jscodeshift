@@ -171,6 +171,25 @@ const traversalMethods = {
     });
     return Collection.fromPaths(paths, this, JSXElement);
   },
+
+  /**
+   * Returns all children that are of jsxElementType.
+   *
+   * @return {Collection<jsxElementType>}
+   */
+  childNodesOfType: function(jsxChildElementType) {
+    const paths = [];
+    this.forEach(function(path) {
+      const children = path.get('children');
+      const l = children.value.length;
+      for (let i = 0; i < l; i++) {
+        if (jsxChildElementType.check(children.value[i])) {
+          paths.push(children.get(i));
+        }
+      }
+    });
+    return Collection.fromPaths(paths, this, jsxChildElementType);
+  },
 };
 
 const mappingMethods = {
