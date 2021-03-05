@@ -96,6 +96,7 @@ const parser = require('../src/argsParser')
       process: file => JSON.parse(fs.readFileSync(file)),
     },
     failOnError: {
+      flag: true,
       help: 'Return a non-zero code when there are errors',
       list: true,
       full: 'fail-on-error',
