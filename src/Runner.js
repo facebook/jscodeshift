@@ -298,6 +298,10 @@ function run(transformFile, paths, options) {
             process.stdout.write(
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
+            
+            if (options.failOnError && fileStats.error > 0) {
+              process.exit(1);
+            }
           }
           if (usedRemoteScript) {
             temp.cleanupSync();
