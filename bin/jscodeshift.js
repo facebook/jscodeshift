@@ -98,7 +98,6 @@ const parser = require('../src/argsParser')
     failOnError: {
       flag: true,
       help: 'Return a non-zero code when there are errors',
-      list: true,
       full: 'fail-on-error',
       default: false,
     },
