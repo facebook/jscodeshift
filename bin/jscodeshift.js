@@ -95,6 +95,12 @@ const parser = require('../src/argsParser')
       metavar: 'FILE',
       process: file => JSON.parse(fs.readFileSync(file)),
     },
+    failOnError: {
+      help: 'Return a non-zero code when there are errors',
+      list: true,
+      full: 'fail-on-error',
+      default: false,
+    },
     version: {
       help: 'print version and exit',
       callback: function() {
@@ -111,12 +117,6 @@ const parser = require('../src/argsParser')
     stdin: {
       help: 'read file/directory list from stdin',
       flag: true,
-      default: false,
-    },
-    failOnError: {
-      help: 'Return a non-zero code when there are errors',
-      list: true,
-      full: 'fail-on-error',
       default: false,
     },
   });
