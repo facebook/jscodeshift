@@ -299,7 +299,7 @@ function run(transformFile, paths, options) {
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
             
-            if (options.failOnError && fileStats.error > 0) {
+            if (options.failOnError && fileCounters.error > 0) {
               process.exit(1);
             }
           }
