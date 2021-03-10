@@ -39,3 +39,18 @@ var egassem = droWtsrif + droWdnoces;
     'Reverses function names'
   );
 });
+
+describe('typescript/reverse-identifiers', () => {
+  defineInlineTest(transform, {}, `
+const firstWord = 'Hello ';
+const secondWord = 'world';
+const message = firstWord + secondWord;
+
+const getMessage = (): string => message`,`
+const droWtsrif = 'Hello ';
+const droWdnoces = 'world';
+const egassem = droWtsrif + droWdnoces;
+
+const egasseMteg = (): string => egassem
+  `, { parser: 'ts' });
+});
