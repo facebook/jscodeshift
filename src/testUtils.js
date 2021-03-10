@@ -36,8 +36,8 @@ function applyTransform(module, options, input, testOptions = {}) {
 }
 exports.applyTransform = applyTransform;
 
-function runSnapshotTest(module, options, input) {
-  const output = applyTransform(module, options, input);
+function runSnapshotTest(module, options, input, testOptions) {
+  const output = applyTransform(module, options, input, testOptions);
   expect(output).toMatchSnapshot();
   return output;
 }
@@ -126,11 +126,11 @@ function defineInlineTest(module, options, input, expectedOutput, testOptions, t
 }
 exports.defineInlineTest = defineInlineTest;
 
-function defineSnapshotTest(module, options, input, testName) {
+function defineSnapshotTest(module, options, input, testOptions, testName) {
   it(testName || 'transforms correctly', () => {
     runSnapshotTest(module, options, {
       source: input
-    });
+    }, testOptions);
   });
 }
 exports.defineSnapshotTest = defineSnapshotTest;
