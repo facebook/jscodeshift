@@ -410,6 +410,13 @@ const transformOptions = {};
 defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test name (optional)');
 ```
 
+If you want to test code written in TypeScript, add `testOptions`
+
+```js
+const testOptions = { parser: 'ts' };
+defineInlineTest(transform, transformOptions, 'input', 'expected output', testOptions, 'test name (optional)');
+```
+
 #### `defineSnapshotTest`
 
 Similar to `defineInlineTest` but instead of requiring an output value, it uses Jest's `toMatchSnapshot()` 
