@@ -425,7 +425,11 @@ Similar to `defineInlineTest` but instead of requiring an output value, it uses 
 const defineSnapshotTest = require('jscodeshift/dist/testUtils').defineSnapshotTest;
 const transform = require('../myTransform');
 const transformOptions = {};
-defineSnapshotTest(transform, transformOptions, 'input', 'test name (optional)');
+/**
+ * If you want to test snapshots of code written in TypeScript, Replace `const testOptions = { parser: 'ts' }`
+*/
+const testOptions = {};
+defineSnapshotTest(transform, transformOptions, 'input', testOptions, 'test name (optional)');
 ```
 
 For more information on snapshots, check out [Jest's docs](https://jestjs.io/docs/en/snapshot-testing)
