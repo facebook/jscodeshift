@@ -18,6 +18,7 @@
 jest.autoMockOff();
 const defineTest = require('../../src/testUtils').defineTest;
 const defineInlineTest = require('../../src/testUtils').defineInlineTest;
+const defineSnapshotTest = require('../../src/testUtils').defineSnapshotTest;
 const transform = require('../reverse-identifiers');
 
 defineTest(__dirname, 'reverse-identifiers');
@@ -38,6 +39,17 @@ var egassem = droWtsrif + droWdnoces;
     'function noitcnuFa() {};',
     'Reverses function names'
   );
+
+  defineSnapshotTest(transform, {}, `
+var firstWord = 'Hello ';
+var secondWord = 'world';
+var message = firstWord + secondWord;`
+  );
+  defineSnapshotTest(transform, {},
+    'function aFunction() {};',
+    {},
+    'Reverses function names'
+  );
 });
 
 describe('typescript/reverse-identifiers', () => {
@@ -53,4 +65,11 @@ const egassem = droWtsrif + droWdnoces;
 
 const egasseMteg = (): string => egassem
   `, { parser: 'ts' });
+
+  defineSnapshotTest(transform, {}, `
+const firstWord = 'Hello ';
+const secondWord = 'world';
+const message = firstWord + secondWord;
+const getMessage = (): string => message
+  `, { parser: 'ts' })
 });
