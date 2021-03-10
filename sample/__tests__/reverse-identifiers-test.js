@@ -37,6 +37,7 @@ var egassem = droWtsrif + droWdnoces;
   defineInlineTest(transform, {},
     'function aFunction() {};',
     'function noitcnuFa() {};',
+    {},
     'Reverses function names'
   );
 
