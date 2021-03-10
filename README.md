@@ -426,7 +426,7 @@ const defineSnapshotTest = require('jscodeshift/dist/testUtils').defineSnapshotT
 const transform = require('../myTransform');
 const transformOptions = {};
 /**
- * If you want to test snapshots of code written in TypeScript, Replace `const testOptions = { parser: 'ts' }`
+ * If you want to test snapshots of code written in TypeScript, Replace `const testOptions = { parser: 'ts' };`
 */
 const testOptions = {};
 defineSnapshotTest(transform, transformOptions, 'input', testOptions, 'test name (optional)');
