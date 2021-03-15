@@ -1,6 +1,6 @@
 {
-  "name": "@atlassian/jscodeshift",
-  "version": "0.12.2-atlassian-1",
+  "name": "jscodeshift",
+  "version": "0.11.0",
   "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
