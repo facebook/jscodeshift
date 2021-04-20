@@ -145,7 +145,7 @@ function run(data) {
   async.each(
     files,
     function(file, callback) {
-      fs.readFile(file, function(err, source) {
+      fs.readFile(file, async function(err, source) {
         if (err) {
           updateStatus('error', file, 'File error: ' + err);
           callback();
@@ -154,7 +154,7 @@ function run(data) {
         source = source.toString();
         try {
           const jscodeshift = prepareJscodeshift(options);
-          const out = transform(
+          const out = await transform(
             {
               path: file,
               source: source,
