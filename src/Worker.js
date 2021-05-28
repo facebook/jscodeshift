@@ -52,8 +52,6 @@ function prepareJscodeshift(options) {
 }
 
 function setup(tr, babel) {
-  let babelRegister;
-
   if (babel === 'babel') {
     const presets = [];
     if (presetEnv) {
@@ -75,9 +73,7 @@ function setup(tr, babel) {
       require('@babel/plugin-transform-modules-commonjs').default,
     ];
 
-    babelRegister = require('@babel/register');
-
-    babelRegister({
+    require('@babel/register')({
       babelrc: false,
       presets,
       plugins,
@@ -96,11 +92,6 @@ function setup(tr, babel) {
   }
 
   const module = require(tr);
-
-  if (babelRegister) {
-    babelRegister.revert();
-  }
-
   transform = typeof module.default === 'function' ?
     module.default :
     module;
