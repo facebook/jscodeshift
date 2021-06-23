@@ -66,6 +66,7 @@ All options are also passed to the transformer, which means you can supply custo
   -v, --verbose=0|1|2           show more information about the transform process
                                 (default: 0)
       --version                 print version and exit
+      --fail-on-error           return a 1 exit code when errors were found during execution of codemods
 ```
 
 This passes the source of all passed through the transform module specified
