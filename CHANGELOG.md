@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] 2021-06-26
+
+### Added
+
+- Added a `--fail-on-error` flag to return a `1` error code when errors were found (#416, @marcodejongh)
+- Created `template.asyncExpression` (#405, @jedwards1211)
+
+### Changed
+
+- Removed lodash dependency from tsx parser (#432, @JHilker and @robyoder)
+
 ## [0.12.0] 2021-04-21
 ### Changed
 - Allow transform to be a Promise (#237, @rektide)
