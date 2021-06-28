@@ -37,6 +37,7 @@ describe('JSXCollection API', function() {
       '     <Baz.Bar />',
       '  </Child>',
       '  <Child id="2" foo="baz" baz/>',
+      '  {"foo"}',
       '</FooBar>'
     ].join('\n'), {parser: getParser()}).program];
   });
@@ -65,7 +66,7 @@ describe('JSXCollection API', function() {
         Collection.fromNodes(nodes)
         .findJSXElements('FooBar')
         .childNodes();
-      expect(children.length).toBe(5);
+      expect(children.length).toBe(7);
       expect(children.getTypes()).toContain('Expression');
     });
 
@@ -77,6 +78,16 @@ describe('JSXCollection API', function() {
 
       expect(children.length).toBe(2);
       expect(children.getTypes()).toContain('JSXElement');
+    });
+
+    it('returns the child element types of an JSXElement', function() {
+      const children =
+        Collection.fromNodes(nodes)
+        .findJSXElements('FooBar')
+        .childNodesOfType(types.JSXExpressionContainer);
+
+      expect(children.length).toBe(1);
+      expect(children.getTypes()).toContain('JSXExpressionContainer');
     });
 
     it('returns a properly typed collection even if empty', function() {
