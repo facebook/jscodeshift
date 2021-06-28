@@ -79,6 +79,9 @@ function fromSource(source, options) {
   if (!options.parser) {
     options.parser = getParser();
   }
+  if (typeof options.parser === 'string') {
+    options.parser = getParser(options.parser);
+  }
   return fromAST(recast.parse(source, options));
 }
 
