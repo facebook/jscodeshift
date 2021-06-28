@@ -170,6 +170,62 @@ describe('VariableDeclarators', function() {
 
       expect(identifiers.length).toBe(1);
     });
+
+    describe('parsing with bablylon', function() {
+      it('does not rename object property', function () {
+        nodes = [
+          recast.parse('var foo = 42; var obj = { foo: null };', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
+
+      it('does not rename object method', function () {
+        nodes = [
+          recast.parse('var foo = 42; var obj = { foo() {} };', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
+
+      it('does not rename class method', function () {
+        nodes = [
+          recast.parse('var foo = 42; class A { foo() {} }', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
+    });
   });
 
 });
