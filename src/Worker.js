@@ -66,19 +66,22 @@ function setup(tr, babel) {
         require('@babel/preset-flow').default
     );
 
+    const plugins = [
+      require('@babel/plugin-proposal-class-properties').default,
+      require('@babel/plugin-proposal-nullish-coalescing-operator').default,
+      require('@babel/plugin-proposal-optional-chaining').default,
+      require('@babel/plugin-transform-modules-commonjs').default,
+    ];
+
     require('@babel/register')({
       babelrc: false,
       presets,
-      plugins: [
-        require('@babel/plugin-proposal-class-properties').default,
-        require('@babel/plugin-proposal-nullish-coalescing-operator').default,
-        require('@babel/plugin-proposal-optional-chaining').default,
-        require('@babel/plugin-transform-modules-commonjs').default,
-      ],
+      plugins,
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
       // https://github.com/babel/babel/blob/2a4f16236656178e84b05b8915aab9261c55782c/packages/babel-register/src/node.js#L140-L157
       ignore: [
+        /\/node_modules\//,
         // Ignore parser related files
         /@babel\/parser/,
         /\/flow-parser\//,
