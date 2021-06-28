@@ -462,6 +462,7 @@ defineInlineTest(transform, /* ... */)
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
+- [fix-js](https://github.com/anshckr/fix-js) - Codemods to fix some ESLint issues
 
 ### Recipes
 
