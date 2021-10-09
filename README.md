@@ -75,7 +75,7 @@ directory). The next section explains the structure of the transform module.
 
 ## Usage (JS)
 
-```
+```js
 const {run: jscodeshift} = require('jscodeshift/src/Runner')
 
 const transformPath = 'transform.js'
