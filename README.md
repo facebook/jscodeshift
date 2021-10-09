@@ -73,6 +73,23 @@ This passes the source of all passed through the transform module specified
 with `-t` or `--transform` (defaults to `transform.js` in the current
 directory). The next section explains the structure of the transform module.
 
+## Usage (JS)
+
+```
+const {run: jscodeshift} = require('jscodeshift/src/Runner')
+
+const transformPath = 'transform.js'
+const paths = ['foo.js', 'bar']
+const options = {
+  dry: true,
+  print: true,
+  verbose: 1,
+  // ...
+}
+
+const res = await jscodeshift(transformPath, paths, options)
+```
+
 ## Transform module
 
 The transform is simply a module that exports a function of the form:
