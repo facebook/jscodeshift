@@ -88,6 +88,17 @@ const options = {
 }
 
 const res = await jscodeshift(transformPath, paths, options)
+console.log(res)
+/*
+{
+  stats: {},
+  timeElapsed: '0.001',
+  error: 0,
+  ok: 0,
+  nochange: 0,
+  skip: 0
+}
+*/
 ```
 
 ## Transform module
