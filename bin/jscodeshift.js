@@ -106,7 +106,7 @@ const parser = require('../src/argsParser')
       callback: function() {
         const requirePackage = require('../utils/requirePackage');
         return [
-          `jscodeshift: ${pkg.version}`,
+          `evcodeshift: ${pkg.version}`,
           ` - babel: ${require('babel-core').version}`,
           ` - babylon: ${requirePackage('@babel/parser').version}`,
           ` - flow: ${requirePackage('flow-parser').version}`,

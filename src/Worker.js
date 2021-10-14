@@ -160,8 +160,10 @@ function run(data) {
               source: source,
             },
             {
+              // Keeping the below two for backwards compatibility with existing scripts
               j: jscodeshift,
               jscodeshift: jscodeshift,
+              evcodeshift: jscodeshift,
               stats: options.dry ? stats : empty,
               report: msg => report(file, msg),
             },

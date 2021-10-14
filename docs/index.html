@@ -43,7 +43,7 @@
 
 
     <section>
-        <article><h1>jscodeshift <a href="https://travis-ci.org/facebook/jscodeshift"><img src="https://travis-ci.org/facebook/jscodeshift.svg?branch=master" alt="Build Status"></a></h1><p>jscodeshift is a toolkit for running codemods over multiple JS files.
+        <article><h1>evcodeshift <a href="https://travis-ci.org/facebook/jscodeshift"><img src="https://travis-ci.org/facebook/jscodeshift.svg?branch=master" alt="Build Status"></a></h1><p>evcodeshift is a toolkit for running codemods over multiple JS files.
 It provides:</p>
 <ul>
 <li>A runner, which executes the provided transform for each file passed to it.
@@ -52,12 +52,12 @@ It also outputs a summary of how many files have (not) been transformed.</li>
 AST-to-AST transform tool and also tries to preserve the style of original code
 as much as possible.</li>
 </ul>
-<h2>Install</h2><p>Get jscodeshift from <a href="https://www.npmjs.com/">npm</a>:</p>
-<pre class="prettyprint source"><code>$ npm install -g jscodeshift</code></pre><p>This will install the runner as <code>jscodeshift</code>.</p>
+<h2>Install</h2><p>Get evcodeshift from <a href="https://www.npmjs.com/">npm</a>:</p>
+<pre class="prettyprint source"><code>$ npm install -g evcodeshift</code></pre><p>This will install the runner as <code>evcodeshift</code>.</p>
 <h2>Usage (CLI)</h2><p>The CLI provides the following options:</p>
-<pre class="prettyprint source lang-text"><code>$ jscodeshift --help
+<pre class="prettyprint source lang-text"><code>$ evcodeshift --help
 
-Usage: jscodeshift &lt;path>... [options]
+Usage: evcodeshift &lt;path>... [options]
 
 path     Files or directory to transform
 
@@ -102,7 +102,7 @@ directory). The next section explains the structure of the transform module.</p>
 </tr>
 </tbody>
 </table>
-<h4><code>api</code></h4><p>This object exposes the <code>jscodeshift</code> library and helper functions from the
+<h4><code>api</code></h4><p>This object exposes the <code>evcodeshift</code> library and helper functions from the
 runner.</p>
 <table>
 <thead>
@@ -113,8 +113,8 @@ runner.</p>
 </thead>
 <tbody>
 <tr>
-<td>jscodeshift</td>
-<td>A reference to the jscodeshift library</td>
+<td>evcodeshift</td>
+<td>A reference to the evcodeshift library</td>
 </tr>
 <tr>
 <td>stats</td>
@@ -122,7 +122,7 @@ runner.</p>
 </tr>
 </tbody>
 </table>
-<p><code>jscodeshift</code> is a reference to the wrapper around recast and provides a
+<p><code>evcodeshift</code> is a reference to the wrapper around recast and provides a
 jQuery-like API to navigate and transform the AST. Here is a quick example,
 a more detailed description can be found below.</p>
 <pre class="prettyprint source lang-js"><code>/**
@@ -142,7 +142,7 @@ developing the transform, e.g. to find out how often a certain construct
 appears in the source(s).</p>
 <h4><code>options</code></h4><p>Contains all options that have been passed to runner. This allows you to pass
 additional options to the transform. For example, if the CLI is called with</p>
-<pre class="prettyprint source"><code>$ jscodeshift -t myTransforms fileA fileB --foo=bar</code></pre><p><code>options</code> would contain <code>{foo: 'bar'}</code>. jscodeshift uses <a href="https://www.npmjs.com/package/nomnom">nomnom</a> to parse
+<pre class="prettyprint source"><code>$ evcodeshift -t myTransforms fileA fileB --foo=bar</code></pre><p><code>options</code> would contain <code>{foo: 'bar'}</code>. evcodeshift uses <a href="https://www.npmjs.com/package/nomnom">nomnom</a> to parse
 command line options.</p>
 <h3>Return value</h3><p>The return value of the function determines the status of the transformation:</p>
 <ul>
@@ -156,7 +156,7 @@ ok).</li>
 <p>The CLI provides a summary of the transformation at the end. You can get more
 detailed information by setting the <code>-v</code> option to <code>1</code> or <code>2</code>.</p>
 <p>You can collect even more stats via the <code>stats</code> function as explained above.</p>
-<h3>Parser</h3><p>The transform can let jscodeshift know with which parser to parse the source 
+<h3>Parser</h3><p>The transform can let evcodeshift know with which parser to parse the source 
 files (and features like templates).</p>
 <p>To do that, the transform module can export <code>parser</code>, which can either be one 
 of the strings <code>&quot;babel&quot;</code>, <code>&quot;babylon&quot;</code>, or <code>&quot;flow&quot;</code>, or it can be a parser 
@@ -168,12 +168,12 @@ module.exports.parser = {
   parse: function(source) {
     // return estree compatible AST
   },
-};</code></pre><h3>Example output</h3><pre class="prettyprint source lang-text"><code>$ jscodeshift -t myTransform.js src
+};</code></pre><h3>Example output</h3><pre class="prettyprint source lang-text"><code>$ evcode -t myTransform.js src
 Processing 10 files...
 Spawning 2 workers with 5 files each...
 All workers done.
-Results: 0 errors 2 unmodified 3 skipped 5 ok</code></pre><h2>The jscodeshift API</h2><p>As already mentioned, jscodeshift also provides a wrapper around <a href="https://github.com/benjamn/recast">recast</a>.
-In order to properly use the jscodeshift API, one has to understand the basic
+Results: 0 errors 2 unmodified 3 skipped 5 ok</code></pre><h2>The evcodeshift API</h2><p>As already mentioned, evcodeshift also provides a wrapper around <a href="https://github.com/benjamn/recast">recast</a>.
+In order to properly use the evcodeshift API, one has to understand the basic
 building blocks of recast (and ASTs) as well.</p>
 <h3>Core Concepts</h3><h4>AST nodes</h4><p>An AST node is a plain JavaScript object with a specific set of fields, in
 accordance with the <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API">Mozilla Parser API</a>. The primary way to identify nodes
@@ -198,7 +198,7 @@ Given a path object however, the parent can be traversed to via <code>path.paren
 <p>For more information about the path object API, please have a look at
 <a href="https://github.com/benjamn/ast-types">ast-types</a>.</p>
 <h4>Builders</h4><p>To make creating AST nodes a bit simpler and &quot;safer&quot;, ast-types defines a couple
-of <em>builder methods</em>, which are also exposed on <code>jscodeshift</code>.</p>
+of <em>builder methods</em>, which are also exposed on <code>evcodeshift</code>.</p>
 <p>For example, the following creates an AST equivalent to <code>foo(bar)</code>:</p>
 <pre class="prettyprint source lang-js"><code>// inside a module transform
 var j = jscodeshift;
@@ -209,7 +209,7 @@ var ast = j.callExpression(
 );</code></pre><p>The signature of each builder function is best learned by having a look at the
 <a href="https://github.com/benjamn/ast-types/blob/master/def/">definition files</a>.</p>
 <h3>Collections and Traversal</h3><p>In order to transform the AST, you have to traverse it and find the nodes that
-need to be changed. jscodeshift is built around the idea of <strong>collections</strong> of
+need to be changed. evcodeshift is built around the idea of <strong>collections</strong> of
 paths and thus provides a different way of processing an AST than recast or
 ast-types.</p>
 <p>A collection has methods to process the nodes inside a collection, often
@@ -220,7 +220,7 @@ make the transform more readable.</p>
 cannot call a method for a <code>FunctionExpression</code> collection on an <code>Identifier</code>
 collection.</p>
 <p>Here is an example of how one would find/traverse all <code>Identifier</code> nodes with
-jscodeshift and with recast:</p>
+evcodeshift and with recast:</p>
 <pre class="prettyprint source lang-js"><code>// recast
 var ast = recast.parse(src);
 recast.visit(ast, {
@@ -230,14 +230,14 @@ recast.visit(ast, {
   }
 });
 
-// jscodeshift
+// evcodeshift
 jscodeshift(src)
   .find(jscodeshift.Identifier)
   .forEach(function(path) {
     // do something with path
   });</code></pre><p>To learn about the provided methods, have a look at the
 <a href="src/Collection.js">Collection.js</a> and its <a href="src/collections/">extensions</a>.</p>
-<h3>Extensibility</h3><p>jscodeshift provides an API to extend collections. By moving common operators
+<h3>Extensibility</h3><p>evcodeshift provides an API to extend collections. By moving common operators
 into helper functions (which can be stored separately in other modules), a
 transform can be made more readable.</p>
 <p>There are two types of extensions: generic extensions and type-specific
@@ -265,9 +265,9 @@ jscodeshift(ast).findIdentifiers().logNames();
 jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier nodes</code></pre><h3>Passing options to <a href="https://github.com/benjamn/recast">recast</a></h3><p>You may want to change some of the output settings (like setting <code>'</code> instead of <code>&quot;</code>).
 This can be done by passing config options to <a href="https://github.com/benjamn/recast">recast</a>.</p>
 <pre class="prettyprint source lang-js"><code>.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.</code></pre><p>You can also pass options to recast's <code>parse</code> method by passing an object to 
-jscodeshift as second argument:</p>
-<pre class="prettyprint source lang-js"><code>jscodeshift(source, {...})</code></pre><p>More on config options <a href="https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61">here</a></p>
-<h3>Unit Testing</h3><p>jscodeshift comes with a simple utility to allow easy unit testing with <a href="https://facebook.github.io/jest/">Jest</a>, without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:</p>
+evcodeshift as second argument:</p>
+<pre class="prettyprint source lang-js"><code>evcodeshift(source, {...})</code></pre><p>More on config options <a href="https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61">here</a></p>
+<h3>Unit Testing</h3><p>evcodeshift comes with a simple utility to allow easy unit testing with <a href="https://facebook.github.io/jest/">Jest</a>, without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:</p>
 <ul>
 <li>The test is located in a subdirectory under the directory the transform itself is located in (eg. <code>__tests__</code>)</li>
 <li>Test fixtures are located in a <code>__testfixtures__</code> directory</li>
@@ -304,7 +304,7 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-jscodeshift.html">jscodeshift</a></li></ul><h3>Externals</h3><ul><li><a href="external-astTypes.html">astTypes</a></li></ul><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a></li></ul><h3>Mixins</h3><ul><li><a href="globalMethods.html">globalMethods</a></li><li><a href="mutationMethods.html">mutationMethods</a></li><li><a href="transformMethods.html">transformMethods</a></li><li><a href="traversalMethods.html">traversalMethods</a></li></ul><h3>Global</h3><ul><li><a href="global.html#registerMethods">registerMethods</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-jscodeshift.html">evcodeshift</a></li></ul><h3>Externals</h3><ul><li><a href="external-astTypes.html">astTypes</a></li></ul><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a></li></ul><h3>Mixins</h3><ul><li><a href="globalMethods.html">globalMethods</a></li><li><a href="mutationMethods.html">mutationMethods</a></li><li><a href="transformMethods.html">transformMethods</a></li><li><a href="traversalMethods.html">traversalMethods</a></li></ul><h3>Global</h3><ul><li><a href="global.html#registerMethods">registerMethods</a></li></ul>
 </nav>
 
 <br class="clear">
