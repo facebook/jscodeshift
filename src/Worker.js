@@ -67,6 +67,7 @@ function setup(tr, babel) {
     );
 
     require('@babel/register')({
+      configFile: false,
       babelrc: false,
       presets,
       plugins: [
