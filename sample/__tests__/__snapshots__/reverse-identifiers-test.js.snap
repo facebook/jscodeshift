@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transforms correctly 1`] = `
+"var droWtsrif = 'Hello ';
+var droWdnoces = 'world';
+var egassem = droWtsrif + droWdnoces;
+
+class ooF {
+  @detaroced
+  *rab() { }
+}"
+`;

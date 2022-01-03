@@ -424,6 +424,17 @@ defineSnapshotTest(transform, transformOptions, 'input', 'test name (optional)')
 
 For more information on snapshots, check out [Jest's docs](https://jestjs.io/docs/en/snapshot-testing)
 
+#### `defineSnapshotTestFromFixture`
+
+Similar to `defineSnapshotTest` but will load the file using same file-directory defaults as `defineTest`
+
+```js
+const defineSnapshotTestDefault = require('jscodeshift/dist/testUtils').defineSnapshotTestDefault;
+const transform = require('../myTransform');
+const transformOptions = {};
+defineSnapshotTestFromFixture(__dirname, transform, transformOptions, 'FirstFixture', 'test name (optional)');
+```
+
 #### `applyTransform`
 
 Executes your transform using the options and the input given and returns the result.

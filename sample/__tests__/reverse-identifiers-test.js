@@ -18,6 +18,7 @@
 jest.autoMockOff();
 const defineTest = require('../../src/testUtils').defineTest;
 const defineInlineTest = require('../../src/testUtils').defineInlineTest;
+const defineSnapshotTestFromFixture = require('../../src/testUtils').defineSnapshotTestFromFixture;
 const transform = require('../reverse-identifiers');
 
 defineTest(__dirname, 'reverse-identifiers');
@@ -39,3 +40,6 @@ var egassem = droWtsrif + droWdnoces;
     'Reverses function names'
   );
 });
+
+// the snapshot output of this file should be the same as reverse-identifiers.output.js
+defineSnapshotTestFromFixture(__dirname, transform, {}, 'reverse-identifiers');
