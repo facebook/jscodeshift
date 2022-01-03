@@ -134,3 +134,15 @@ function defineSnapshotTest(module, options, input, testName) {
   });
 }
 exports.defineSnapshotTest = defineSnapshotTest;
+
+/**
+ * Handles file-loading boilerplates, using same defaults as defineTest
+ */
+function defineSnapshotTestFromFixture(dirName, module, options, testFilePrefix, testName, testOptions = {}) {
+  const extension = extensionForParser(testOptions.parser)
+  const fixtureDir = path.join(dirName, '..', '__testfixtures__');
+  const inputPath = path.join(fixtureDir, testFilePrefix + `.input.${extension}`);
+  const source = fs.readFileSync(inputPath, 'utf8');
+  defineSnapshotTest(module, options, source, testName)
+}
+exports.defineSnapshotTestFromFixture = defineSnapshotTestFromFixture;
