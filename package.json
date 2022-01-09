@@ -34,7 +34,7 @@
     "@babel/preset-typescript": "^7.13.0",
     "@babel/register": "^7.13.16",
     "babel-core": "^7.0.0-bridge.0",
-    "colors": "^1.1.2",
+    "colors": "1.4.0",
     "flow-parser": "0.*",
     "graceful-fs": "^4.2.4",
     "micromatch": "^3.1.10",
