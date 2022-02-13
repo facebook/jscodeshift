@@ -24,19 +24,19 @@
   "author": "Ilan Volow, Felix King",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.15.8",
-    "@babel/parser": "^7.15.8",
-    "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
-    "@babel/plugin-proposal-optional-chaining": "^7.14.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.15.4",
-    "@babel/preset-flow": "^7.14.5",
-    "@babel/preset-typescript": "^7.15.0",
-    "@babel/register": "^7.15.3",
+    "@babel/core": "^7.17.2",
+    "@babel/parser": "^7.17.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.7",
+    "@babel/plugin-proposal-optional-chaining": "^7.16.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "@babel/preset-flow": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@babel/register": "^7.17.0",
     "babel-core": "^7.0.0-bridge.0",
     "chalk": "^4.1.2",
     "flow-parser": "0.*",
-    "graceful-fs": "^4.2.8",
+    "graceful-fs": "^4.2.9",
     "lodash": "^4.17.21",
     "micromatch": "^4.0.4",
     "neo-async": "^2.6.2",
@@ -44,16 +44,16 @@
 
     "recast": "^0.21.0",
     "temp": "^0.9.4",
-    "write-file-atomic": "^3.0.3"
+    "write-file-atomic": "^4.0.1"
   },
   "peerDependencies": {
     "@babel/preset-env": "^7.15.8"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^8.0.0",
+    "eslint": "^8.9.0",
     "jest": "^21",
-    "jsdoc": "^3.6.7",
+    "jsdoc": "^3.6.10",
     "mkdirp": "^1.0.4"
   },
   "jest": {
