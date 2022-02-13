@@ -34,14 +34,15 @@
     "@babel/preset-typescript": "^7.15.0",
     "@babel/register": "^7.15.3",
     "babel-core": "^7.0.0-bridge.0",
-    "colors": "^1.4.0",
+    "chalk": "^4.1.2",
     "flow-parser": "0.*",
     "graceful-fs": "^4.2.8",
     "lodash": "^4.17.21",
     "micromatch": "^4.0.4",
     "neo-async": "^2.6.2",
     "node-dir": "^0.1.17",
-    "recast": "^0.20.5",
+
+    "recast": "^0.21.0",
     "temp": "^0.9.4",
     "write-file-atomic": "^3.0.3"
   },

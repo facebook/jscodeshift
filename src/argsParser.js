@@ -48,7 +48,17 @@ function formatOption(option) {
 function getHelpText(options) {
   const opts = Object.keys(options)
     .map(k => options[k])
-    .sort((a,b) => a.full.localeCompare(b.full));
+    .sort((a,b) => {
+      if (a.display_index > b.display_index) {
+        return 1;
+      } else if (a.display_index < b.display_index) {
+        return -1;
+      } else if (a.display_index === b.display_index) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
 
   const text = `
 Usage: evcodeshift [OPTION]... PATH...
@@ -89,6 +99,7 @@ function validateOptions(parsedOptions, options) {
 
 function prepareOptions(options) {
   options.help = {
+    display_index: 5,
     abbr: 'h',
     help: 'print this help and exit',
     callback() {
