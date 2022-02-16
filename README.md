@@ -320,18 +320,18 @@ node types and are not callable on differently typed collections.
 ```js
 // Adding a method to all Identifiers
 jscodeshift.registerMethods({
-	logNames: function() {
-		return this.forEach(function(path) {
-			console.log(path.node.name);
-		});
-	}
+  logNames: function() {
+    return this.forEach(function(path) {
+      console.log(path.node.name);
+    });
+  }
 }, jscodeshift.Identifier);
 
 // Adding a method to all collections
 jscodeshift.registerMethods({
-	findIdentifiers: function() {
-		return this.find(jscodeshift.Identifier);
-	}
+  findIdentifiers: function() {
+    return this.find(jscodeshift.Identifier);
+  }
 });
 
 jscodeshift(ast).findIdentifiers().logNames();
