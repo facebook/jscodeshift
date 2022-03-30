@@ -15,14 +15,8 @@ const createTempFileWith = testUtils.createTempFileWith;
 const getFileContent = testUtils.getFileContent;
 
 describe('Worker API', () => {
-  let worker;
-
-  beforeEach(() => {
-    jest.resetModuleRegistry();
-    worker = require('../Worker');
-  });
-
   it('transforms files', done => {
+    const worker = require('../Worker');
     const transformPath =
       createTransformWith('return fileInfo.source + " changed";');
     const sourcePath = createTempFileWith('foo');
@@ -38,6 +32,7 @@ describe('Worker API', () => {
   });
 
   it('passes j as argument', done => {
+    const worker = require('../Worker');
     const transformPath = createTempFileWith(
       `module.exports = function (file, api) {
         return api.j(file.source).toSource() + ' changed';
@@ -76,6 +71,7 @@ describe('Worker API', () => {
     }
 
     it('errors if new flow type code is parsed with babel v5', done => {
+      const worker = require('../Worker');
       const transformPath = createTransformWith(
         'api.jscodeshift(fileInfo.source); return "changed";'
       );
@@ -92,6 +88,7 @@ describe('Worker API', () => {
 
     ['flow', 'babylon'].forEach(parser => {
       it(`uses ${parser} if configured as such`, done => {
+        const worker = require('../Worker');
         const transformPath = getTransformForParser(parser);
         const sourcePath = getSourceFile();
         const emitter = worker([transformPath]);
@@ -107,6 +104,7 @@ describe('Worker API', () => {
 
     ['babylon', 'flow', 'tsx'].forEach(parser => {
       it(`can parse JSX with ${parser}`, done => {
+        const worker = require('../Worker');
         const transformPath = getTransformForParser(parser);
         const sourcePath = createTempFileWith(
           'var component = <div>{foobar}</div>;'
@@ -122,7 +120,8 @@ describe('Worker API', () => {
       });
     });
 
-    it(`can parse enums with flow`, done => {
+    it('can parse enums with flow', done => {
+      const worker = require('../Worker');
       const transformPath = getTransformForParser('flow');
       const sourcePath = createTempFileWith(
         'enum E {A, B}'
