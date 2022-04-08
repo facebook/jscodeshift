@@ -502,6 +502,14 @@ defineInlineTest(transform, /* ... */)
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
 
+### Local Documentation Server
+
+ To update docs in `/docs`, use `npm run docs`.
+
+ To view these docs locally, use `npx http-server ./docs`
+
+
+
 ### Recipes
 
 - [Retain leading comment(s) in file when replacing/removing first statement](recipes/retain-first-comment.md)
