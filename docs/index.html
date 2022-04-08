@@ -43,7 +43,9 @@
 
 
     <section>
-        <article><h1>jscodeshift <a href="https://travis-ci.org/facebook/jscodeshift"><img src="https://travis-ci.org/facebook/jscodeshift.svg?branch=master" alt="Build Status"></a></h1><p>jscodeshift is a toolkit for running codemods over multiple JS files.
+        <article><h1>jscodeshift <a href="https://opensource.fb.com/support-ukraine"><img src="https://img.shields.io/badge/Support-Ukraine-FFD500?style=flat&amp;labelColor=005BBB" alt="Support Ukraine"></a> <a href="https://travis-ci.org/facebook/jscodeshift"><img src="https://travis-ci.org/facebook/jscodeshift.svg?branch=master" alt="Build Status"></a></h1>
+<p>jscodeshift is a toolkit for running codemods over multiple JavaScript or
+TypeScript files.
 It provides:</p>
 <ul>
 <li>A runner, which executes the provided transform for each file passed to it.
@@ -52,38 +54,97 @@ It also outputs a summary of how many files have (not) been transformed.</li>
 AST-to-AST transform tool and also tries to preserve the style of original code
 as much as possible.</li>
 </ul>
-<h2>Install</h2><p>Get jscodeshift from <a href="https://www.npmjs.com/">npm</a>:</p>
-<pre class="prettyprint source"><code>$ npm install -g jscodeshift</code></pre><p>This will install the runner as <code>jscodeshift</code>.</p>
-<h2>Usage (CLI)</h2><p>The CLI provides the following options:</p>
-<pre class="prettyprint source lang-text"><code>$ jscodeshift --help
+<h2>Install</h2>
+<p>Get jscodeshift from <a href="https://www.npmjs.com/">npm</a>:</p>
+<pre class="prettyprint source"><code>$ npm install -g jscodeshift
+</code></pre>
+<p>This will install the runner as <code>jscodeshift</code>.</p>
+<h2>Usage (CLI)</h2>
+<p>The CLI provides the following options:</p>
+<pre class="prettyprint source"><code>$ jscodeshift --help
 
-Usage: jscodeshift &lt;path>... [options]
+Usage: jscodeshift [OPTION]... PATH...
+  or:  jscodeshift [OPTION]... -t TRANSFORM_PATH PATH...
+  or:  jscodeshift [OPTION]... -t URL PATH...
+  or:  jscodeshift [OPTION]... --stdin &lt; file_list.txt
 
-path     Files or directory to transform
+Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
+If --stdin is set, each line of the standard input is used as a path.
 
 Options:
-   -t FILE, --transform FILE   Path to the transform file. Can be either a local path or url  [./transform.js]
-   -c, --cpus                  (all by default) Determines the number of processes started.
-   -v, --verbose               Show more information about the transform process  [0]
-   -d, --dry                   Dry run (no changes are made to files)
-   -p, --print                 Print output, useful for development
-   --babel                     Apply Babel to transform files  [true]
-   --extensions                File extensions the transform file should be applied to  [js]
-   --ignore-pattern            Ignore files that match a provided glob expression
-   --ignore-config FILE        Ignore files if they match patterns sourced from a configuration file (e.g., a .gitignore)
-   --run-in-band               Run serially in the current process  [false]
-   -s, --silent                No output  [false]
-   --parser                    The parser to use for parsing your source files (babel | babylon | flow)  [babel]
-   --version                   print version and exit</code></pre><p>This passes the source of all passed through the transform module specified
+&quot;...&quot; behind an option means that it can be supplied multiple times.
+All options are also passed to the transformer, which means you can supply custom options that are not listed here.
+
+      --(no-)babel              apply babeljs to the transform file
+                                (default: true)
+  -c, --cpus=N                  start at most N child processes to process source files
+                                (default: max(all - 1, 1))
+  -d, --(no-)dry                dry run (no changes are made to files)
+                                (default: false)
+      --extensions=EXT          transform files with these file extensions (comma separated list)
+                                (default: js)
+  -h, --help                    print this help and exit
+      --ignore-config=FILE ...  ignore files if they match patterns sourced from a configuration file (e.g. a .gitignore)
+      --ignore-pattern=GLOB ...  ignore files that match a provided glob expression
+      --parser=babel|babylon|flow|ts|tsx  the parser to use for parsing the source files
+                                          (default: babel)
+      --parser-config=FILE      path to a JSON file containing a custom parser configuration for flow or babylon
+  -p, --(no-)print              print transformed files to stdout, useful for development
+                                (default: false)
+      --(no-)run-in-band        run serially in the current process
+                                (default: false)
+  -s, --(no-)silent             do not write to stdout or stderr
+                                (default: false)
+      --(no-)stdin              read file/directory list from stdin
+                                (default: false)
+  -t, --transform=FILE          path to the transform file. Can be either a local path or url
+                                (default: ./transform.js)
+  -v, --verbose=0|1|2           show more information about the transform process
+                                (default: 0)
+      --version                 print version and exit
+      --fail-on-error           return a 1 exit code when errors were found during execution of codemods
+</code></pre>
+<p>This passes the source of all passed through the transform module specified
 with <code>-t</code> or <code>--transform</code> (defaults to <code>transform.js</code> in the current
 directory). The next section explains the structure of the transform module.</p>
-<h2>Transform module</h2><p>The transform is simply a module that exports a function of the form:</p>
+<h2>Usage (JS)</h2>
+<pre class="prettyprint source lang-js"><code>const {run: jscodeshift} = require('jscodeshift/src/Runner')
+
+const transformPath = 'transform.js'
+const paths = ['foo.js', 'bar']
+const options = {
+  dry: true,
+  print: true,
+  verbose: 1,
+  // ...
+}
+
+const res = await jscodeshift(transformPath, paths, options)
+console.log(res)
+/*
+{
+  stats: {},
+  timeElapsed: '0.001',
+  error: 0,
+  ok: 0,
+  nochange: 0,
+  skip: 0
+}
+*/
+</code></pre>
+<h2>Transform module</h2>
+<p>The transform is simply a module that exports a function of the form:</p>
 <pre class="prettyprint source lang-js"><code>module.exports = function(fileInfo, api, options) {
   // transform `fileInfo.source` here
   // ...
   // return changed source
   return source;
-};</code></pre><h3>Arguments</h3><h4><code>fileInfo</code></h4><p>Holds information about the currently processed file.</p>
+};
+</code></pre>
+<p>As of v0.6.1, this module can also be written in TypeScript.</p>
+<h3>Arguments</h3>
+<h4><code>fileInfo</code></h4>
+<p>Holds information about the currently processed file.</p>
 <table>
 <thead>
 <tr>
@@ -102,7 +163,8 @@ directory). The next section explains the structure of the transform module.</p>
 </tr>
 </tbody>
 </table>
-<h4><code>api</code></h4><p>This object exposes the <code>jscodeshift</code> library and helper functions from the
+<h4><code>api</code></h4>
+<p>This object exposes the <code>jscodeshift</code> library and helper functions from the
 runner.</p>
 <table>
 <thead>
@@ -120,6 +182,10 @@ runner.</p>
 <td>stats</td>
 <td>A function to collect statistics during <code>--dry</code> runs</td>
 </tr>
+<tr>
+<td>report</td>
+<td>Prints the passed string to stdout</td>
+</tr>
 </tbody>
 </table>
 <p><code>jscodeshift</code> is a reference to the wrapper around recast and provides a
@@ -133,18 +199,27 @@ module.exports = function(fileInfo, api) {
     .findVariableDeclarators('foo')
     .renameTo('bar')
     .toSource();
-}</code></pre><p><strong>Note:</strong> This API is exposed for convenience, but you don't have to use it.
+}
+</code></pre>
+<p><strong>Note:</strong> This API is exposed for convenience, but you don't have to use it.
 You can use any tool to modify the source.</p>
 <p><code>stats</code> is a function that only works when the <code>--dry</code> options is set. It accepts
 a string, and will simply count how often it was called with that value.</p>
 <p>At the end, the CLI will report those values. This can be useful while
 developing the transform, e.g. to find out how often a certain construct
 appears in the source(s).</p>
-<h4><code>options</code></h4><p>Contains all options that have been passed to runner. This allows you to pass
+<p><strong><code>report</code></strong> allows you do print arbitrary strings to stdout. This can be
+useful when other tools consume the output of jscodeshift. The reason to not
+directly use <code>process.stdout</code> in transform code is to avoid mangled output when
+many files are processed.</p>
+<h4><code>options</code></h4>
+<p>Contains all options that have been passed to runner. This allows you to pass
 additional options to the transform. For example, if the CLI is called with</p>
-<pre class="prettyprint source"><code>$ jscodeshift -t myTransforms fileA fileB --foo=bar</code></pre><p><code>options</code> would contain <code>{foo: 'bar'}</code>. jscodeshift uses <a href="https://www.npmjs.com/package/nomnom">nomnom</a> to parse
-command line options.</p>
-<h3>Return value</h3><p>The return value of the function determines the status of the transformation:</p>
+<pre class="prettyprint source"><code>$ jscodeshift -t myTransforms fileA fileB --foo=bar
+</code></pre>
+<p><code>options</code> would contain <code>{foo: 'bar'}</code>.</p>
+<h3>Return value</h3>
+<p>The return value of the function determines the status of the transformation:</p>
 <ul>
 <li>If a string is returned and it is different from passed source, the
 transform is considered to be successful.</li>
@@ -156,11 +231,12 @@ ok).</li>
 <p>The CLI provides a summary of the transformation at the end. You can get more
 detailed information by setting the <code>-v</code> option to <code>1</code> or <code>2</code>.</p>
 <p>You can collect even more stats via the <code>stats</code> function as explained above.</p>
-<h3>Parser</h3><p>The transform can let jscodeshift know with which parser to parse the source 
+<h3>Parser</h3>
+<p>The transform can let jscodeshift know with which parser to parse the source
 files (and features like templates).</p>
-<p>To do that, the transform module can export <code>parser</code>, which can either be one 
-of the strings <code>&quot;babel&quot;</code>, <code>&quot;babylon&quot;</code>, or <code>&quot;flow&quot;</code>, or it can be a parser 
-object that is compatible with recast.</p>
+<p>To do that, the transform module can export <code>parser</code>, which can either be one
+of the strings <code>&quot;babel&quot;</code>, <code>&quot;babylon&quot;</code>, <code>&quot;flow&quot;</code>, <code>&quot;ts&quot;</code>, or <code>&quot;tsx&quot;</code>,
+or it can be a parser object that is compatible with recast.</p>
 <p>For example:</p>
 <pre class="prettyprint source lang-js"><code>module.exports.parser = 'flow'; // use the flow parser
 // or
@@ -168,14 +244,22 @@ module.exports.parser = {
   parse: function(source) {
     // return estree compatible AST
   },
-};</code></pre><h3>Example output</h3><pre class="prettyprint source lang-text"><code>$ jscodeshift -t myTransform.js src
+};
+</code></pre>
+<h3>Example output</h3>
+<pre class="prettyprint source lang-text"><code>$ jscodeshift -t myTransform.js src
 Processing 10 files...
 Spawning 2 workers with 5 files each...
 All workers done.
-Results: 0 errors 2 unmodified 3 skipped 5 ok</code></pre><h2>The jscodeshift API</h2><p>As already mentioned, jscodeshift also provides a wrapper around <a href="https://github.com/benjamn/recast">recast</a>.
+Results: 0 errors 2 unmodified 3 skipped 5 ok
+</code></pre>
+<h2>The jscodeshift API</h2>
+<p>As already mentioned, jscodeshift also provides a wrapper around <a href="https://github.com/benjamn/recast">recast</a>.
 In order to properly use the jscodeshift API, one has to understand the basic
 building blocks of recast (and ASTs) as well.</p>
-<h3>Core Concepts</h3><h4>AST nodes</h4><p>An AST node is a plain JavaScript object with a specific set of fields, in
+<h3>Core Concepts</h3>
+<h4>AST nodes</h4>
+<p>An AST node is a plain JavaScript object with a specific set of fields, in
 accordance with the <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API">Mozilla Parser API</a>. The primary way to identify nodes
 is via their <code>type</code>.</p>
 <p>For example, string literals are represented via <code>Literal</code> nodes, which
@@ -185,10 +269,13 @@ have the structure</p>
   type: 'Literal',
   value: 'foo',
   raw: '&quot;foo&quot;'
-}</code></pre><p>It's OK to not know the structure of every AST node type.
+}
+</code></pre>
+<p>It's OK to not know the structure of every AST node type.
 The <a href="http://astexplorer.net/">(esprima) AST explorer</a> is an online tool to inspect the AST
 for a given piece of JS code.</p>
-<h4>Path objects</h4><p>Recast itself relies heavily on <a href="https://github.com/benjamn/ast-types">ast-types</a> which defines methods to traverse
+<h4>Path objects</h4>
+<p>Recast itself relies heavily on <a href="https://github.com/benjamn/ast-types">ast-types</a> which defines methods to traverse
 the AST, access node fields and build new nodes. ast-types wraps every AST node
 into a <em>path object</em>. Paths contain meta-information and helper methods to
 process AST nodes.</p>
@@ -197,7 +284,8 @@ defined. Given a plain AST node, it is not possible to traverse the tree <em>up<
 Given a path object however, the parent can be traversed to via <code>path.parent</code>.</p>
 <p>For more information about the path object API, please have a look at
 <a href="https://github.com/benjamn/ast-types">ast-types</a>.</p>
-<h4>Builders</h4><p>To make creating AST nodes a bit simpler and &quot;safer&quot;, ast-types defines a couple
+<h4>Builders</h4>
+<p>To make creating AST nodes a bit simpler and &quot;safer&quot;, ast-types defines a couple
 of <em>builder methods</em>, which are also exposed on <code>jscodeshift</code>.</p>
 <p>For example, the following creates an AST equivalent to <code>foo(bar)</code>:</p>
 <pre class="prettyprint source lang-js"><code>// inside a module transform
@@ -206,9 +294,12 @@ var j = jscodeshift;
 var ast = j.callExpression(
   j.identifier('foo'),
   [j.identifier('bar')]
-);</code></pre><p>The signature of each builder function is best learned by having a look at the
+);
+</code></pre>
+<p>The signature of each builder function is best learned by having a look at the
 <a href="https://github.com/benjamn/ast-types/blob/master/def/">definition files</a>.</p>
-<h3>Collections and Traversal</h3><p>In order to transform the AST, you have to traverse it and find the nodes that
+<h3>Collections and Traversal</h3>
+<p>In order to transform the AST, you have to traverse it and find the nodes that
 need to be changed. jscodeshift is built around the idea of <strong>collections</strong> of
 paths and thus provides a different way of processing an AST than recast or
 ast-types.</p>
@@ -235,9 +326,12 @@ jscodeshift(src)
   .find(jscodeshift.Identifier)
   .forEach(function(path) {
     // do something with path
-  });</code></pre><p>To learn about the provided methods, have a look at the
+  });
+</code></pre>
+<p>To learn about the provided methods, have a look at the
 <a href="src/Collection.js">Collection.js</a> and its <a href="src/collections/">extensions</a>.</p>
-<h3>Extensibility</h3><p>jscodeshift provides an API to extend collections. By moving common operators
+<h3>Extensibility</h3>
+<p>jscodeshift provides an API to extend collections. By moving common operators
 into helper functions (which can be stored separately in other modules), a
 transform can be made more readable.</p>
 <p>There are two types of extensions: generic extensions and type-specific
@@ -245,29 +339,38 @@ extensions. <strong>Generic extensions</strong> are applicable to all collection
 they typically don't access specific node data, but rather traverse the AST from
 the nodes in the collection. <strong>Type-specific</strong> extensions work only on specific
 node types and are not callable on differently typed collections.</p>
-<h4>Examples</h4><pre class="prettyprint source lang-js"><code>// Adding a method to all Identifiers
+<h4>Examples</h4>
+<pre class="prettyprint source lang-js"><code>// Adding a method to all Identifiers
 jscodeshift.registerMethods({
-    logNames: function() {
-        return this.forEach(function(path) {
-            console.log(path.node.name);
-        });
-    }
+  logNames: function() {
+    return this.forEach(function(path) {
+      console.log(path.node.name);
+    });
+  }
 }, jscodeshift.Identifier);
 
 // Adding a method to all collections
 jscodeshift.registerMethods({
-    findIdentifiers: function() {
-        return this.find(jscodeshift.Identifier);
-    }
+  findIdentifiers: function() {
+    return this.find(jscodeshift.Identifier);
+  }
 });
 
 jscodeshift(ast).findIdentifiers().logNames();
-jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier nodes</code></pre><h3>Passing options to <a href="https://github.com/benjamn/recast">recast</a></h3><p>You may want to change some of the output settings (like setting <code>'</code> instead of <code>&quot;</code>).
+jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier nodes
+</code></pre>
+<h3>Passing options to <a href="https://github.com/benjamn/recast">recast</a></h3>
+<p>You may want to change some of the output settings (like setting <code>'</code> instead of <code>&quot;</code>).
 This can be done by passing config options to <a href="https://github.com/benjamn/recast">recast</a>.</p>
-<pre class="prettyprint source lang-js"><code>.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.</code></pre><p>You can also pass options to recast's <code>parse</code> method by passing an object to 
+<pre class="prettyprint source lang-js"><code>.toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
+</code></pre>
+<p>You can also pass options to recast's <code>parse</code> method by passing an object to
 jscodeshift as second argument:</p>
-<pre class="prettyprint source lang-js"><code>jscodeshift(source, {...})</code></pre><p>More on config options <a href="https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61">here</a></p>
-<h3>Unit Testing</h3><p>jscodeshift comes with a simple utility to allow easy unit testing with <a href="https://facebook.github.io/jest/">Jest</a>, without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:</p>
+<pre class="prettyprint source lang-js"><code>jscodeshift(source, {...})
+</code></pre>
+<p>More on config options <a href="https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61">here</a></p>
+<h3>Unit Testing</h3>
+<p>jscodeshift comes with a simple utility to allow easy unit testing with <a href="https://facebook.github.io/jest/">Jest</a>, without having to write a lot of boilerplate code. This utility makes some assumptions in order to reduce the amount of configuration required:</p>
 <ul>
 <li>The test is located in a subdirectory under the directory the transform itself is located in (eg. <code>__tests__</code>)</li>
 <li>Test fixtures are located in a <code>__testfixtures__</code> directory</li>
@@ -276,23 +379,85 @@ jscodeshift as second argument:</p>
 <pre class="prettyprint source"><code>/MyTransform.js
 /__tests__/MyTransform-test.js
 /__testfixtures__/MyTransform.input.js
-/__testfixtures__/MyTransform.output.js</code></pre><p>To define a test, use <code>defineTest</code> or <code>defineInlineTest</code> from the <code>testUtils</code> module. A simple example is bundled in the <a href="sample">sample directory</a>.</p>
-<h4><code>defineTest</code></h4><pre class="prettyprint source lang-js"><code>jest.autoMockOff();
+/__testfixtures__/MyTransform.output.js
+</code></pre>
+<p>A simple example of unit tests is bundled in the <a href="sample">sample directory</a>.</p>
+<p>The <code>testUtils</code> module exposes a number of useful helpers for unit testing.</p>
+<h4><code>defineTest</code></h4>
+<p>Defines a Jest/Jasmine test for a jscodeshift transform which depends on fixtures</p>
+<pre class="prettyprint source lang-js"><code>jest.autoMockOff();
 const defineTest = require('jscodeshift/dist/testUtils').defineTest;
-defineTest(__dirname, 'MyTransform');</code></pre><p>An alternate fixture filename can be provided as the fourth argument to <code>defineTest</code>. This also means that multiple test fixtures can be provided:</p>
+defineTest(__dirname, 'MyTransform');
+</code></pre>
+<p>An alternate fixture filename can be provided as the fourth argument to <code>defineTest</code>.
+This also means that multiple test fixtures can be provided:</p>
 <pre class="prettyprint source lang-js"><code>defineTest(__dirname, 'MyTransform', null, 'FirstFixture');
-defineTest(__dirname, 'MyTransform', null, 'SecondFixture');</code></pre><p>This will run two tests: One for <code>__testfixtures__/FirstFixture.input.js</code> and one for <code>__testfixtures__/SecondFixture.input.js</code></p>
-<h4><code>defineInlineTest</code></h4><pre class="prettyprint source lang-js"><code>const transform = require('../myTransform');
-defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional)');</code></pre><h3>Example Codemods</h3><ul>
+defineTest(__dirname, 'MyTransform', null, 'SecondFixture');
+</code></pre>
+<p>This will run two tests:</p>
+<ul>
+<li><code>__testfixtures__/FirstFixture.input.js</code></li>
+<li><code>__testfixtures__/SecondFixture.input.js</code></li>
+</ul>
+<h4><code>defineInlineTest</code></h4>
+<p>Defines a Jest/Jasmine test suite for a jscodeshift transform which accepts inline values</p>
+<p>This is a more flexible alternative to <code>defineTest</code>, as this allows to also provide options to your transform</p>
+<pre class="prettyprint source lang-js"><code>const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
+const transform = require('../myTransform');
+const transformOptions = {};
+defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test name (optional)');
+</code></pre>
+<h4><code>defineSnapshotTest</code></h4>
+<p>Similar to <code>defineInlineTest</code> but instead of requiring an output value, it uses Jest's <code>toMatchSnapshot()</code></p>
+<pre class="prettyprint source lang-js"><code>const defineSnapshotTest = require('jscodeshift/dist/testUtils').defineSnapshotTest;
+const transform = require('../myTransform');
+const transformOptions = {};
+defineSnapshotTest(transform, transformOptions, 'input', 'test name (optional)');
+</code></pre>
+<p>For more information on snapshots, check out <a href="https://jestjs.io/docs/en/snapshot-testing">Jest's docs</a></p>
+<h4><code>defineSnapshotTestFromFixture</code></h4>
+<p>Similar to <code>defineSnapshotTest</code> but will load the file using same file-directory defaults as <code>defineTest</code></p>
+<pre class="prettyprint source lang-js"><code>const defineSnapshotTestDefault = require('jscodeshift/dist/testUtils').defineSnapshotTestDefault;
+const transform = require('../myTransform');
+const transformOptions = {};
+defineSnapshotTestFromFixture(__dirname, transform, transformOptions, 'FirstFixture', 'test name (optional)');
+</code></pre>
+<h4><code>applyTransform</code></h4>
+<p>Executes your transform using the options and the input given and returns the result.
+This function is used internally by the other helpers, but it can prove useful in other cases.</p>
+<pre class="prettyprint source lang-js"><code>const applyTransform = require('jscodeshift/dist/testUtils').applyTransform;
+const transform = require('../myTransform');
+const transformOptions = {};
+const output = applyTransform(transform, transformOptions, 'input');
+</code></pre>
+<h4>ES modules</h4>
+<p>If you're authoring your transforms and tests using ES modules, make sure to import the transform's parser (if specified) in your tests:</p>
+<pre class="prettyprint source lang-js"><code>// MyTransform.js
+export const parser = 'flow'
+export default function MyTransform(fileInfo, api) {
+  // ...
+}
+</code></pre>
+<pre class="prettyprint source lang-js"><code>// __tests__/MyTransform-test.js
+import { defineInlineTest } from 'jscodeshift/dist/testUtils
+import * as transform from '../MyTransform
+
+console.log(transform.parser) // 'flow'
+
+defineInlineTest(transform, /* ... */)
+</code></pre>
+<h3>Example Codemods</h3>
+<ul>
 <li><a href="https://github.com/reactjs/react-codemod">react-codemod</a> - React codemod scripts to update React APIs.</li>
 <li><a href="https://github.com/cpojer/js-codemod/">js-codemod</a> - Codemod scripts to transform code to next generation JS.</li>
 <li><a href="https://github.com/jhgg/js-transforms">js-transforms</a> - Some documented codemod experiments to help you learn.</li>
 </ul>
-<h3>Recipes</h3><ul>
+<h3>Local Documentation Server</h3>
+<p>To update docs in <code>/docs</code>, use <code>npm run docs</code>.</p>
+<p>To view these docs locally, use <code>npx http-server ./docs</code></p>
+<h3>Recipes</h3>
+<ul>
 <li><a href="recipes/retain-first-comment.md">Retain leading comment(s) in file when replacing/removing first statement</a></li>
-</ul>
-<h3>Support</h3><ul>
-<li>Discord - <a href="https://discordapp.com/channels/102860784329052160/103748721107292160">#codemod</a> on <a href="http://www.reactiflux.com/">Reactiflux</a></li>
 </ul></article>
     </section>
 
@@ -310,7 +475,7 @@ defineInlineTest(transform, {}, 'input', 'expected output', 'test name (optional
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Oct 09 2018 21:58:15 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Apr 08 2022 04:22:46 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
