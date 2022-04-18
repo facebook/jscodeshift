@@ -20,6 +20,10 @@ $ npm install -g jscodeshift
 
 This will install the runner as `jscodeshift`.
 
+## VSCode Debugger
+
+[Configure VSCode to debug codemods](#vscode-debugging)
+
 ## Usage (CLI)
 
 The CLI provides the following options:
@@ -508,6 +512,85 @@ defineInlineTest(transform, /* ... */)
 
  To view these docs locally, use `npx http-server ./docs`
 
+## VSCode Debugging
+
+It's recommended that you set up your codemod project to all debugging via the VSCode IDE. When you open your project in VSCode, add the following configuration to your launch.json debugging configuration.
+
+```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Debug Transform",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceRoot}/node_modules/.bin/jscodeshift",
+            "stopOnEntry": false,
+            "args": ["--dry", "--print", "-t", "${input:transformFile}", "--parser", "${input:parser}", "--run-in-band", "${file}"],
+            "preLaunchTask": null,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "console": "internalConsole",
+            "sourceMaps": true,
+            "outFiles": []
+        },
+        {
+            "name": "Debug All JSCodeshift Jest Tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+                "--inspect-brk",
+                "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                "--runInBand",
+                "--testPathPattern=${fileBasenameNoExtension}"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "port": 9229
+        }
+    ],
+    "inputs": [
+        {
+          "type": "pickString",
+          "id": "parser",
+          "description": "jscodeshift parser",
+          "options": [
+            "babel",
+            "babylon",
+            "flow",
+            "ts",
+            "tsx",
+          ],
+          "default": "babel"
+        },
+        {
+            "type": "promptString",
+            "id": "transformFile",
+            "description": "evcodeshift transform file",
+            "default": "transform.js"
+        }
+    ]
+}
+```
+
+Once this has been added to the configuration
+
+1. Install evcodeshift as a package if you haven't done so already by running the command  **npm install --save evcodeshift**. The debug configuration will not work otherwise.
+2. Once the evcodeshift local package has been installed, go to the VSCode file tree and select the file on which you want to run the transform. For example, if you wanted to run codemod transforms of foo.js file, you would click on the entry for foo.js file in your project tree.
+3. Select "Debug Transform" from the debugging menu's options menu.
+4. Click the **"Start Debugging"** button on the VSCode debugger.
+5. You will be then prompted for the name of evcodeshift transform file. Enter in the name of the transform file to use. If no name is given it will default to **transform.js**
+6. Select the parser to use from the presented selection list of parsers. The transform will otherwise default to using the **babel** parser.
+7. The transform will then be run, stopping at any breakpoints that have been set.
+8. If there are no errors and the transform is complete, then the results of the transform will be printed in the VSCode debugging console. The file with the contents that have been transformed will not be changed, as the debug configuration makes use the evcodeshift **--dry** option.
 
 
 ### Recipes
