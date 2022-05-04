@@ -150,7 +150,7 @@ a more detailed description can be found below.
 /**
  * This replaces every occurrence of variable "foo".
  */
-module.exports = function(fileInfo, api) {
+module.exports = function(fileInfo, api, options) {
   return api.jscodeshift(fileInfo.source)
     .findVariableDeclarators('foo')
     .renameTo('bar')
@@ -202,18 +202,43 @@ You can collect even more stats via the `stats` function as explained above.
 
 ### Parser
 
-The transform can let jscodeshift know with which parser to parse the source
+The transform file can let jscodeshift know with which parser to parse the source
 files (and features like templates).
 
 To do that, the transform module can export `parser`, which can either be one
 of the strings `"babel"`, `"babylon"`, `"flow"`, `"ts"`, or `"tsx"`,
-or it can be a parser object that is compatible with recast.
+or it can be a parser object that is compatible with recast and follows the estree spec.
 
-For example:
+__Example: specifying parser type string in the transform file__
 
 ```js
-module.exports.parser = 'flow'; // use the flow parser
-// or
+
+module.exports = function transformer(file, api, options) {
+  const j = api.jscodeshift;
+  const rootSource = j(file.source);
+  
+  // whatever other code...
+  
+  return rootSource.toSource();
+}
+  
+// use the flow parser
+module.exports.parser = 'flow'; 
+```
+
+__Example: specifying a custom parser object in the transform file__
+
+```js
+
+module.exports = function transformer(file, api, options) {
+  const j = api.jscodeshift;
+  const rootSource = j(file.source);
+  
+  // whatever other code...
+  
+  return rootSource.toSource();
+}
+
 module.exports.parser = {
   parse: function(source) {
     // return estree compatible AST
@@ -486,7 +511,7 @@ If you're authoring your transforms and tests using ES modules, make sure to imp
 ```js
 // MyTransform.js
 export const parser = 'flow'
-export default function MyTransform(fileInfo, api) {
+export default function MyTransform(fileInfo, api, options) {
   // ...
 }
 ```
