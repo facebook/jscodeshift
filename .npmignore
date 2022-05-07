@@ -1,4 +1,6 @@
+/docs/
 /sample/
+/recipes/
 .gitignore
 .eslintrc
 .eslintrc.yaml

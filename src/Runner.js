@@ -9,7 +9,7 @@
 'use strict';
 
 const child_process = require('child_process');
-const colors = require('colors/safe');
+const chalk = require('chalk');
 const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
@@ -47,21 +47,21 @@ const bufferedWrite = (function() {
 
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && bufferedWrite(colors.white.bgGreen(' OKK ') + msg);
+    verbose >= 2 && bufferedWrite(chalk.white.bgGreen(' OKK ') + msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && bufferedWrite(colors.white.bgYellow(' NOC ') + msg);
+    verbose >= 1 && bufferedWrite(chalk.white.bgYellow(' NOC ') + msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && bufferedWrite(colors.white.bgYellow(' SKIP ') + msg);
+    verbose >= 1 && bufferedWrite(chalk.white.bgYellow(' SKIP ') + msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && bufferedWrite(colors.white.bgRed(' ERR ') + msg);
+    verbose >= 0 && bufferedWrite(chalk.white.bgRed(' ERR ') + msg);
   },
 };
 
 function report({file, msg}) {
-  bufferedWrite(lineBreak(`${colors.white.bgBlue(' REP ')}${file} ${msg}`));
+  bufferedWrite(lineBreak(`${chalk.white.bgBlue(' REP ')}${file} ${msg}`));
 }
 
 function concatAll(arrays) {
@@ -77,17 +77,17 @@ function concatAll(arrays) {
 function showFileStats(fileStats) {
   process.stdout.write(
     'Results: \n'+
-    colors.red(fileStats.error + ' errors\n')+
-    colors.yellow(fileStats.nochange + ' unmodified\n')+
-    colors.yellow(fileStats.skip + ' skipped\n')+
-    colors.green(fileStats.ok + ' ok\n')
+    chalk.red(fileStats.error + ' errors\n')+
+    chalk.yellow(fileStats.nochange + ' unmodified\n')+
+    chalk.yellow(fileStats.skip + ' skipped\n')+
+    chalk.green(fileStats.ok + ' ok\n')
   );
 }
 
 function showStats(stats) {
   const names = Object.keys(stats).sort();
   if (names.length) {
-    process.stdout.write(colors.blue('Stats: \n'));
+    process.stdout.write(chalk.blue('Stats: \n'));
   }
   names.forEach(name => process.stdout.write(name + ': ' + stats[name] + '\n'));
 }
@@ -201,7 +201,7 @@ function run(transformFile, paths, options) {
     });
   } else if (!fs.existsSync(transformFile)) {
     process.stderr.write(
-      colors.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
+      chalk.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
   } else {
@@ -247,7 +247,7 @@ function run(transformFile, paths, options) {
           }
           if (options.dry) {
             process.stdout.write(
-              colors.green('Running in dry mode, no files will be written! \n')
+              chalk.green('Running in dry mode, no files will be written! \n')
             );
           }
         }
@@ -298,6 +298,10 @@ function run(transformFile, paths, options) {
             process.stdout.write(
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
+            
+            if (options.failOnError && fileCounters.error > 0) {
+              process.exit(1);
+            }
           }
           if (usedRemoteScript) {
             temp.cleanupSync();

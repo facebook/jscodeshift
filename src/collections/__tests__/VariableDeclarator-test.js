@@ -29,7 +29,7 @@ describe('VariableDeclarators', function() {
       'var foo = 42;',
       'var bar = require("module");',
       'var baz = require("module2");',
-      'function func() {',
+      'function first() {',
       '  var x = bar;',
       '  bar.someMethod();',
       '  func1(bar);',
@@ -40,7 +40,7 @@ describe('VariableDeclarators', function() {
       'foo.bar();',
       'foo[bar]();',
       'bar.foo();',
-      'function func() {',
+      'function second() {',
       '  var blah;',
       '  var obj = {',
       '    blah: 4,',
@@ -52,6 +52,7 @@ describe('VariableDeclarators', function() {
       '    blah() {}',
       '  }',
       '}',
+      'class Foo { @decorator\n*stuff() {} }',
       '<Component foo={foo} />',
     ].join('\n'), {parser: getParser()}).program];
   });
@@ -168,6 +169,62 @@ describe('VariableDeclarators', function() {
         .find(types.JSXIdentifier, { name: 'foo' });
 
       expect(identifiers.length).toBe(1);
+    });
+
+    describe('parsing with bablylon', function() {
+      it('does not rename object property', function () {
+        nodes = [
+          recast.parse('var foo = 42; var obj = { foo: null };', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
+
+      it('does not rename object method', function () {
+        nodes = [
+          recast.parse('var foo = 42; var obj = { foo() {} };', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
+
+      it('does not rename class method', function () {
+        nodes = [
+          recast.parse('var foo = 42; class A { foo() {} }', {
+            parser: getParser('babylon'),
+          }).program
+        ];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'newFoo' }).length
+        ).toBe(1);
+        expect(
+          Collection.fromNodes(nodes).find(types.Identifier, { name: 'foo' }).length
+        ).toBe(1);
+      })
     });
   });
 

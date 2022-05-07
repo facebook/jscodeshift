@@ -136,11 +136,38 @@ module.exports = function withParser(parser) {
       template[template.length - 1] += ')';
     }
 
-    return statement.apply(
+    const expression = statement.apply(
       null,
       [template].concat(Array.from(arguments).slice(1))
     ).expression;
+
+    // Remove added parens
+    if (expression.extra) {
+      expression.extra.parenthesized = false;
+    }
+
+    return expression;
   }
 
-  return {statements, statement, expression};
+  function asyncExpression(template/*, ...nodes*/) {
+    template = Array.from(template);
+    if (template.length > 0) {
+      template[0] = 'async () => (' + template[0];
+      template[template.length - 1] += ')';
+    }
+
+    const expression = statement.apply(
+      null,
+      [template].concat(Array.from(arguments).slice(1))
+    ).expression.body;
+
+    // Remove added parens
+    if (expression.extra) {
+      expression.extra.parenthesized = false;
+    }
+
+    return expression;
+  }
+
+  return {statements, statement, expression, asyncExpression};
 }
