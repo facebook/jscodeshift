@@ -202,8 +202,7 @@ You can collect even more stats via the `stats` function as explained above.
 
 ### Parser
 
-The transform file can let jscodeshift know with which parser to parse the source
-files (and features like templates).
+The transform file can let jscodeshift know with which parser to parse the source files (and features like templates).
 
 To do that, the transform module can export `parser`, which can either be one
 of the strings `"babel"`, `"babylon"`, `"flow"`, `"ts"`, or `"tsx"`,
@@ -530,6 +529,7 @@ defineInlineTest(transform, /* ... */)
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.
 - [js-codemod](https://github.com/cpojer/js-codemod/) - Codemod scripts to transform code to next generation JS.
 - [js-transforms](https://github.com/jhgg/js-transforms) - Some documented codemod experiments to help you learn.
+- [fix-js](https://github.com/anshckr/fix-js) - Codemods to fix some ESLint issues
 
 ### Local Documentation Server
 
