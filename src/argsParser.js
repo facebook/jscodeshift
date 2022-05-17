@@ -48,17 +48,7 @@ function formatOption(option) {
 function getHelpText(options) {
   const opts = Object.keys(options)
     .map(k => options[k])
-    .sort((a,b) => {
-      if (a.display_index > b.display_index) {
-        return 1;
-      } else if (a.display_index < b.display_index) {
-        return -1;
-      } else if (a.display_index === b.display_index) {
-        return 0;
-      } else {
-        return -1;
-      }
-    });
+    .sort((a,b) => a.display_index - b.display_index);
 
   const text = `
 Usage: jscodeshift [OPTION]... PATH...
