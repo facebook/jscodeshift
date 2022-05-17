@@ -20,6 +20,7 @@ const path = require('path');
 const temp = require('temp');
 const mkdirp = require('mkdirp');
 const testUtils = require('../../utils/testUtils');
+const { chdir } = require('process');
 
 const createTransformWith = testUtils.createTransformWith;
 const createTempFileWith = testUtils.createTempFileWith;
@@ -306,6 +307,48 @@ describe('jscodeshift CLI', () => {
           expect(readFile(sources[2]).toString()).toBe('subfile');
         }
       );
+    });
+
+    it('sources ignore patterns from configuration file', () => {
+      const patterns = ['sub/dir/', '*-test.js'];
+      const gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      return run(['-t', transform, '--ignore-config', gitignore].concat(sources)).then(
+        () => {
+          expect(readFile(sources[0]).toString()).toBe('transforma');
+          expect(readFile(sources[1]).toString()).toBe('a');
+          expect(readFile(sources[2]).toString()).toBe('subfile');
+        }
+      );
+    });
+
+    it('sources ignore patterns from a root directory\'s .gitignore file', () => {
+      // This test is a little different from the one above only in that we have
+      // to simulate automatically hitting up the .gitignore file from the current
+      // directory that the codeshift process is running from
+      const patterns = ['sub/dir/', '*-test.js'];
+      const gitignore = createTempFileWith(patterns.join('\n'), '.gitignore');
+      sources.push(createTempFileWith('subfile', 'sub/dir/file.js'));
+
+      // Make the temp directory with our test files the current working directory
+      let currPath = process.cwd();
+      let tempDirPath = path.dirname(sources[0]);
+      process.chdir(tempDirPath);;
+
+      return run(['-t', transform, '--gitignore'].concat(sources)).then(
+        () => {
+          expect(readFile(sources[0]).toString()).toBe('transforma');
+          expect(readFile(sources[1]).toString()).toBe('a');
+          expect(readFile(sources[2]).toString()).toBe('subfile');
+        }
+      )
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        process.chdir(currPath);
+      })
     });
 
     it('accepts a list of configuration files', () => {
