@@ -48,7 +48,7 @@ function formatOption(option) {
 function getHelpText(options) {
   const opts = Object.keys(options)
     .map(k => options[k])
-    .sort((a,b) => a.full.localeCompare(b.full));
+    .sort((a,b) => a.display_index - b.display_index);
 
   const text = `
 Usage: jscodeshift [OPTION]... PATH...
@@ -89,6 +89,7 @@ function validateOptions(parsedOptions, options) {
 
 function prepareOptions(options) {
   options.help = {
+    display_index: 5,
     abbr: 'h',
     help: 'print this help and exit',
     callback() {
