@@ -20,7 +20,7 @@ const path = require('path');
 const temp = require('temp');
 const mkdirp = require('mkdirp');
 const testUtils = require('../../utils/testUtils');
-const { chdir } = require('process');
+const {chdir} = require('process');
 
 const createTransformWith = testUtils.createTransformWith;
 const createTempFileWith = testUtils.createTempFileWith;
