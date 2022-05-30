@@ -401,7 +401,7 @@ jscodeshift(ast).logNames(); // error, unless `ast` only consists of Identifier 
 
 Sometimes there are files and directories that you want to avoid running transforms on. For example, the node_modules/ directory, where the project's installed local npm packages reside, can introduce bugs if any files in it are accidentally transformed by jscodeshift.
 
-The simplest way to avoid many of these unwanted transforms is to pass jscodeshift the __—gitignore__ flag, which uses the glob patterns specified in your project’s .gitignore file to avoid transforming anything in directories such as node_modules/, dist/, etc. In most cases anything you want git to ignore you proabably are also going to want jscodeshift to ignore as well. _Please note that the .gitignore file use will be taken from the current working directory from which jscodeshift is being run._
+The simplest way to avoid many of these unwanted transforms is to pass jscodeshift the __--gitignore__ flag, which uses the glob patterns specified in your project’s .gitignore file to avoid transforming anything in directories such as node_modules/, dist/, etc. In most cases anything you want git to ignore you proabably are also going to want jscodeshift to ignore as well. _Please note that the .gitignore file use will be taken from the current working directory from which jscodeshift is being run._
 
 ```
 jscodeshift --gitignore mytransform.js
@@ -413,10 +413,10 @@ For more custom ignore functionality, the __--ignore-pattern__ and the __--ignor
 __--ignore-pattern__  takes a [.gitignore format](https://git-scm.com/docs/gitignore#_pattern_format) glob pattern that specifies file and directory patterns to ignore
 
 ```
-jscodeshift -—ignore-pattern="js_configuration_files/**/*” mytransform.js
+jscodeshift --ignore-pattern="js_configuration_files/**/*” mytransform.js
 
 // More than one ignore
-jscodeshift -—ignore-pattern="first_ignored_dir/**/*” -—ignore-pattern="second_ignored_dir/**/*” mytransform.js
+jscodeshift --ignore-pattern="first_ignored_dir/**/*” -—ignore-pattern="second_ignored_dir/**/*” mytransform.js
 ```
 
 __--ignore-config__ takes one or more paths to files containing lines with [.gitignore format](https://git-scm.com/docs/gitignore#_pattern_format) glob patterns.
@@ -424,10 +424,10 @@ __--ignore-config__ takes one or more paths to files containing lines with [.git
 
 // note: .gitignore is a random made-up filename extension for this example
 
-jscodeshift -—ignore-config="MyIgnoreFile.gitignore" mytransform.js
+jscodeshift --ignore-config="MyIgnoreFile.gitignore" mytransform.js
 
 // More than one ignore file
-jscodeshift -—ignore-pattern="first_ignore_file.gitignore” -—ignore-pattern="second_ignore_file.gitignore” mytransform.js
+jscodeshift --ignore-pattern="first_ignore_file.gitignore” --ignore-pattern="second_ignore_file.gitignore” mytransform.js
 ```
 
 ### Passing options to [recast]
