@@ -27,6 +27,7 @@ function applyTransform(module, options, input, testOptions = {}) {
     input,
     {
       jscodeshift,
+      j: jscodeshift,
       stats: () => {},
     },
     options || {}
