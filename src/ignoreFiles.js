@@ -63,6 +63,7 @@ function shouldIgnore(path) {
   return matched;
 }
 
+exports.matchers = matchers;
 exports.add = addIgnoreFromInput;
 exports.addFromFile = addIgnoreFromFile;
 exports.shouldIgnore = shouldIgnore;

@@ -137,9 +137,7 @@ function getAllFiles(paths, filter) {
   return Promise.all(
     paths.map((file) => {
       if (file.includes('*')) {
-        return fg([file]).then((list) =>
-          list.filter((name) => filter(name) && !ignores.shouldIgnore(name))
-        );
+        return fg([file], { ignore: ignores.matchers, dot: true });
       }
       return new Promise((resolve) => {
         fs.lstat(file, (err, stat) => {
