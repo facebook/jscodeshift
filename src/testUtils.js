@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const isPromise = require('is-promise');
 
 function applyTransform(module, options, input, testOptions = {}) {
   // Handle ES6 modules using default export for the transform
@@ -33,12 +34,28 @@ function applyTransform(module, options, input, testOptions = {}) {
     options || {}
   );
 
+  if (isPromise(output)) {
+    return output
+      .then(result => {
+        return (result || '').trim()
+      });
+  }
+
   return (output || '').trim();
 }
 exports.applyTransform = applyTransform;
 
 function runSnapshotTest(module, options, input) {
   const output = applyTransform(module, options, input);
+
+  if (isPromise(output)) {
+    return output.then(result => {
+      expect(result).toMatchSnapshot();
+
+      return result;
+    })
+  }
+
   expect(output).toMatchSnapshot();
   return output;
 }
@@ -46,6 +63,15 @@ exports.runSnapshotTest = runSnapshotTest;
 
 function runInlineTest(module, options, input, expectedOutput, testOptions) {
   const output = applyTransform(module, options, input, testOptions);
+
+  if (isPromise(output)) {
+    return output.then(result => {
+      expect(result).toEqual(expectedOutput.trim());
+
+      return result;
+    })
+  }
+
   expect(output).toEqual(expectedOutput.trim());
   return output;
 }

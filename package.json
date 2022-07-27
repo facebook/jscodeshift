@@ -50,6 +50,7 @@
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "eslint": "^5.9.0",
+    "is-promise": "^4.0.0",
     "jest": "^26",
     "jsdoc": "3.6.7",
     "mkdirp": "^0.5.1"

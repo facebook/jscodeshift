@@ -25,6 +25,8 @@ defineTest(__dirname, 'reverse-identifiers');
 
 defineTest(__dirname, 'reverse-identifiers', null, 'typescript/reverse-identifiers', { parser: 'ts' });
 
+defineTest(__dirname, 'reverse-identifiers-async', null, 'typescript/reverse-identifiers', { parser: 'ts' });
+
 describe('reverse-identifiers', () => {
   defineInlineTest(transform, {}, `
 var firstWord = 'Hello ';
