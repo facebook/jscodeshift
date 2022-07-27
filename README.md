@@ -495,12 +495,16 @@ defineSnapshotTestFromFixture(__dirname, transform, transformOptions, 'FirstFixt
 
 Executes your transform using the options and the input given and returns the result.
 This function is used internally by the other helpers, but it can prove useful in other cases.
+Return promise if your transform is async.
 
 ```js
 const applyTransform = require('jscodeshift/dist/testUtils').applyTransform;
 const transform = require('../myTransform');
 const transformOptions = {};
+// sync
 const output = applyTransform(transform, transformOptions, 'input');
+// async
+const output = await applyTransform(transform, transformOptions, 'input');
 ```
 
 #### ES modules

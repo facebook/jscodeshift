@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const isPromise = require('is-promise');
 
 function applyTransform(module, options, input, testOptions = {}) {
   // Handle ES6 modules using default export for the transform
@@ -33,12 +34,27 @@ function applyTransform(module, options, input, testOptions = {}) {
     options || {}
   );
 
+  if (isPromise(output)) {
+    return output.then(result => {
+      return (result || '').trim();
+    });
+  }
+
   return (output || '').trim();
 }
 exports.applyTransform = applyTransform;
 
 function runSnapshotTest(module, options, input) {
   const output = applyTransform(module, options, input);
+
+  if (isPromise(output)) {
+    return output.then(result => {
+      expect(result).toMatchSnapshot();
+
+      return result;
+    });
+  }
+
   expect(output).toMatchSnapshot();
   return output;
 }
@@ -46,6 +62,14 @@ exports.runSnapshotTest = runSnapshotTest;
 
 function runInlineTest(module, options, input, expectedOutput, testOptions) {
   const output = applyTransform(module, options, input, testOptions);
+
+  if (isPromise(output)) {
+    return output.then(result => {
+      expect(result).toEqual(expectedOutput.trim());
+      return result;
+    });
+  }
+
   expect(output).toEqual(expectedOutput.trim());
   return output;
 }
@@ -95,10 +119,14 @@ function runTest(dirName, transformName, options, testFilePrefix, testOptions = 
   );
   // Assumes transform is one level up from __tests__ directory
   const module = require(path.join(dirName, '..', transformName));
-  runInlineTest(module, options, {
+  const result =  runInlineTest(module, options, {
     path: inputPath,
     source
   }, expectedOutput, testOptions);
+
+  if (isPromise(result)) {
+    return result;
+  }
 }
 exports.runTest = runTest;
 
@@ -112,7 +140,7 @@ function defineTest(dirName, transformName, options, testFilePrefix, testOptions
     : 'transforms correctly';
   describe(transformName, () => {
     it(testName, () => {
-      runTest(dirName, transformName, options, testFilePrefix, testOptions);
+      return runTest(dirName, transformName, options, testFilePrefix, testOptions);
     });
   });
 }
@@ -120,18 +148,26 @@ exports.defineTest = defineTest;
 
 function defineInlineTest(module, options, input, expectedOutput, testName) {
   it(testName || 'transforms correctly', () => {
-    runInlineTest(module, options, {
+    const result = runInlineTest(module, options, {
       source: input
     }, expectedOutput);
+
+    if (isPromise(result)) {
+      return result;
+    }
   });
 }
 exports.defineInlineTest = defineInlineTest;
 
 function defineSnapshotTest(module, options, input, testName) {
   it(testName || 'transforms correctly', () => {
-    runSnapshotTest(module, options, {
+    const result = runSnapshotTest(module, options, {
       source: input
     });
+
+    if (isPromise(result)) {
+      return result;
+    }
   });
 }
 exports.defineSnapshotTest = defineSnapshotTest;
