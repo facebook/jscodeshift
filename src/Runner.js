@@ -320,3 +320,5 @@ function run(transformFile, paths, options) {
 }
 
 exports.run = run;
+
+exports.getAllFiles = getAllFiles
