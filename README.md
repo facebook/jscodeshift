@@ -12,7 +12,7 @@ It provides:
 
 ## Install
 
-Get jscodeshift from [npm][]:
+Get jscodeshift from [npm](https://www.npmjs.com/package/jscodeshift):
 
 ```
 $ npm install -g jscodeshift
