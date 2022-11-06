@@ -19,7 +19,7 @@ describe('VariableDeclarators', function() {
   let VariableDeclaratorCollection;
 
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     Collection = require('../../Collection');
     VariableDeclaratorCollection =  require('../VariableDeclarator');

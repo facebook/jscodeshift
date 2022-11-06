@@ -19,7 +19,7 @@ describe('JSXCollection API', function() {
   let b;
 
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     Collection = require('../../Collection');
     JSXElementCollection = require('../JSXElement');

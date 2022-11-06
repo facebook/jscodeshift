@@ -13,15 +13,11 @@ const matchNode = require('../matchNode');
 
 describe('matchNode', function() {
   beforeEach(function() {
-    jest.addMatchers({
-      toMatchNode: function() {
-        return {
-          compare(haystack, needle) {
-            const result = {};
-            result.pass = matchNode(haystack, needle);
-            return result;
-          },
-        };
+    expect.extend({
+      toMatchNode: function(haystack, needle) {
+        const result = {};
+        result.pass = matchNode(haystack, needle);
+        return result;
       }
     });
   })

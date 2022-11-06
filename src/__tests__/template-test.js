@@ -18,7 +18,7 @@ describe('Templates', () => {
   let jscodeshift;
 
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     jscodeshift = require('../core');
     const template = jscodeshift.template;

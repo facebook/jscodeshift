@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`tsxParser parse extends the ts config with jsx support 1`] = `
-Array [
-  "\\"mock content\\";",
-  Object {
+[
+  ""mock content";",
+  {
     "allowImportExportEverywhere": true,
     "allowReturnOutsideFunction": true,
-    "plugins": Array [
+    "plugins": [
       "jsx",
       "asyncGenerators",
       "bigInt",
@@ -27,9 +27,9 @@ Array [
       "objectRestSpread",
       "optionalCatchBinding",
       "optionalChaining",
-      Array [
+      [
         "pipelineOperator",
-        Object {
+        {
           "proposal": "minimal",
         },
       ],
