@@ -17,7 +17,7 @@ describe('Collection API', function() {
   let b;
 
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     Collection = require('../../Collection');
     NodeCollection = require('../Node');
