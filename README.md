@@ -81,8 +81,9 @@ directory). The next section explains the structure of the transform module.
 
 ```js
 const {run: jscodeshift} = require('jscodeshift/src/Runner')
+const path = require('node:path');
 
-const transformPath = 'transform.js'
+const transformPath = path.resolve('transform.js')
 const paths = ['foo.js', 'bar']
 const options = {
   dry: true,
