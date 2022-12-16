@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -16,6 +15,7 @@ const http = require('http');
 const https = require('https');
 const temp = require('temp');
 const ignores = require('./ignoreFiles');
+const fg = require('fast-glob');
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
 const CHUNK_SIZE = 50;
@@ -135,27 +135,31 @@ function dirFiles (dir, callback, acc) {
 
 function getAllFiles(paths, filter) {
   return Promise.all(
-    paths.map(file => new Promise(resolve => {
-      fs.lstat(file, (err, stat) => {
-        if (err) {
-          process.stderr.write('Skipping path ' + file + ' which does not exist. \n');
-          resolve([]);
-          return;
-        }
+    paths.map((file) => {
+      if (file.includes('*')) {
+        return fg([file], { ignore: ignores.matchers, dot: true });
+      }
+      return new Promise((resolve) => {
+        fs.lstat(file, (err, stat) => {
+          if (err) {
+            process.stderr.write(
+              'Skipping path ' + file + ' which does not exist. \n'
+            );
+            resolve([]);
+            return;
+          }
 
-        if (stat.isDirectory()) {
-          dirFiles(
-            file,
-            list => resolve(list.filter(filter))
-          );
-        } else if (ignores.shouldIgnore(file)) {
-          // ignoring the file
-          resolve([]);
-        } else {
-          resolve([file]);
-        }
-      })
-    }))
+          if (stat.isDirectory()) {
+            dirFiles(file, (list) => resolve(list.filter(filter)));
+          } else if (ignores.shouldIgnore(file)) {
+            // ignoring the file
+            resolve([]);
+          } else {
+            resolve([file]);
+          }
+        });
+      });
+    })
   ).then(concatAll);
 }
 
@@ -316,3 +320,5 @@ function run(transformFile, paths, options) {
 }
 
 exports.run = run;
+
+exports.getAllFiles = getAllFiles
