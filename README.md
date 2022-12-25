@@ -318,7 +318,7 @@ var ast = j.callExpression(
 ```
 
 The signature of each builder function is best learned by having a look at the
-[definition files](https://github.com/benjamn/ast-types/blob/master/def/).
+[definition files](https://github.com/benjamn/ast-types/tree/master/src/def).
 
 ### Collections and Traversal
 
