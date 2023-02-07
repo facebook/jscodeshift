@@ -169,7 +169,7 @@ At the end, the CLI will report those values. This can be useful while
 developing the transform, e.g. to find out how often a certain construct
 appears in the source(s).
 
-**`report`** allows you do print arbitrary strings to stdout. This can be
+**`report`** allows you to print arbitrary strings to stdout. This can be
 useful when other tools consume the output of jscodeshift. The reason to not
 directly use `process.stdout` in transform code is to avoid mangled output when
 many files are processed.
