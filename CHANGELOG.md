@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+<!-- Add new changes here -->
+
+## [0.15.0] 2023-05-07
+
+### Changed
+- Upgraded to recast 0.23.1 (#544, @ryanrhee)
+- Make @babel/preset-env optional (#480, @SimenB)
+
+### Fixed
+- Force LF line ending in bin/jscodeshift.sh (#555, @jakeboone02)
+- Use transform's exported parser in testUitls (#528, @CrispyBacon12)
+- Ensure jscodeshift doesn't load Babel config file (#460, @raon0211)
+
 ## [0.14.0] 2022-10-04
 
 ### Added
