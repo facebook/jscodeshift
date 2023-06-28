@@ -148,7 +148,7 @@ function getAllFiles(paths, filter) {
             file,
             list => resolve(list.filter(filter))
           );
-        } else if (ignores.shouldIgnore(file)) {
+        } else if (!filter(file) || ignores.shouldIgnore(file)) {
           // ignoring the file
           resolve([]);
         } else {
