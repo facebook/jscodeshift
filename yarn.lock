@@ -3322,10 +3322,10 @@ react-is@^18.0.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-recast@^0.23.1:
-  version "0.23.1"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.23.1.tgz#ee415a5561d2f99f02318ea8db81ad3a2267a6ff"
-  integrity sha512-RokaBcoxSjXUDzz1TXSZmZsSW6ZpLmlA3GGqJ8uuTrQ9hZhEz+4Tpsc+gRvYRJ2BU4H+ZyUlg91eSGDw7bwy7g==
+recast@^0.23.3:
+  version "0.23.3"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.23.3.tgz#f205d1f46b2c6f730de413ab18f96c166263d85f"
+  integrity sha512-HbCVFh2ANP6a09nzD4lx7XthsxMOJWKX5pIcUwtLrmeEIl3I0DwjCoVXDE0Aobk+7k/mS3H50FK4iuYArpcT6Q==
   dependencies:
     assert "^2.0.0"
     ast-types "^0.16.1"
