@@ -75,6 +75,7 @@ function setup(tr, babel) {
         require('@babel/plugin-proposal-nullish-coalescing-operator').default,
         require('@babel/plugin-proposal-optional-chaining').default,
         require('@babel/plugin-transform-modules-commonjs').default,
+        require('@babel/plugin-transform-private-methods').default,
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
