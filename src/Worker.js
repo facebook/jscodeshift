@@ -71,9 +71,9 @@ function setup(tr, babel) {
       babelrc: false,
       presets,
       plugins: [
-        require('@babel/plugin-proposal-class-properties').default,
-        require('@babel/plugin-proposal-nullish-coalescing-operator').default,
-        require('@babel/plugin-proposal-optional-chaining').default,
+        require('@babel/plugin-transform-class-properties').default,
+        require('@babel/plugin-transform-nullish-coalescing-operator').default,
+        require('@babel/plugin-transform-optional-chaining').default,
         require('@babel/plugin-transform-modules-commonjs').default,
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
