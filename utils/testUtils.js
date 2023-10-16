@@ -13,9 +13,9 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const temp = require('temp');
 
-function renameFileTo(oldPath, newFilename) {
+function renameFileTo(oldPath, newFilename, extension = '') {
   const projectPath = path.dirname(oldPath);
-  const newPath = path.join(projectPath, newFilename);
+  const newPath = path.join(projectPath, newFilename + extension);
   mkdirp.sync(path.dirname(newPath));
   fs.renameSync(oldPath, newPath);
   return newPath;
@@ -27,7 +27,7 @@ function createTempFileWith(content, filename, extension) {
   fs.writeSync(info.fd, content);
   fs.closeSync(info.fd);
   if (filename) {
-    filePath = renameFileTo(filePath, filename);
+    filePath = renameFileTo(filePath, filename, extension);
   }
   return filePath;
 }

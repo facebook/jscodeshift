@@ -30,6 +30,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.23.0",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.22.11",
     "@babel/plugin-transform-optional-chaining": "^7.23.0",
+    "@babel/plugin-transform-private-methods": "^7.22.5",
     "@babel/preset-flow": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
     "@babel/register": "^7.22.15",
