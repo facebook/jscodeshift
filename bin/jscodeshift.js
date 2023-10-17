@@ -91,7 +91,7 @@ const parser = require('../src/argsParser')
       display_index: 8,
       flag: true,
       default: false,
-      help: 'adds entries the current directory\'s .gitignore file',
+      help: 'ignore files matching patterns specified in current directory\'s .gitignore file',
     },
     runInBand: {
       display_index: 12,
