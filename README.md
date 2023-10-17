@@ -54,6 +54,7 @@ All options are also passed to the transformer, which means you can supply custo
   -h, --help                    print this help and exit
       --ignore-config=FILE ...  ignore files if they match patterns sourced from a configuration file (e.g. a .gitignore)
       --ignore-pattern=GLOB ...  ignore files that match a provided glob expression
+      --(no-)gitignore          ignore files matching patterns specified in current directory's .gitignore file
       --parser=babel|babylon|flow|ts|tsx  the parser to use for parsing the source files
                                           (default: babel)
       --parser-config=FILE      path to a JSON file containing a custom parser configuration for flow or babylon
