@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [0.15.1] 2023-10-28
+
+### Changed
+- Upgraded to recast 0.23.3 (#564, @ashsearle)
+- Enable `@babel/plugin-proposal-private-methods` in worker (#568, @sibelius)
+- Upgraded Babel packages (#570, @dartess)
+
+### Fixed
+- Respect extensions cli option when filtering individual files (#562, @robcmills)
+- Fixed unit test after #562 broke them (#575, @ElonVolo)
+
 ## [0.15.0] 2023-05-07
 
 ### Changed
