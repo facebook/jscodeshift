@@ -63,7 +63,6 @@ const parser = require('../src/argsParser')
     },
     extensions: {
       display_index: 3,
-      default: 'js',
       help: 'transform files with these file extensions (comma separated list)',
       metavar: 'EXT',
     },
