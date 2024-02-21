@@ -14,6 +14,12 @@ const Runner = require('../src/Runner.js');
 const fs = require('fs');
 const path = require('path');
 const pkg = require('../package.json');
+
+const { DEFAULT_EXTENSIONS } = require('@babel/core');
+const defaultExtensions = DEFAULT_EXTENSIONS.concat(['ts', 'tsx']).map(
+  (ext) => (ext.startsWith('.') ? ext.substring(1) : ext)
+).sort().join(',');
+
 const parser = require('../src/argsParser')
   .options({
     transform: {
@@ -63,7 +69,7 @@ const parser = require('../src/argsParser')
     },
     extensions: {
       display_index: 3,
-      default: 'js',
+      default: defaultExtensions,
       help: 'transform files with these file extensions (comma separated list)',
       metavar: 'EXT',
     },
