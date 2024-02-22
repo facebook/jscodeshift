@@ -567,7 +567,10 @@ It's recommended that you set up your codemod project to all debugging via the V
             ],
             "console": "internalConsole",
             "sourceMaps": true,
-            "outFiles": []
+            "outFiles": [],
+            "windows": {
+                "program": "${workspaceRoot}/node_modules/jscodeshift/bin/jscodeshift.js",
+            }
         },
         {
             "name": "Debug All JSCodeshift Jest Tests",
