@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [0.15.2] 2024-02-21
+
+### Fixed
+- Process all supported extensions by default (#584, @trivikr)
+
 ## [0.15.1] 2023-10-28
 
 ### Changed
