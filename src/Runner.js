@@ -168,9 +168,16 @@ function run(transformFile, paths, options) {
   const statsCounter = {};
   const startTime = process.hrtime();
 
+  ignores.add(options.ignoreSet);
   ignores.add(options.ignorePattern);
   ignores.addFromFile(options.ignoreConfig);
 
+  if (options.gitignore) {
+    let currDirectory = process.cwd();
+    let gitIgnorePath = path.join(currDirectory, '.gitignore');
+    ignores.addFromFile(gitIgnorePath);
+  }
+ 
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
     return new Promise((resolve, reject) => {
