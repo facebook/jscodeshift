@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [0.16.0] 2024-06-18
+
+### Added
+ - Added a `--gitignore` flag to avoid transforming any files listed in `.gitignore` (#508, @ElonVolo)
+
+### Changed
+- Updated various dependencies to latest version (#588, @ElonVolo)
+
 ## [0.15.2] 2024-02-21
 
 ### Fixed
