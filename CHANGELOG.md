@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [0.16.1] 2024-06-25
+
+### Fixed
+- Removed old `babel-core` dependency that was unused but caused security scanners to flag vulnerabilities.
+
 ## [0.16.0] 2024-06-18
 
 ### Added
