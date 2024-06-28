@@ -25,7 +25,7 @@ Generally, creating a codemod involves two main tasks: **detection** and **trans
 
 For jscodeshift, we have a set of APIs for each part of the codemod process (initial traversal, filtering, transformation), as detailed below. jscodeshift accepts `—parser` as argument. We can select from the list of parser that are currently supported, all those parsers should be compatible with `estree` spec and have same AST grammar. It's important to know the AST grammar for describing the nodes in the codemod.
 
-Refer to [this link](https://github.com/estree/estree/blob/master/es5.md#literal) for ES5, and [this link](https://github.com/babel/babel/blob/main/packages/babel-parser/ast/spec.md) for babel-parser AST node definitions.
+Refer to the [`jscodeshift` node types](/ast/node-types).
 
 ## Core API
 
