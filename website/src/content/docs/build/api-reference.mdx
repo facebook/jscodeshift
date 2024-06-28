@@ -2,30 +2,40 @@
 title: API Reference
 ---
 
+import { Steps, LinkCard, Card, CardGrid } from '@astrojs/starlight/components';
+
 `jscodeshift` has around 25 APIs to help developers easily detect and transform any JS/TS code. 
 
 Generally, creating a codemod involves two main tasks: **detection** and **transformation**. 
 
 <Steps>
-  <Step title="Detection">
-    Detecting a specific pattern in a large codebase can be expensive, so this task is often divided into two passes.
-    <Steps>
-      <Step title="First Pass">
-        In the first pass, we perform an initial scope reduction of the AST nodes to significantly reduce the search space and produce a collection of AST nodes to process. 
-      </Step>
-      <Step title="Second Pass">
-        In the second pass, we process and filter the nodes collection to pinpoint the specific AST nodes that need transformation.
-      </Step>
-    </Steps>
-  </Step>
-  <Step title="Transformation">
-    Once we detect the desired nodes, we transform the AST and produce the modified code.
-  </Step>
+  1. Detection
+    
+      Detecting a specific pattern in a large codebase can be expensive, so this task is often divided into two passes.
+
+      <Steps>
+        1. **First pass**
+            
+            In the first pass, we perform an initial scope reduction of the AST nodes to significantly reduce the search space and produce a collection of AST nodes to process. 
+        2. **Second pass**
+            
+            In the second pass, we process and filter the nodes collection to pinpoint the specific AST nodes that need transformation.
+      </Steps>
+  2. Transformation
+      Once we detect the desired nodes, we transform the AST and produce the modified code.
 </Steps>
 
 For jscodeshift, we have a set of APIs for each part of the codemod process (initial traversal, filtering, transformation), as detailed below. jscodeshift accepts `—parser` as argument. We can select from the list of parser that are currently supported, all those parsers should be compatible with `estree` spec and have same AST grammar. It's important to know the AST grammar for describing the nodes in the codemod.
 
-Refer to [this link](https://github.com/estree/estree/blob/master/es5.md#literal) for ES5, and [this link](https://github.com/babel/babel/blob/main/packages/babel-parser/ast/spec.md) for babel-parser AST node definitions.
+Refer to the [`jscodeshift` node types](/ast/node-types).
+
+## Building jscodeshift codemods
+
+<CardGrid>
+  <LinkCard title="Core API" href="#core-api" />
+  <LinkCard title="Node Traversal APIs" href="#node-traversal-apis" />
+  <LinkCard title="Node Transformation APIs" href="#node-transformation-apis" />
+</CardGrid>
 
 ## Core API
 
@@ -33,11 +43,7 @@ Refer to [this link](https://github.com/estree/estree/blob/master/es5.md#literal
 
 **Description**: The main function that returns the jscodeshift instance.
 
-##### **Parameters:**
-
-<ResponseField name="source" type="string">
-  The source code to be transformed.
-</ResponseField>
+**Parameters**: `source` (String): The source code to be transformed.
 
 **Example**:
 
@@ -53,11 +59,9 @@ Below are APIs that often used in the **initial scope reduction** phase ([source
 
 ### **`find`**
 
-##### **Parameters:**
+**Description**: Finds nodes that match the provided type.
 
-<ResponseField name="type" type="string | function">
-  The type of nodes to find.
-</ResponseField>
+**Parameters**: `type` (String or Function): The type of nodes to find.
 
 **Example**:
 
@@ -79,11 +83,7 @@ const closestScopes = j.find(j.Identifier).closestScope();
 
 **Description**: Finds the closest ancestor of a node that matches the provided type.
 
-##### **Parameters:**
-
-<ResponseField name="type" type="string | function">
-  The type of ancestor to find.
-</ResponseField>
+**Parameters**:`type` (String or Function): The type of ancestor to find.
 
 **Example**:
 
@@ -95,11 +95,7 @@ const closestFunction = j.find(j.Identifier).closest(j.FunctionDeclaration);
 
 **Description**: Retrieves variable declarators with the specified name from the current collection.
 
-##### **Parameters:**
-
-<ResponseField name="name" type="string">
-  The name of the variable to find.
-</ResponseField>
+**Parameters**:`name` (String): The name of the variable to find.
 
 **Example**:
 
@@ -111,11 +107,7 @@ const variableDeclarators = j.getVariableDeclarators('myVariable');
 
 **Description**: Finds variable declarators by name.
 
-##### **Parameters:**
-
-<ResponseField name="name" type="string">
-  The name of the variable to find.
-</ResponseField>
+**Parameters**: `name` (String): The name of the variable to find.
 
 **Example**:
 
@@ -129,11 +121,7 @@ Below are the APIs that are often used in the second phase, which is the **detai
 
 **Description**: Filters nodes based on a predicate function.
 
-##### **Parameters:**
-
-<ResponseField name="predicate" type="function">
-  A function to test each element.
-</ResponseField>
+**Parameters**: `predicate` (Function): A function to test each element.
 
 **Example**:
 
@@ -146,11 +134,7 @@ const constDeclarations = j.find(j.VariableDeclaration)
 
 **Description**: Iterates over each node in the collection.
 
-##### **Parameters:**
-
-<ResponseField name="callback" type="function">
-  A function to call for each node.
-</ResponseField>
+**Parameters**: `callback` (Function): A function to call for each node.
 
 **Example**:
 
@@ -162,15 +146,13 @@ j.find(j.VariableDeclaration).forEach(path => {
 
 ### `some`
 
-**Description:**`some` checks if at least one element in the collection passes the test implemented by the provided function.
+**Description:** `some` checks if at least one element in the collection passes the test implemented by the provided function.
 
-<ResponseField name="callback" type="function">
-  A function that tests each element. The callback function takes three arguments:
+**Parameters:** `callback`: A function that tests each element. The callback function takes three arguments:
 
-  - `path`: The current element being processed.
-  - `index`: The index of the current element.
-  - `array`: The array `some` was called upon.
-</ResponseField>
+- `path`: The current element being processed.
+- `index`: The index of the current element.
+- `array`: The array `some` was called upon.
 
 **Example:**
 
@@ -186,15 +168,13 @@ console.log(hasVariableA); // true
 
 ### `every`
 
-**Description:**`every` checks if all elements in the collection pass the test implemented by the provided function.
+**Description:** `every` checks if all elements in the collection pass the test implemented by the provided function.
 
+**Parameters:** `callback`: A function that tests each element. The callback function takes three arguments:
 
-<ResponseField name="callback" type="function">
-  A function that tests each element. The callback function takes three arguments:
-  - `path`: The current element being processed.
-  - `index`: The index of the current element.
-  - `array`: The array `every` was called upon.
-</ResponseField>
+- `path`: The current element being processed.
+- `index`: The index of the current element.
+- `array`: The array `every` was called upon.
 
 **Example:**
 
@@ -212,11 +192,7 @@ console.log(allAreConst); // true
 
 **Description**: Maps each node in the collection to a new value.
 
-##### **Parameters:**
-
-<ResponseField name="callback" type="function">
-  A function to call for each node.
-</ResponseField>
+**Parameters**:`callback` (Function): A function to call for each node.
 
 **Example**:
 
@@ -237,7 +213,7 @@ const numberOfNodes = j.find(j.VariableDeclaration).size();
 
 ### `length`
 
-**Description:**`length` returns the number of elements in the collection.
+**Description:** `length` returns the number of elements in the collection.
 
 **Example:**
 
@@ -263,7 +239,7 @@ const paths = j.find(j.VariableDeclaration).paths();
 
 ### `getAST`
 
-**Description:**`getAST` returns the root AST node of the collection.
+**Description:** `getAST` returns the root AST node of the collection.
 
 **Example:**
 
@@ -291,11 +267,7 @@ const firstVariableDeclaration = j.find(j.VariableDeclaration).get();
 
 **Description**: Navigates to a specific path in the AST.
 
-##### **Parameters:**
-
-<ResponseField name="index" type="number">
-  The index of the path to navigate to.
-</ResponseField>
+**Parameters**: `index` (Number): The index of the path to navigate to.
 
 **Example**:
 
@@ -305,7 +277,7 @@ const secondVariableDeclaration = j.find(j.VariableDeclaration).at(1);
 
 ### `getTypes`
 
-**Description:**`getTypes` returns the set of node types present in the collection.
+**Description:** `getTypes` returns the set of node types present in the collection.
 
 **Example:**
 
@@ -321,11 +293,9 @@ console.log(types); // Set { 'VariableDeclarator' }
 
 ### `isOfType`
 
-**Description:**`isOfType` checks if the node in the collection is of a specific type.
+**Description:** `isOfType` checks if the node in the collection is of a specific type.
 
-<ResponseField name="type">
-  The type to check against.
-</ResponseField>
+**Parameters:** `type`: The type to check against.
 
 **Example:**
 
@@ -347,11 +317,7 @@ Below are the APIs used in node transformations. ([source](https://github.com/fa
 
 **Description**: Replaces the current node(s) with a new node.
 
-##### **Parameters:**
-
-<ResponseField name="newNode" type="node | function">
-  The new node or a function that returns a new node.
-</ResponseField>
+**Parameters**: `newNode` (Node or Function): The new node or a function that returns a new node.
 
 **Example**:
 
@@ -364,11 +330,7 @@ j.find(j.Identifier)
 
 **Description**: Inserts a node before the current node.
 
-##### **Parameters:**
-
-<ResponseField name="newNode" type="node">
-  The node to insert.
-</ResponseField>
+**Parameters**: `newNode` (Node): The node to insert.
 
 **Example**:
 
@@ -381,11 +343,7 @@ j.find(j.FunctionDeclaration)
 
 **Description**: Inserts a node after the current node.
 
-##### **Parameters:**
-
-<ResponseField name="newNode" type="node">
-  The node to insert.
-</ResponseField>
+**Parameters**: `newNode` (Node): The node to insert.
 
 **Example**:
 
@@ -406,13 +364,9 @@ j.find(j.VariableDeclaration).remove();
 
 ### `renameTo` ([source](https://github.com/facebook/jscodeshift/blob/main/src/collections/VariableDeclarator.js))
 
-**Description:**`renameTo` renames the nodes in the collection to a new name.
+**Description:** `renameTo` renames the nodes in the collection to a new name.
 
-##### **Parameters:**
-
-<ResponseField name="newName" type="node">
-  The new name to rename to.
-</ResponseField>
+**Parameters:** `newName`: The new name to rename to.
 
 **Example:**
 
@@ -433,11 +387,7 @@ These descriptions and examples should give you a clear understanding of how to 
 
 **Description**: Converts the transformed AST back to source code.
 
-##### **Parameters:**
-
-<ResponseField name="options" type="object">
-  Optional formatting options.
-</ResponseField>
+**Parameters**: `options` (Object): Optional formatting options.
 
 **Example**:
 
