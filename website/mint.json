@@ -29,7 +29,7 @@
     },
     {
       "group": "Building",
-      "pages": ["build"]
+      "pages": ["build", "ast/node-types"]
     },
     {
       "group": "Running",
