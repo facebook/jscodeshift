@@ -8,6 +8,20 @@ title: Overview
 - A wrapper around [recast](https://github.com/benjamn/recast), providing a different API.  Recast is an AST-to-AST transform tool and also tries to preserve the style of original code
 as much as possible.
 
+## How does `jscodeshift` work?
+
+<Steps>
+  <Step title="Parsing Code into AST">
+    First, jscodeshift takes your JavaScript code and converts it into an Abstract Syntax Tree (AST). An AST is a tree representation of your code where each node represents a different part of the code, like variables, functions, and expressions.
+  </Step>
+  <Step title="Transforming the AST">
+    Using jscodeshift, you can navigate through the AST and apply transformations. For example, you can find all instances of a certain function and rename it or change its parameters.
+  </Step>
+  <Step title="Generating Code from AST">
+    After transforming the AST, jscodeshift converts it back into JavaScript code. The result is your original code with the specified changes applied.
+  </Step>
+</Steps>
+
 ## Installation
 
 Get jscodeshift from [npm](https://www.npmjs.com/package/jscodeshift):
