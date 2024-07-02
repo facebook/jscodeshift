@@ -7,7 +7,7 @@ export default defineConfig({
 		starlight({
 			title: 'jscodeshift',
 			social: {
-				github: 'https://github.com/withastro/starlight',
+				github: 'https://github.com/facebook/jscodeshift',
 			},
 			sidebar: [
 				{
