@@ -19,6 +19,7 @@ module.exports = {
   tokens: true,
   plugins: [
     'asyncGenerators',
+    'decoratorAutoAccessors',
     'bigInt',
     'classPrivateMethods',
     'classPrivateProperties',
