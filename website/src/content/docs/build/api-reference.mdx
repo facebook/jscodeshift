@@ -43,7 +43,7 @@ Refer to the [`jscodeshift` node types](/build/ast-grammar/).
 
 ### **`jscodeshift`**
 
-**Description**: The main function that returns the jscodeshift instance.
+The main function that returns the jscodeshift instance.
 
 **Parameters**: `source` (String): The source code to be transformed.
 
@@ -61,7 +61,7 @@ Below are APIs that often used in the **initial scope reduction** phase ([source
 
 ### **`find`**
 
-**Description**: Finds nodes that match the provided type.
+Finds nodes that match the provided type.
 
 **Parameters**: `type` (String or Function): The type of nodes to find.
 
@@ -73,7 +73,7 @@ const variableDeclarations = j.find(j.VariableDeclaration);
 
 ### **`closestScope`**
 
-**Description**: Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
+Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
 
 **Example**:
 
@@ -83,11 +83,9 @@ const closestScopes = j.find(j.Identifier).closestScope();
 
 ### **`closest`**
 
-**Description**: Finds the closest ancestor of a node that matches the provided type.
+Finds the nearest parent node that matches the specified type. The child node must be obtained from a previous function call, such as find.
 
 **Parameters**:`type` (String or Function): The type of ancestor to find.
-
-**Example**:
 
 ```jsx
 const closestFunction = j.find(j.Identifier).closest(j.FunctionDeclaration);
@@ -95,7 +93,7 @@ const closestFunction = j.find(j.Identifier).closest(j.FunctionDeclaration);
 
 ### **`getVariableDeclarators`**
 
-**Description**: Retrieves variable declarators with the specified name from the current collection.
+Retrieves variable declarators with the specified name from the current collection.
 
 **Parameters**:`name` (String): The name of the variable to find.
 
@@ -107,7 +105,7 @@ const variableDeclarators = j.getVariableDeclarators('myVariable');
 
 ### **`findVariableDeclarators` ([source](https://github.com/facebook/jscodeshift/blob/main/src/collections/VariableDeclarator.js))**
 
-**Description**: Finds variable declarators by name.
+Finds variable declarators by name.
 
 **Parameters**: `name` (String): The name of the variable to find.
 
@@ -121,7 +119,7 @@ Below are the APIs that are often used in the second phase, which is the **detai
 
 ### **`filter`**
 
-**Description**: Filters nodes based on a predicate function.
+Filters nodes based on a predicate function.
 
 **Parameters**: `predicate` (Function): A function to test each element.
 
@@ -134,7 +132,7 @@ const constDeclarations = j.find(j.VariableDeclaration)
 
 ### **`forEach`**
 
-**Description**: Iterates over each node in the collection.
+Iterates over each node in the collection.
 
 **Parameters**: `callback` (Function): A function to call for each node.
 
@@ -148,7 +146,7 @@ j.find(j.VariableDeclaration).forEach(path => {
 
 ### `some`
 
-**Description:** `some` checks if at least one element in the collection passes the test implemented by the provided function.
+`some` checks if at least one element in the collection passes the test implemented by the provided function.
 
 **Parameters:** `callback`: A function that tests each element. The callback function takes three arguments:
 
@@ -170,7 +168,7 @@ console.log(hasVariableA); // true
 
 ### `every`
 
-**Description:** `every` checks if all elements in the collection pass the test implemented by the provided function.
+`every` checks if all elements in the collection pass the test implemented by the provided function.
 
 **Parameters:** `callback`: A function that tests each element. The callback function takes three arguments:
 
@@ -192,7 +190,7 @@ console.log(allAreConst); // true
 
 ### **`map`**
 
-**Description**: Maps each node in the collection to a new value.
+Maps each node in the collection to a new value.
 
 **Parameters**:`callback` (Function): A function to call for each node.
 
@@ -205,7 +203,7 @@ const variableNames = j.find(j.VariableDeclaration)
 
 ### **`size`**
 
-**Description**: Returns the number of nodes in the collection.
+Returns the number of nodes in the collection.
 
 **Example**:
 
@@ -215,7 +213,7 @@ const numberOfNodes = j.find(j.VariableDeclaration).size();
 
 ### `length`
 
-**Description:** `length` returns the number of elements in the collection.
+`length` returns the number of elements in the collection.
 
 **Example:**
 
@@ -231,7 +229,7 @@ console.log(varCount); // 3
 
 ### **`paths`**
 
-**Description**: Returns the paths of the found nodes.
+Returns the paths of the found nodes.
 
 **Example**:
 
@@ -241,7 +239,7 @@ const paths = j.find(j.VariableDeclaration).paths();
 
 ### `getAST`
 
-**Description:** `getAST` returns the root AST node of the collection.
+`getAST` returns the root AST node of the collection.
 
 **Example:**
 
@@ -257,7 +255,7 @@ console.log(ast.type); // File
 
 ### **`get`**
 
-**Description**: Gets the first node in the collection.
+Gets the first node in the collection.
 
 **Example**:
 
@@ -267,7 +265,7 @@ const firstVariableDeclaration = j.find(j.VariableDeclaration).get();
 
 ### **`at`**
 
-**Description**: Navigates to a specific path in the AST.
+Navigates to a specific path in the AST.
 
 **Parameters**: `index` (Number): The index of the path to navigate to.
 
@@ -279,7 +277,7 @@ const secondVariableDeclaration = j.find(j.VariableDeclaration).at(1);
 
 ### `getTypes`
 
-**Description:** `getTypes` returns the set of node types present in the collection.
+`getTypes` returns the set of node types present in the collection.
 
 **Example:**
 
@@ -295,7 +293,7 @@ console.log(types); // Set { 'VariableDeclarator' }
 
 ### `isOfType`
 
-**Description:** `isOfType` checks if the node in the collection is of a specific type.
+`isOfType` checks if the node in the collection is of a specific type.
 
 **Parameters:** `type`: The type to check against.
 
@@ -317,7 +315,7 @@ Below are the APIs used in node transformations. ([source](https://github.com/fa
 
 ### **`replaceWith`**
 
-**Description**: Replaces the current node(s) with a new node.
+Replaces the current node(s) with a new node.
 
 **Parameters**: `newNode` (Node or Function): The new node or a function that returns a new node.
 
@@ -330,7 +328,7 @@ j.find(j.Identifier)
 
 ### **`insertBefore`**
 
-**Description**: Inserts a node before the current node.
+Inserts a node before the current node.
 
 **Parameters**: `newNode` (Node): The node to insert.
 
@@ -343,7 +341,7 @@ j.find(j.FunctionDeclaration)
 
 ### **`insertAfter`**
 
-**Description**: Inserts a node after the current node.
+Inserts a node after the current node.
 
 **Parameters**: `newNode` (Node): The node to insert.
 
@@ -356,7 +354,7 @@ j.find(j.FunctionDeclaration)
 
 ### **`remove`**
 
-**Description**: Removes the current node(s).
+Removes the current node(s).
 
 **Example**:
 
@@ -366,7 +364,7 @@ j.find(j.VariableDeclaration).remove();
 
 ### `renameTo` ([source](https://github.com/facebook/jscodeshift/blob/main/src/collections/VariableDeclarator.js))
 
-**Description:** `renameTo` renames the nodes in the collection to a new name.
+`renameTo` renames the nodes in the collection to a new name.
 
 **Parameters:** `newName`: The new name to rename to.
 
@@ -387,7 +385,7 @@ These descriptions and examples should give you a clear understanding of how to 
 
 ### **`toSource`**
 
-**Description**: Converts the transformed AST back to source code.
+Converts the transformed AST back to source code.
 
 **Parameters**: `options` (Object): Optional formatting options.
 
