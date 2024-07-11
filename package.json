@@ -61,6 +61,7 @@
   },
   "jest": {
     "roots": [
+      "test",
       "src",
       "bin",
       "parser",

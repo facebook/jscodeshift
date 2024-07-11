@@ -9,6 +9,7 @@ exports[`tsxParser parse extends the ts config with jsx support 1`] = `
     "plugins": [
       "jsx",
       "asyncGenerators",
+      "decoratorAutoAccessors",
       "bigInt",
       "classPrivateMethods",
       "classPrivateProperties",
