@@ -93,14 +93,14 @@ const closestFunction = j.find(j.Identifier).closest(j.FunctionDeclaration);
 
 ### **`getVariableDeclarators`**
 
-Retrieves variable declarators with the specified name from the current collection.
+Retrieves variable declarators from the current collection. If the callback function returns a falsy value, the element is not included in the result.
 
-**Parameters**:`name` (String): The name of the variable to find.
+**Parameters**:`callback` (Function): A function that returns the name of the variable to find.
 
 **Example**:
 
 ```jsx
-const variableDeclarators = j.getVariableDeclarators('myVariable');
+const variableDeclarators = j.find(j.Identifier).getVariableDeclarators(path => path.value.name);
 ```
 
 ### **`findVariableDeclarators` ([source](https://github.com/facebook/jscodeshift/blob/main/src/collections/VariableDeclarator.js))**
