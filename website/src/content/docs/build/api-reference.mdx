@@ -227,6 +227,16 @@ console.log(varCount); // 3
 
 ```
 
+### **`nodes`**
+
+Returns the AST nodes in the collection.
+
+**Example**:
+
+```jsx
+const nodes = j.find(j.VariableDeclaration).nodes();
+```
+
 ### **`paths`**
 
 Returns the paths of the found nodes.
