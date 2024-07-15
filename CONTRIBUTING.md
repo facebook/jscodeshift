@@ -12,12 +12,13 @@ the process for contributing will follow standard GitHub protocol.
 ## Pull Requests
 We actively welcome your pull requests.
 
-1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints.
-6. If you haven't already, complete the Contributor License Agreement ("CLA").
+1. Fork the repo and create your branch from `main`.
+1. Run `corepack enable` to set up `yarn` package manager.
+1. If you've added code that should be tested, add tests.
+1. If you've changed APIs, update the documentation.
+1. Ensure the test suite passes.
+1. Make sure your code lints.
+1. If you haven't already, complete the Contributor License Agreement ("CLA").
 
 ## Contributor License Agreement ("CLA")
 In order to accept your pull request, we need you to submit a CLA. You only need
