@@ -9,7 +9,7 @@
 'use strict';
 
 const child_process = require('child_process');
-const chalk = require('chalk');
+const pc = require('picocolors');
 const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
@@ -47,21 +47,21 @@ const bufferedWrite = (function() {
 
 const log = {
   ok(msg, verbose) {
-    verbose >= 2 && bufferedWrite(chalk.white.bgGreen(' OKK ') + msg);
+    verbose >= 2 && bufferedWrite(pc.bgGreen(pc.white(' OKK ')) + msg);
   },
   nochange(msg, verbose) {
-    verbose >= 1 && bufferedWrite(chalk.white.bgYellow(' NOC ') + msg);
+    verbose >= 1 && bufferedWrite(pc.bgYellow(pc.white(' NOC ')) + msg);
   },
   skip(msg, verbose) {
-    verbose >= 1 && bufferedWrite(chalk.white.bgYellow(' SKIP ') + msg);
+    verbose >= 1 && bufferedWrite(pc.bgYellow(pc.white(' SKIP ')) + msg);
   },
   error(msg, verbose) {
-    verbose >= 0 && bufferedWrite(chalk.white.bgRed(' ERR ') + msg);
+    verbose >= 0 && bufferedWrite(pc.bgRed(pc.white(' ERR ')) + msg);
   },
 };
 
 function report({file, msg}) {
-  bufferedWrite(lineBreak(`${chalk.white.bgBlue(' REP ')}${file} ${msg}`));
+  bufferedWrite(lineBreak(`${pc.bgBlue(pc.white(' REP '))}${file} ${msg}`));
 }
 
 function concatAll(arrays) {
@@ -77,17 +77,17 @@ function concatAll(arrays) {
 function showFileStats(fileStats) {
   process.stdout.write(
     'Results: \n'+
-    chalk.red(fileStats.error + ' errors\n')+
-    chalk.yellow(fileStats.nochange + ' unmodified\n')+
-    chalk.yellow(fileStats.skip + ' skipped\n')+
-    chalk.green(fileStats.ok + ' ok\n')
+    pc.red(fileStats.error + ' errors\n')+
+    pc.yellow(fileStats.nochange + ' unmodified\n')+
+    pc.yellow(fileStats.skip + ' skipped\n')+
+    pc.green(fileStats.ok + ' ok\n')
   );
 }
 
 function showStats(stats) {
   const names = Object.keys(stats).sort();
   if (names.length) {
-    process.stdout.write(chalk.blue('Stats: \n'));
+    process.stdout.write(pc.blue('Stats: \n'));
   }
   names.forEach(name => process.stdout.write(name + ': ' + stats[name] + '\n'));
 }
@@ -177,7 +177,7 @@ function run(transformFile, paths, options) {
     let gitIgnorePath = path.join(currDirectory, '.gitignore');
     ignores.addFromFile(gitIgnorePath);
   }
- 
+
   if (/^http/.test(transformFile)) {
     usedRemoteScript = true;
     return new Promise((resolve, reject) => {
@@ -208,7 +208,7 @@ function run(transformFile, paths, options) {
     });
   } else if (!fs.existsSync(transformFile)) {
     process.stderr.write(
-      chalk.white.bgRed('ERROR') + ' Transform file ' + transformFile + ' does not exist \n'
+      pc.bgRed(pc.white('ERROR')) + ' Transform file ' + transformFile + ' does not exist \n'
     );
     return;
   } else {
@@ -254,7 +254,7 @@ function run(transformFile, paths, options) {
           }
           if (options.dry) {
             process.stdout.write(
-              chalk.green('Running in dry mode, no files will be written! \n')
+              pc.green('Running in dry mode, no files will be written! \n')
             );
           }
         }
@@ -305,7 +305,7 @@ function run(transformFile, paths, options) {
             process.stdout.write(
               'Time elapsed: ' + timeElapsed + 'seconds \n'
             );
-            
+
             if (options.failOnError && fileCounters.error > 0) {
               process.exit(1);
             }
