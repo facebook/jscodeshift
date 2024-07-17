@@ -9,14 +9,13 @@
 'use strict';
 
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const temp = require('temp');
 
 function renameFileTo(oldPath, newFilename, extension = '') {
   const projectPath = path.dirname(oldPath);
   const newPath = path.join(projectPath, newFilename + extension);
-  mkdirp.sync(path.dirname(newPath));
+  fs.mkdirSync(path.dirname(newPath), { recursive: true });
   fs.renameSync(oldPath, newPath);
   return newPath;
 }
