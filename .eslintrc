@@ -1,6 +1,6 @@
 {
   "extends": "eslint:recommended",
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "rules": {
     "comma-dangle": 0,
     "no-underscore-dangle": 0,
