@@ -52,7 +52,7 @@
     }
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
+    "@babel/eslint-parser": "^7.24.7",
     "eslint": "8.56.0",
     "jest": "^29.7.0",
     "jsdoc": "^4.0.3"
