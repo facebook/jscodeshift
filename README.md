@@ -580,7 +580,7 @@ defineInlineTest(transform, /* ... */)
 
 It's recommended that you set up your codemod project to all debugging via the VSCode IDE. When you open your project in VSCode, add the following configuration to your launch.json debugging configuration.
 
-```
+```jsonc
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
