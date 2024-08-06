@@ -37,8 +37,8 @@ function generateName(suffix) {
 exports.open = async function open(opts) {
   if (!opts) opts = {};
   const target = generateName(opts.suffix);
-  const fd = await fs.promises.open(target, RDWR_EXCL, 0o600);
-  return { path: target, fd };
+  const file = await fs.promises.open(target, RDWR_EXCL, 0o600);
+  return { path: target, fd: file.fd };
 };
 
 exports.openSync = function open(opts) {
