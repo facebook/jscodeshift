@@ -190,8 +190,7 @@ function run(transformFile, paths, options) {
           })
           .on('end', () => {
             const ext = path.extname(transformFile);
-            temp.open({ suffix: ext }, (err, info) => {
-              if (err) return reject(err);
+            temp.open({ suffix: ext }).then((info) => {
               fs.write(info.fd, contents, function (err) {
                 if (err) return reject(err);
                 fs.close(info.fd, function(err) {
@@ -199,7 +198,7 @@ function run(transformFile, paths, options) {
                   transform(info.path).then(resolve, reject);
                 });
               });
-            });
+            }, reject);
         })
       })
       .on('error', (e) => {

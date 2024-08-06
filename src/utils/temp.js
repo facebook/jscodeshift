@@ -34,17 +34,11 @@ function generateName(suffix) {
   );
 }
 
-exports.open = function open(opts, callback) {
+exports.open = async function open(opts) {
   if (!opts) opts = {};
   const target = generateName(opts.suffix);
-  return new Promise((resolve, reject) => {
-    fs.open(target, RDWR_EXCL, 0o600, (error, fd) => {
-      const result = { path: target, fd };
-      if (callback) callback(error, result);
-      if (error) return reject(error);
-      resolve(result);
-    });
-  });
+  const fd = await fs.promises.open(target, RDWR_EXCL, 0o600);
+  return { path: target, fd };
 };
 
 exports.openSync = function open(opts) {
