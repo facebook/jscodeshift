@@ -39,9 +39,6 @@ exports.open = function open(opts, callback) {
   const target = generateName(opts.suffix);
   return new Promise((resolve, reject) => {
     fs.open(target, RDWR_EXCL, 0o600, (error, fd) => {
-      if (!error) {
-        deleteFileOnExit(target);
-      }
       const result = { path: target, fd };
       if (callback) callback(error, result);
       if (error) return reject(error);
