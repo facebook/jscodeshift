@@ -160,7 +160,6 @@ function getAllFiles(paths, filter) {
 }
 
 function run(transformFile, paths, options) {
-  let usedRemoteScript = false;
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
@@ -179,7 +178,6 @@ function run(transformFile, paths, options) {
   }
 
   if (/^http/.test(transformFile)) {
-    usedRemoteScript = true;
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
       (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
@@ -308,9 +306,6 @@ function run(transformFile, paths, options) {
             if (options.failOnError && fileCounters.error > 0) {
               process.exit(1);
             }
-          }
-          if (usedRemoteScript) {
-            temp.cleanupSync();
           }
           return Object.assign({
             stats: statsCounter,
