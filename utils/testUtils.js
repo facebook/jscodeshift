@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const temp = require('temp');
+const temp = require('../src/utils/temp');
 
 function renameFileTo(oldPath, newFilename, extension = '') {
   const projectPath = path.dirname(oldPath);
