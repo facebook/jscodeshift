@@ -16,6 +16,7 @@ jest.setTimeout(600000); // 10 minutes
 
 const child_process = require('child_process');
 const fs = require('fs');
+const http = require('http');
 const path = require('path');
 const testUtils = require('../../utils/testUtils');
 const {chdir} = require('process');
@@ -364,6 +365,34 @@ describe('jscodeshift CLI', () => {
           expect(readFile(sources[2]).toString()).toBe('subfile');
         }
       );
+    });
+  });
+
+  describe('remote transformer', () => {
+    let server;
+
+    afterAll(() => {
+      if (server) server.close();
+    });
+
+    it('fetches a remote transform and executes it', () => {
+      const sourceA = createTempFileWith('a', 'sourceA', '.js');
+      server = http.createServer((req, res) => {
+        res.writeHead(200);
+        res.end('module.exports = function() { return null; }');
+      }).listen(() => {
+        const { port } = server.address();
+        run(['-t', `http://127.0.0.1:${port}`, sourceA]).then(
+          out => {
+            expect(out[0]).toContain('Processing 1 files...');
+            expect(out[0]).toContain('Spawning 1 workers...');
+            expect(out[0]).toContain('Sending 1 files to free worker...');
+            expect(out[0]).toContain('All done.');
+            expect(out[0]).toContain('Results: ');
+            expect(out[0]).toContain('Time elapsed: ');
+          }
+        );
+      });
     });
   });
 
