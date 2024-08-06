@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [17.0.0] 2024-08-06
+
+We needed to go [from v0.x to a major release](https://github.com/facebook/jscodeshift/issues/593), and it may as well happen now. jscodeshift has been around for nine years though, so going to v1.0.0 didn't feel quite right. I've instead promoted the minor version number to a major version number, similar to what React did when it went from 0.14 to 15.0.
+
+### Fixed
+- Node.js 16 is now explicitly specified as the minimum required version. It was *already* (#607, @trivikr)
+
+### Added
+- A new [jscodeshift website](https://jscodeshift.com/) has launched, thanks to the team at [Codemod](https://codemod.com/). (#592, @mohab-sameh with some tweaks by @morinokami)
+- Added collection functions for import declarations, including finding imports and inserting new imports (#617, @danieldelcore)
+
+### Changed
+- Enabled TypeScript `importAttributes` (#585, @benasher44) and `decoratorAutoAccessors` (#594, @syi0808) plugins
+- Removed or replaced various outdated and unused dependencies (#601, #605, #609, #613, @trivikr)
+- Started using Corepack to manage Yarn version (#599, @trivikr)
+
+
 ## [0.16.1] 2024-06-25
 
 ### Fixed
