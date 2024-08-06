@@ -22,6 +22,7 @@ exports[`tsxParser parse extends the ts config with jsx support 1`] = `
       "exportNamespaceFrom",
       "functionBind",
       "functionSent",
+      "importAttributes",
       "importMeta",
       "nullishCoalescingOperator",
       "numericSeparator",

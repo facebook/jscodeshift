@@ -32,7 +32,7 @@ module.exports = {
     'exportNamespaceFrom',
     'functionBind',
     'functionSent',
-    'importAttributes,
+    'importAttributes',
     'importMeta',
     'nullishCoalescingOperator',
     'numericSeparator',
