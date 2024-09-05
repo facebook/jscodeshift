@@ -5,10 +5,10 @@ on:
     branches: [main]
 
 jobs:
-  call-build:
+  call-test:
     uses: ./.github/workflows/test.yml
   release:
-    needs: call-build
+    needs: call-test
     runs-on: ubuntu-latest
     permissions:
       contents: write
