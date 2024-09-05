@@ -10,7 +10,8 @@
   "main": "index.js",
   "scripts": {
     "prepare": "cp -R src/ dist/",
-    "test": "jest --bail"
+    "test": "jest --bail",
+    "release": "changeset publish"
   },
   "bin": {
     "jscodeshift": "./bin/jscodeshift.js"
