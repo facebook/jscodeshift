@@ -18,4 +18,4 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
       - name: Preview
-        run: npx pkg-pr-new publish --compact
+        run: yarn pkg-pr-new publish --compact
