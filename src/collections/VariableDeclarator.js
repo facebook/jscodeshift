@@ -157,6 +157,15 @@ const transformMethods = {
             return false;
           }
 
+          if (
+            (types.JSXOpeningElement.check(parent) || types.JSXClosingElement.check(parent)) &&
+            parent.name === path.node &&
+            /^[a-z]/.test(path.node.name)
+          ) {
+            // <oldName></oldName>
+            return false;
+          }
+
           return true;
         })
         .forEach(function(path) {
