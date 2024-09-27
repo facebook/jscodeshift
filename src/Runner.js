@@ -14,7 +14,7 @@ const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const temp = require('temp');
+const tmp = require('tmp');
 const ignores = require('./ignoreFiles');
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
@@ -190,13 +190,13 @@ function run(transformFile, paths, options) {
           })
           .on('end', () => {
             const ext = path.extname(transformFile);
-            temp.open({ prefix: 'jscodeshift', suffix: ext }, (err, info) => {
+            tmp.file({ prefix: 'jscodeshift', postfix: ext }, (err, path, fd) => {
               if (err) return reject(err);
-              fs.write(info.fd, contents, function (err) {
+              fs.write(fd, contents, function (err) {
                 if (err) return reject(err);
-                fs.close(info.fd, function(err) {
+                fs.close(fd, function(err) {
                   if (err) return reject(err);
-                  transform(info.path).then(resolve, reject);
+                  transform(path).then(resolve, reject);
                 });
               });
             });

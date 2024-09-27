@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const temp = require('temp');
+const tmp = require('tmp');
 
 function renameFileTo(oldPath, newFilename, extension = '') {
   const projectPath = path.dirname(oldPath);
@@ -21,12 +21,12 @@ function renameFileTo(oldPath, newFilename, extension = '') {
 }
 
 function createTempFileWith(content, filename, extension) {
-  const info = temp.openSync({ suffix: extension });
-  let filePath = info.path;
+  const info = tmp.fileSync({ postfix: extension });
+  let filePath = info.name;
   fs.writeSync(info.fd, content);
   fs.closeSync(info.fd);
   if (filename) {
-    filePath = renameFileTo(filePath, filename, extension);
+    filePath = renameFileTo(info.name, filename, extension);
   }
   return filePath;
 }
