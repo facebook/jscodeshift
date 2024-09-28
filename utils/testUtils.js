@@ -26,7 +26,7 @@ function createTempFileWith(content, filename, extension) {
   fs.writeSync(info.fd, content);
   fs.closeSync(info.fd);
   if (filename) {
-    filePath = renameFileTo(info.name, filename, extension);
+    filePath = renameFileTo(filePath, filename, extension);
   }
   return filePath;
 }
