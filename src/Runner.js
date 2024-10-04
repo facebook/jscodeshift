@@ -14,8 +14,10 @@ const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const tmp = require('tmp');
 const ignores = require('./ignoreFiles');
+
+const tmp = require('tmp');
+tmp.setGracefulCleanup();
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
 const CHUNK_SIZE = 50;
