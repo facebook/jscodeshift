@@ -17,9 +17,7 @@ jest.setTimeout(600000); // 10 minutes
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const temp = require('temp');
 const testUtils = require('../../utils/testUtils');
-const {chdir} = require('process');
 
 const createTransformWith = testUtils.createTransformWith;
 const createTempFileWith = testUtils.createTempFileWith;

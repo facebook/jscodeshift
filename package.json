@@ -39,7 +39,7 @@
     "neo-async": "^2.5.0",
     "picocolors": "^1.0.1",
     "recast": "^0.23.9",
-    "temp": "^0.9.4",
+    "tmp": "^0.2.3",
     "write-file-atomic": "^5.0.1"
   },
   "peerDependencies": {
