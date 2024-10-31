@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Hello world!
+
 'use strict';
 const Collection = require('./Collection');
 
