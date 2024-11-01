@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [17.1.1] 2024-10-31
+
+### Fixed
+- Republished with `temp` dependency properly removed (#638, thanks @trivikr for reporting)
+
 ## [17.1.0] 2024-10-30
 
 ### Added
