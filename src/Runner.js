@@ -166,6 +166,7 @@ function run(transformFile, paths, options) {
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
   const fileCounters = {error: 0, ok: 0, nochange: 0, skip: 0};
+  const fileResults = [];
   const statsCounter = {};
   const startTime = process.hrtime();
 
@@ -275,6 +276,7 @@ function run(transformFile, paths, options) {
             switch (message.action) {
               case 'status':
                 fileCounters[message.status] += 1;
+                fileResults.push({file: message.file, status: message.status});
                 log[message.status](lineBreak(message.msg), options.verbose);
                 break;
               case 'update':
@@ -312,7 +314,8 @@ function run(transformFile, paths, options) {
           }
           return Object.assign({
             stats: statsCounter,
-            timeElapsed: timeElapsed
+            timeElapsed: timeElapsed,
+            results: fileResults
           }, fileCounters);
         })
       );
