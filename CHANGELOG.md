@@ -7,12 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- Add new changes here -->
 
+## [17.1.1] 2024-10-31
+
+### Fixed
+- Republished with `temp` dependency properly removed (#638, thanks @trivikr for reporting)
+
+## [17.1.0] 2024-10-30
+
+### Added
+- `pkg.pr.new` will now be used to build an npm pakage for each commit to the repo, allowing you to more easily test changes or use new features before an official release is cut. (#622, @Aslemammad)
+
+### Changed
+- Replaced `temp` library with `tmp` (#633, @r4zendev)
+
+### Fixed
+- Removed old `docs` command from `package.json` since the new docs are in the `website` folder, which has instructions in its README.
+
 ## [17.0.0] 2024-08-06
 
 We needed to go [from v0.x to a major release](https://github.com/facebook/jscodeshift/issues/593), and it may as well happen now. jscodeshift has been around for nine years though, so going to v1.0.0 didn't feel quite right. I've instead promoted the minor version number to a major version number, similar to what React did when it went from 0.14 to 15.0.
 
 ### Fixed
-- Node.js 16 is now explicitly specified as the minimum required version. It was *already* (#607, @trivikr)
+- Node.js 16 is now explicitly specified as the minimum required version. It was *already* implicitly required due to some dependencies requiring it, but this wasn't explicitly specified until now. (#607, @trivikr)
 
 ### Added
 - A new [jscodeshift website](https://jscodeshift.com/) has launched, thanks to the team at [Codemod](https://codemod.com/). (#592, @mohab-sameh with some tweaks by @morinokami)

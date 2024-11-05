@@ -1,6 +1,6 @@
 {
   "name": "jscodeshift",
-  "version": "17.0.0",
+  "version": "17.1.1",
   "description": "A toolkit for JavaScript codemods",
   "repository": {
     "type": "git",
@@ -9,7 +9,8 @@
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
   "scripts": {
-    "prepare": "cp -R src/ dist/",
+    "clean": "rm -rf dist/",
+    "prepare": "yarn clean && cp -R src/ dist/",
     "test": "jest --bail",
     "release": "changeset publish"
   },
