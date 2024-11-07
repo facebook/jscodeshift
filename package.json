@@ -11,7 +11,8 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "prepare": "yarn clean && cp -R src/ dist/",
-    "test": "jest --bail"
+    "test": "jest --bail",
+    "release": "changeset publish"
   },
   "bin": {
     "jscodeshift": "./bin/jscodeshift.js"
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.7",
+    "@changesets/cli": "^2.27.8",
     "eslint": "8.56.0",
     "jest": "^29.7.0",
     "jsdoc": "^4.0.3"
