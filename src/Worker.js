@@ -107,7 +107,7 @@ function free() {
 
 function updateStatus(status, file, msg) {
   msg = msg ? file + ' ' + msg : file;
-  notify({action: 'status', status: status, msg: msg});
+  notify({action: 'status', status: status, msg: msg, file: file});
 }
 
 function report(file, msg) {
