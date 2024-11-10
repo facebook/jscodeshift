@@ -14,8 +14,10 @@ const fs = require('graceful-fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const temp = require('temp');
 const ignores = require('./ignoreFiles');
+
+const tmp = require('tmp');
+tmp.setGracefulCleanup();
 
 const availableCpus = Math.max(require('os').cpus().length - 1, 1);
 const CHUNK_SIZE = 50;
@@ -160,7 +162,6 @@ function getAllFiles(paths, filter) {
 }
 
 function run(transformFile, paths, options) {
-  let usedRemoteScript = false;
   const cpus = options.cpus ? Math.min(availableCpus, options.cpus) : availableCpus;
   const extensions =
     options.extensions && options.extensions.split(',').map(ext => '.' + ext);
@@ -179,7 +180,6 @@ function run(transformFile, paths, options) {
   }
 
   if (/^http/.test(transformFile)) {
-    usedRemoteScript = true;
     return new Promise((resolve, reject) => {
       // call the correct `http` or `https` implementation
       (transformFile.indexOf('https') !== 0 ?  http : https).get(transformFile, (res) => {
@@ -190,13 +190,13 @@ function run(transformFile, paths, options) {
           })
           .on('end', () => {
             const ext = path.extname(transformFile);
-            temp.open({ prefix: 'jscodeshift', suffix: ext }, (err, info) => {
+            tmp.file({ prefix: 'jscodeshift', postfix: ext }, (err, path, fd) => {
               if (err) return reject(err);
-              fs.write(info.fd, contents, function (err) {
+              fs.write(fd, contents, function (err) {
                 if (err) return reject(err);
-                fs.close(info.fd, function(err) {
+                fs.close(fd, function(err) {
                   if (err) return reject(err);
-                  transform(info.path).then(resolve, reject);
+                  transform(path).then(resolve, reject);
                 });
               });
             });
@@ -309,9 +309,6 @@ function run(transformFile, paths, options) {
             if (options.failOnError && fileCounters.error > 0) {
               process.exit(1);
             }
-          }
-          if (usedRemoteScript) {
-            temp.cleanupSync();
           }
           return Object.assign({
             stats: statsCounter,

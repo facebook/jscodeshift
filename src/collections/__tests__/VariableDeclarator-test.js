@@ -171,6 +171,39 @@ describe('VariableDeclarators', function() {
       expect(identifiers.length).toBe(1);
     });
 
+    it('does not rename JSX open and closing tags that start with a lowercase letter', function () {
+      nodes = [recast.parse([
+        'var span = useRef(null);',
+        'var element = <span ref={span}></span>;',
+      ].join('\n'), {parser: getParser()}).program];
+
+      Collection.fromNodes(nodes)
+        .findVariableDeclarators('span')
+        .renameTo('spanRef');
+
+      const identifiers = Collection.fromNodes(nodes)
+        .find(types.JSXIdentifier, { name: 'spanRef' });
+
+      expect(identifiers.length).toBe(0);
+    });
+
+    it('does rename JSX open and closing tags that are capitalized', function () {
+      nodes = [recast.parse([
+        'var Span = require("./Span");',
+        'var span = useRef(null);',
+        'var element = <Span ref={span}></Span>;',
+      ].join('\n'), {parser: getParser()}).program];
+
+      Collection.fromNodes(nodes)
+        .findVariableDeclarators('Span')
+        .renameTo('SpanComponent');
+
+      const identifiers = Collection.fromNodes(nodes)
+        .find(types.JSXIdentifier, { name: 'SpanComponent' });
+
+      expect(identifiers.length).toBe(2);
+    });
+
     describe('parsing with bablylon', function() {
       it('does not rename object property', function () {
         nodes = [
