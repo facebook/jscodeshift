@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`testUtils async should run async defineSnapshotTest 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils async should run async defineSnapshotTestFromFixture 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils async should run snapshot test 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils synchronous should run snapshot test 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils synchronous should run sync defineSnapshotTest 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils synchronous should run sync defineSnapshotTestFromFixture 1`] = `"export const addition = (a, b) => a + b;"`;

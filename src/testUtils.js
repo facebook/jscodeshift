@@ -33,12 +33,23 @@ function applyTransform(module, options, input, testOptions = {}) {
     options || {}
   );
 
+  // Support async transforms
+  if (output instanceof Promise) {
+    return output.then(output => (output || '').trim());
+  }
+
   return (output || '').trim();
 }
 exports.applyTransform = applyTransform;
 
 function runSnapshotTest(module, options, input) {
   const output = applyTransform(module, options, input);
+  if (output instanceof Promise) {
+    return output.then(output => {
+      expect(output).toMatchSnapshot();
+      return output;
+    });
+  }
   expect(output).toMatchSnapshot();
   return output;
 }
@@ -46,7 +57,14 @@ exports.runSnapshotTest = runSnapshotTest;
 
 function runInlineTest(module, options, input, expectedOutput, testOptions) {
   const output = applyTransform(module, options, input, testOptions);
-  expect(output).toEqual(expectedOutput.trim());
+  const expectation = (output => expect(output).toEqual(expectedOutput.trim()))
+  if (output instanceof Promise) {
+    return output.then(output => {
+      expectation(output);
+      return output;
+    });
+  }
+  expectation(output);
   return output;
 }
 exports.runInlineTest = runInlineTest;
@@ -95,10 +113,12 @@ function runTest(dirName, transformName, options, testFilePrefix, testOptions = 
     path.join(fixtureDir, testFilePrefix + `.output.${extension}`),
     'utf8'
   );
-  runInlineTest(module, options, {
+  const testResult = runInlineTest(module, options, {
     path: inputPath,
     source
   }, expectedOutput, testOptions);
+
+  return testResult instanceof Promise ? testResult : undefined;
 }
 exports.runTest = runTest;
 
@@ -112,7 +132,8 @@ function defineTest(dirName, transformName, options, testFilePrefix, testOptions
     : 'transforms correctly';
   describe(transformName, () => {
     it(testName, () => {
-      runTest(dirName, transformName, options, testFilePrefix, testOptions);
+      const testResult = runTest(dirName, transformName, options, testFilePrefix, testOptions);
+      return testResult instanceof Promise ? testResult : undefined;
     });
   });
 }
@@ -120,18 +141,20 @@ exports.defineTest = defineTest;
 
 function defineInlineTest(module, options, input, expectedOutput, testName) {
   it(testName || 'transforms correctly', () => {
-    runInlineTest(module, options, {
+    const testResult = runInlineTest(module, options, {
       source: input
     }, expectedOutput);
+    return testResult instanceof Promise ? testResult : undefined;
   });
 }
 exports.defineInlineTest = defineInlineTest;
 
 function defineSnapshotTest(module, options, input, testName) {
   it(testName || 'transforms correctly', () => {
-    runSnapshotTest(module, options, {
+    const testResult = runSnapshotTest(module, options, {
       source: input
     });
+    return testResult instanceof Promise ? testResult : undefined;
   });
 }
 exports.defineSnapshotTest = defineSnapshotTest;
@@ -144,6 +167,7 @@ function defineSnapshotTestFromFixture(dirName, module, options, testFilePrefix,
   const fixtureDir = path.join(dirName, '..', '__testfixtures__');
   const inputPath = path.join(fixtureDir, testFilePrefix + `.input.${extension}`);
   const source = fs.readFileSync(inputPath, 'utf8');
-  defineSnapshotTest(module, options, source, testName)
+  const testResult = defineSnapshotTest(module, options, source, testName)
+  return testResult instanceof Promise ? testResult : undefined;
 }
 exports.defineSnapshotTestFromFixture = defineSnapshotTestFromFixture;
