@@ -1,5 +1,11 @@
 # Changelog
 
+## 17.2.0
+
+### Minor Changes
+
+- e5fe5be: Bumps recast to resolve a bug where JSX elements are wrapped in two pairs of parenthesis
+
 ## 17.1.2
 
 ### Patch Changes
