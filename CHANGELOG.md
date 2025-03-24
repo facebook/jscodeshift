@@ -1,5 +1,11 @@
 # Changelog
 
+## 17.3.0
+
+### Minor Changes
+
+- 6c2ff57: Bumps recast to allow parsing of Typescript type arguments on tagged template literals
+
 ## 17.2.0
 
 ### Minor Changes
