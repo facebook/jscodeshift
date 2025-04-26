@@ -71,6 +71,19 @@ Finds nodes that match the provided type.
 const variableDeclarations = j.find(j.VariableDeclaration);
 ```
 
+### **`findImportDeclarations`**
+
+Finds all ImportDeclarations optionally filtered by name.
+
+**Parameters**: `sourcePath` (String).
+
+**Example**:
+
+```jsx
+const routerImports = j.findImportDeclarations('react-router-dom');
+
+```
+
 ### **`closestScope`**
 
 Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
