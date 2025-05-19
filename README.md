@@ -437,11 +437,14 @@ jscodeshift --ignore-pattern="first_ignore_file.gitignore” --ignore-pattern="s
 
 ### Passing options to [recast]
 
-You may want to change some of the output settings (like setting `'` instead of `"`).
+You may want to change some of the output settings (like setting `'` instead of `"` or 
+changing the end-of-line terminator to `\r\n` for Windows files).
 This can be done by passing config options to [recast].
 
 ```js
 .toSource({quote: 'single'}); // sets strings to use single quotes in transformed code.
+// or
+.toSource({lineTerminator: '\r\n'}); // sets EOL to use CRLF.
 ```
 
 You can also pass options to recast's `parse` method by passing an object to
@@ -451,7 +454,7 @@ jscodeshift as second argument:
 jscodeshift(source, {...})
 ```
 
-More on config options [here](https://github.com/benjamn/recast/blob/52a7ec3eaaa37e78436841ed8afc948033a86252/lib/options.js#L61)
+For more details on recast config options, see [here](https://github.com/benjamn/recast/blob/master/lib/options.ts).
 
 ### Unit Testing
 
