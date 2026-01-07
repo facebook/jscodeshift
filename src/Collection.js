@@ -65,6 +65,15 @@ class Collection {
   }
 
   /**
+   * Implements for-of iterator semantic for node paths of the collection.
+   *
+   * @returns {Iterator<import("ast-types").NodePath>}
+   */
+  *[Symbol.iterator]() {
+    yield* this.__paths;
+  }
+
+  /**
    * Executes callback for each node/path in the collection.
    *
    * @param {function} callback
