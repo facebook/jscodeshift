@@ -214,6 +214,20 @@ describe('Collection API', function() {
 
     });
 
+    describe('iterator', () => {
+      it('provides an iterator over the collection', () => {
+        const each = jest.fn();
+        const collection = Collection.fromNodes(nodes);
+        for (const path of collection) {
+          each(path);
+        }
+
+        expect(each.mock.calls.length).toBe(2);
+        expect(each.mock.calls[0][0].value).toBe(nodes[0]);
+        expect(each.mock.calls[1][0].value).toBe(nodes[1]);
+      });
+    });
+
     describe('forEach', function() {
       it('lets you iterate over each element of an collection', function() {
         const each = jest.fn();
