@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const mm = require('micromatch');
+const picomatch = require('picomatch');
 
 const matchers = [];
 
@@ -59,7 +59,7 @@ function addIgnoreFromFile(input) {
 }
 
 function shouldIgnore(path) {
-  const matched = matchers.length ? mm.isMatch(path, matchers, { dot:true }) : false;
+  const matched = matchers.length ? picomatch.isMatch(path, matchers, { dot:true }) : false;
   return matched;
 }
 
