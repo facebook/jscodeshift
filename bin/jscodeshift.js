@@ -26,9 +26,16 @@ const parser = require('../src/argsParser')
       display_index: 15,
       abbr: 't',
       default: './transform.js',
-      help: 'path to the transform file. Can be either a local path or url',
+      help: 'path to the transform file. Can be either a local path or url (requires --allow-remote-transform)',
       metavar: 'FILE',
       required: true
+    },
+    allowRemoteTransform: {
+      display_index: 18,
+      flag: true,
+      default: false,
+      full: 'allow-remote-transform',
+      help: 'allow downloading and executing transform files from remote URLs'
     },
     cpus: {
       display_index: 1,
@@ -166,8 +173,18 @@ try {
   process.exit(exitCode);
 }
 function run(paths, options) {
+  const isRemoteTransform = /^https?:/.test(options.transform);
+
+  if (isRemoteTransform && !options.allowRemoteTransform) {
+    process.stderr.write(
+      'Error: Remote transform URLs are disabled by default. ' +
+      'Use --allow-remote-transform to enable them.\n'
+    );
+    process.exit(1);
+  }
+
   Runner.run(
-    /^https?/.test(options.transform) ? options.transform : path.resolve(options.transform),
+    isRemoteTransform ? options.transform : path.resolve(options.transform),
     paths,
     options
   );
