@@ -29,6 +29,8 @@ let notify;
 let transform;
 let parserFromTransform;
 
+const allowUnsafeBabel = process.env.JSCODESHIFT_ALLOW_UNSAFE_BABEL === '1';
+
 if (module.parent) {
   emitter = new EventEmitter();
   emitter.send = (data) => { run(data); };
@@ -53,6 +55,9 @@ function prepareJscodeshift(options) {
 
 function setup(tr, babel) {
   if (babel === 'babel') {
+    if (!allowUnsafeBabel) {
+      throw new Error('Babel transform loading is disabled. Set JSCODESHIFT_ALLOW_UNSAFE_BABEL=1 only for trusted transforms.');
+    }
     const presets = [];
     if (presetEnv) {
       presets.push([
