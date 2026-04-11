@@ -45,6 +45,9 @@ const traversalMethods = {
       const self = this;
       visitor[visitorMethodName] = function(path) {
         if (self.__paths[i] === path) {
+          if (type.check(path.value) && (!filter || matchNode(path.value, filter))) {
+            paths.push(path);
+          }
           this.traverse(path);
         } else {
           return visit.call(this, path);
