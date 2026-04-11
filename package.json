@@ -8,6 +8,7 @@
   },
   "bugs": "https://github.com/facebook/jscodeshift/issues",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "clean": "rm -rf dist/",
     "prepare": "yarn clean && cp -R src/ dist/",
