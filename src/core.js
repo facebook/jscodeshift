@@ -18,6 +18,32 @@ const template = require('./template');
 const Node = recast.types.namedTypes.Node;
 const NodePath = recast.types.NodePath;
 
+const namedTypes = recast.types.namedTypes;
+const builders = recast.types.builders;
+
+const Precedence = {
+  UNARY: 15,
+  LOGICAL_AND: 13,
+  LOGICAL_OR: 14,
+  SEQUENCE: 1,
+};
+
+function needsParens(path, childPath) {
+  const node = path.value;
+  const childNode = childPath.value;
+  
+  if (node.type === namedTypes.UnaryExpression.type) {
+    if (childNode.type === namedTypes.LogicalExpression.type) {
+      return true;
+    }
+    if (childNode.type === namedTypes.SequenceExpression.type) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 // Register all built-in collections
 for (var name in collections) {
   collections[name].register();
