@@ -16,7 +16,7 @@ const hasOwn =
  *
  * @param {*} haystack Value to test.
  * @param {*} needle Test function or value to look for in `haystack`.
- * @return {bool}
+ * @return {boolean}
  */
 function matchNode(haystack, needle) {
   if (typeof needle === 'function') {
@@ -33,6 +33,10 @@ function matchNode(haystack, needle) {
   return haystack === needle;
 }
 
+/**
+ * @param {*} value
+ * @return {boolean}
+ */
 function isNode(value) {
   return typeof value === 'object' && value;
 }
