@@ -118,7 +118,13 @@ const parser = require('../src/argsParser')
       full: 'parser-config',
       help: 'path to a JSON file containing a custom parser configuration for flow or babylon',
       metavar: 'FILE',
-      process: file => JSON.parse(fs.readFileSync(file)),
+      process: file => {
+        try {
+          return JSON.parse(fs.readFileSync(file));
+        } catch (err) {
+          throw new Error(`Failed to parse parser config file "${file}": ${err.message}`);
+        }
+      },
     },
     failOnError: {
       display_index: 4,
