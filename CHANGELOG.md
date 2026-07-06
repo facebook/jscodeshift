@@ -16,7 +16,7 @@
 
 ### Patch Changes
 
-- 8f60fbf: Enable async tranformers in test utils.
+- 8f60fbf: Enable async transformers in test utils.
   All notable changes to this project will be documented in this file.
 
 ## [17.1.1] 2024-10-31
@@ -29,7 +29,7 @@
 
 ### Added
 
-- `pkg.pr.new` will now be used to build an npm pakage for each commit to the repo, allowing you to more easily test changes or use new features before an official release is cut. (#622, @Aslemammad)
+- `pkg.pr.new` will now be used to build an npm package for each commit to the repo, allowing you to more easily test changes or use new features before an official release is cut. (#622, @Aslemammad)
 
 ### Changed
 
@@ -214,7 +214,7 @@ We needed to go [from v0.x to a major release](https://github.com/facebook/jscod
 
 ### Added
 
-- Tranform files can be written in Typescript. If the file extension of the
+- Transform files can be written in Typescript. If the file extension of the
   transform file is `.ts` or `.tsx`, `@babel/preset-typescript` is used to
   convert them. This requires the `--babel` option to be set (which it is by
   default). ( #287 , @brieb )
