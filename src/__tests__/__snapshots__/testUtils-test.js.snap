@@ -11,3 +11,18 @@ exports[`testUtils synchronous should run snapshot test 1`] = `"export const add
 exports[`testUtils synchronous should run sync defineSnapshotTest 1`] = `"export const addition = (a, b) => a + b;"`;
 
 exports[`testUtils synchronous should run sync defineSnapshotTestFromFixture 1`] = `"export const addition = (a, b) => a + b;"`;
+
+exports[`testUtils testOptions propagation defineSnapshotTest forwards testOptions.parser 1`] = `
+"enum Direction { Up, Down }
+export const addition = (a: number, b: number): number => a + b;"
+`;
+
+exports[`testUtils testOptions propagation defineSnapshotTestFromFixture forwards testOptions.parser 1`] = `
+"enum Direction { Up, Down }
+export const addition = (a: number, b: number): number => a + b;"
+`;
+
+exports[`testUtils testOptions propagation runSnapshotTest forwards testOptions.parser 1`] = `
+"enum Direction { Up, Down }
+export const addition = (a: number, b: number): number => a + b;"
+`;
