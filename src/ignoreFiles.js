@@ -59,8 +59,23 @@ function addIgnoreFromFile(input) {
 }
 
 function shouldIgnore(path) {
-  const matched = matchers.length ? picomatch.isMatch(path, matchers, { dot:true }) : false;
-  return matched;
+  if (!matchers.length) {
+    return false;
+  }
+  // Files discovered from a relative source path (e.g. `../src` or `./src`)
+  // are enumerated with a leading `../` or `./` traversal prefix. picomatch's
+  // `**` wildcard does not match across such a leading traversal segment, so
+  // ignore patterns like `**/node_modules/**` silently fail to match those
+  // paths even though they match the equivalent absolute or plain relative
+  // paths. Match against the path with any leading traversal prefix stripped
+  // so ignore behavior is consistent regardless of how the source path was
+  // specified. See https://github.com/facebook/jscodeshift/issues/556
+  const normalizedPath = path.replace(/^(?:\.\.?[/\\])+/, '');
+  return (
+    picomatch.isMatch(path, matchers, { dot: true }) ||
+    (normalizedPath !== path &&
+      picomatch.isMatch(normalizedPath, matchers, { dot: true }))
+  );
 }
 
 exports.add = addIgnoreFromInput;
