@@ -511,6 +511,9 @@ const transformOptions = {};
 defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test name (optional)');
 ```
 
+An optional `testOptions` object can be passed as the last argument to select the
+parser used to run the transform, e.g. `defineInlineTest(transform, transformOptions, 'input', 'expected output', 'test name', { parser: 'tsx' })`.
+
 #### `defineSnapshotTest`
 
 Similar to `defineInlineTest` but instead of requiring an output value, it uses Jest's `toMatchSnapshot()`
@@ -521,6 +524,8 @@ const transform = require('../myTransform');
 const transformOptions = {};
 defineSnapshotTest(transform, transformOptions, 'input', 'test name (optional)');
 ```
+
+Like `defineInlineTest`, an optional `testOptions` object (e.g. `{ parser: 'tsx' }`) can be passed as the last argument to select the parser.
 
 For more information on snapshots, check out [Jest's docs](https://jestjs.io/docs/en/snapshot-testing)
 
@@ -534,6 +539,8 @@ const transform = require('../myTransform');
 const transformOptions = {};
 defineSnapshotTestFromFixture(__dirname, transform, transformOptions, 'FirstFixture', 'test name (optional)');
 ```
+
+An optional `testOptions` object (e.g. `{ parser: 'tsx' }`) can be passed as the last argument. Its `parser` is used both to resolve the fixture's file extension (`.input.tsx`) and to run the transform.
 
 #### `applyTransform`
 

@@ -42,8 +42,8 @@ function applyTransform(module, options, input, testOptions = {}) {
 }
 exports.applyTransform = applyTransform;
 
-function runSnapshotTest(module, options, input) {
-  const output = applyTransform(module, options, input);
+function runSnapshotTest(module, options, input, testOptions) {
+  const output = applyTransform(module, options, input, testOptions);
   if (output instanceof Promise) {
     return output.then(output => {
       expect(output).toMatchSnapshot();
@@ -139,21 +139,21 @@ function defineTest(dirName, transformName, options, testFilePrefix, testOptions
 }
 exports.defineTest = defineTest;
 
-function defineInlineTest(module, options, input, expectedOutput, testName) {
+function defineInlineTest(module, options, input, expectedOutput, testName, testOptions) {
   it(testName || 'transforms correctly', () => {
     const testResult = runInlineTest(module, options, {
       source: input
-    }, expectedOutput);
+    }, expectedOutput, testOptions);
     return testResult instanceof Promise ? testResult : undefined;
   });
 }
 exports.defineInlineTest = defineInlineTest;
 
-function defineSnapshotTest(module, options, input, testName) {
+function defineSnapshotTest(module, options, input, testName, testOptions) {
   it(testName || 'transforms correctly', () => {
     const testResult = runSnapshotTest(module, options, {
       source: input
-    });
+    }, testOptions);
     return testResult instanceof Promise ? testResult : undefined;
   });
 }
@@ -167,7 +167,7 @@ function defineSnapshotTestFromFixture(dirName, module, options, testFilePrefix,
   const fixtureDir = path.join(dirName, '..', '__testfixtures__');
   const inputPath = path.join(fixtureDir, testFilePrefix + `.input.${extension}`);
   const source = fs.readFileSync(inputPath, 'utf8');
-  const testResult = defineSnapshotTest(module, options, source, testName)
+  const testResult = defineSnapshotTest(module, options, source, testName, testOptions)
   return testResult instanceof Promise ? testResult : undefined;
 }
 exports.defineSnapshotTestFromFixture = defineSnapshotTestFromFixture;

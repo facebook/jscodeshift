@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const testSyncTransform = require('../__testfixtures__/test-sync-transform');
 const testAsyncTransform = require('../__testfixtures__/test-async-transform');
+const testTsxTransform = require('../__testfixtures__/test-tsx-transform');
 
 const testUtils = require('../testUtils');
 
@@ -138,6 +139,63 @@ describe('testUtils', () => {
       null,
       'test-async-transform',
       'should run async defineSnapshotTestFromFixture'
+    );
+  });
+
+  // The fixtures below are written in TypeScript and only parse with the `tsx`
+  // parser, which is selected exclusively via `testOptions.parser`. If a helper
+  // fails to forward `testOptions` to `applyTransform`, the transform runs with
+  // the default parser and throws on the `enum` declaration. See #581.
+  describe('testOptions propagation', () => {
+    const tsxInput =
+      'enum Direction { Up, Down }\nexport const sum = (a: number, b: number): number => a + b;';
+    const tsxExpectedOutput =
+      'enum Direction { Up, Down }\nexport const addition = (a: number, b: number): number => a + b;';
+    const tsxOptions = { parser: 'tsx' };
+
+    it('runSnapshotTest forwards testOptions.parser', () => {
+      testUtils.runSnapshotTest(
+        testTsxTransform,
+        null,
+        { source: tsxInput },
+        tsxOptions
+      );
+    });
+
+    it('runInlineTest forwards testOptions.parser', () => {
+      testUtils.runInlineTest(
+        testTsxTransform,
+        null,
+        { source: tsxInput },
+        tsxExpectedOutput,
+        tsxOptions
+      );
+    });
+
+    testUtils.defineInlineTest(
+      testTsxTransform,
+      null,
+      tsxInput,
+      tsxExpectedOutput,
+      'defineInlineTest forwards testOptions.parser',
+      tsxOptions
+    );
+
+    testUtils.defineSnapshotTest(
+      testTsxTransform,
+      null,
+      tsxInput,
+      'defineSnapshotTest forwards testOptions.parser',
+      tsxOptions
+    );
+
+    testUtils.defineSnapshotTestFromFixture(
+      __dirname,
+      testTsxTransform,
+      null,
+      'test-tsx-transform',
+      'defineSnapshotTestFromFixture forwards testOptions.parser',
+      tsxOptions
     );
   });
 });
