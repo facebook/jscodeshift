@@ -6,8 +6,11 @@
  */
 
 module.exports = function(arrays) {
+  if (!arrays || arrays.length === 0) {
+    return [];
+  }
   const result = new Set(arrays[0]);
-  let resultSize = result.length;
+  let resultSize = result.size;
 
   let i, value, valuesToCheck;
   for (i = 1; i < arrays.length; i++) {

@@ -48,10 +48,17 @@ function addIgnoreFromFile(input) {
   }
 
   files.forEach(function(config) {
-    const stats = fs.statSync(config);
-    if (stats.isFile()) {
-      const content = fs.readFileSync(config, 'utf8');
-      lines = lines.concat(content.split(/\r?\n/));
+    try {
+      const stats = fs.statSync(config);
+      if (stats.isFile()) {
+        const content = fs.readFileSync(config, 'utf8');
+        lines = lines.concat(content.split(/\r?\n/));
+      }
+    } catch (err) {
+      // Skip files that cannot be read (e.g., does not exist, permission denied)
+      process.stderr.write(
+        `Warning: Could not read ignore config file "${config}": ${err.message}\n`
+      );
     }
   });
 
