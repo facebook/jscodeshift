@@ -10,6 +10,7 @@
 
 const babylon = require('@babel/parser');
 const baseOptions = require('./tsOptions');
+const printers = babylon.printers.typescript;
 
 const options = Object.assign({}, baseOptions);
 options.plugins = ['jsx'].concat(baseOptions.plugins);
@@ -23,5 +24,6 @@ module.exports = function() {
     parse(code) {
       return babylon.parse(code, options);
     },
+    printers,
   };
 };

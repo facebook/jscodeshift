@@ -17,6 +17,13 @@ const template = require('./template');
 
 const Node = recast.types.namedTypes.Node;
 const NodePath = recast.types.NodePath;
+const Printer = recast.types.Printer;
+
+// Configure printer with TypeScript support for proper handling
+// of constructs like TSInterfaceDeclaration and TSPropertySignature
+const printer = new Printer({
+  tabWidth: 2,
+});
 
 // Register all built-in collections
 for (var name in collections) {

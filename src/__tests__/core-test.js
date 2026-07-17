@@ -61,6 +61,13 @@ describe('core API', function() {
     });
   });
 
+  it('returns a Collection from a TypeScript interface declaration', function () {
+    const source = 'interface Foo { bar: string; }';
+    const ast = recast.parse(source, { parser: require('@typescript-eslint/typescript-estree') });
+    const interfaceDecl = ast.program.body[0];
+    expect(core(interfaceDecl).constructor.name).toContain('Collection');
+  });
+
   it('plugins are only registered once', function () {
     let ct = 0;
 

@@ -154,7 +154,9 @@ const mutationMethods = {
     return this.forEach(function(path, i) {
       const newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertBefore.apply(path, toArray(newNodes));
+      if (newNodes != null) {
+        path.insertBefore.apply(path, toArray(newNodes));
+      }
     });
   },
 
@@ -168,7 +170,9 @@ const mutationMethods = {
     return this.forEach(function(path, i) {
       const newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertAfter.apply(path, toArray(newNodes));
+      if (newNodes != null) {
+        path.insertAfter.apply(path, toArray(newNodes));
+      }
     });
   },
 
