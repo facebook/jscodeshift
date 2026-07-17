@@ -33,8 +33,16 @@ function matchNode(haystack, needle) {
   return haystack === needle;
 }
 
+const DECORATOR_CONTAINERS = ['ClassDeclaration', 'ClassExpression', 'ClassMethod', 'ClassProperty'];
+
 function isNode(value) {
-  return typeof value === 'object' && value;
+  if (typeof value !== 'object' || !value) {
+    return false;
+  }
+  if (value.type && DECORATOR_CONTAINERS.includes(value.type)) {
+    return true;
+  }
+  return typeof value === 'object' && value !== null;
 }
 
 module.exports = matchNode;
