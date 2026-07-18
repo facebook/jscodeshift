@@ -108,7 +108,13 @@ function dirFiles (dir, callback, acc) {
   fs.readdir(dir, (err, files) => {
     // if dir does not exist or is not a directory, bail
     // (this should not happen as long as calls do the necessary checks)
-    if (err) throw err;
+    if (err) {
+      process.stdout.write(
+        'Skipping path "' + dir + '" which does not exist.\n'
+      );
+      done();
+      return;
+    }
 
     acc.remaining += files.length;
     files.forEach(file => {
