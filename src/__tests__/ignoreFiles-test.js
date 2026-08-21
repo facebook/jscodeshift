@@ -69,4 +69,29 @@ describe('ignoreFiles', function() {
     expect(ignores.shouldIgnore('../src/dist/bundle.js')).toBe(true);
     expect(ignores.shouldIgnore('../src/index.js')).toBe(false);
   });
+
+  describe('with negation (gitignore re-include) patterns', function() {
+    // Regression test for https://github.com/facebook/jscodeshift/issues/342
+    it('does not ignore every file when only a negation pattern is given', function() {
+      ignores.add('!.jenkins/');
+      expect(ignores.shouldIgnore('src/index.js')).toBe(false);
+      expect(ignores.shouldIgnore('src/foo/bar.js')).toBe(false);
+      expect(ignores.shouldIgnore('lib/log.keep')).toBe(false);
+    });
+
+    it('re-includes files matched by a prior ignore pattern', function() {
+      ignores.add('**/dist/**');
+      ignores.add('!**/dist/**/*.md');
+      expect(ignores.shouldIgnore('dist/app.js')).toBe(true);
+      expect(ignores.shouldIgnore('dist/readme.md')).toBe(false);
+      expect(ignores.shouldIgnore('src/main.js')).toBe(false);
+    });
+
+    it('re-includes files matched by a negation pattern with a `../` prefix', function() {
+      ignores.add('**/node_modules/**');
+      ignores.add('!**/node_modules/README.md');
+      expect(ignores.shouldIgnore('../src/node_modules/index.js')).toBe(true);
+      expect(ignores.shouldIgnore('../src/node_modules/README.md')).toBe(false);
+    });
+  });
 });
