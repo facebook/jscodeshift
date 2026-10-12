@@ -324,6 +324,23 @@ describe('Collection API', function() {
         expect(ast.expressions[0]).toBe(x);
         expect(ast.expressions[2]).toBe(x);
       });
+
+      it('inserts next to the export statement of an export', function() {
+        const named = b.exportNamedDeclaration(
+          b.functionDeclaration(b.identifier('foo'), [], b.blockStatement([]))
+        );
+        const def = b.exportDefaultDeclaration(
+          b.functionDeclaration(b.identifier('bar'), [], b.blockStatement([]))
+        );
+        const one = b.expressionStatement(b.identifier('one'));
+        const program = b.program([named, def]); // eslint-disable-line no-shadow
+
+        Collection.fromNodes([program])
+          .find(types.FunctionDeclaration)
+          .insertBefore(one);
+
+        expect(program.body).toEqual([one, named, one, def]);
+      });
     });
 
     describe('insertAfter', function() {
@@ -375,6 +392,23 @@ describe('Collection API', function() {
         expect(ast.expressions).toEqual([foo, x, bar, x]);
         expect(ast.expressions[1]).toBe(x);
         expect(ast.expressions[3]).toBe(x);
+      });
+
+      it('inserts next to the export statement of an export', function() {
+        const named = b.exportNamedDeclaration(
+          b.functionDeclaration(b.identifier('foo'), [], b.blockStatement([]))
+        );
+        const def = b.exportDefaultDeclaration(
+          b.functionDeclaration(b.identifier('bar'), [], b.blockStatement([]))
+        );
+        const one = b.expressionStatement(b.identifier('one'));
+        const program = b.program([named, def]); // eslint-disable-line no-shadow
+
+        Collection.fromNodes([program])
+          .find(types.FunctionDeclaration)
+          .insertAfter(one);
+
+        expect(program.body).toEqual([named, one, def, one]);
       });
     });
 
