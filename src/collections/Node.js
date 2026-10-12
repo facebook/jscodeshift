@@ -125,6 +125,20 @@ function toArray(value) {
 }
 
 /**
+ * The declaration of an export statement is a single-child field, not a list,
+ * so nothing can be inserted next to it. Insert next to the export statement
+ * itself instead.
+ */
+function getInsertTarget(path) {
+  const parent = path.parentPath;
+  const isExported = path.name === 'declaration' && (
+    types.ExportNamedDeclaration.check(parent.value) ||
+    types.ExportDefaultDeclaration.check(parent.value)
+  );
+  return isExported ? parent : path;
+}
+
+/**
 * @mixin
 */
 const mutationMethods = {
@@ -154,7 +168,7 @@ const mutationMethods = {
     return this.forEach(function(path, i) {
       const newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertBefore.apply(path, toArray(newNodes));
+      getInsertTarget(path).insertBefore(...toArray(newNodes));
     });
   },
 
@@ -168,7 +182,7 @@ const mutationMethods = {
     return this.forEach(function(path, i) {
       const newNodes =
         (typeof insert === 'function') ? insert.call(path, path, i) : insert;
-      path.insertAfter.apply(path, toArray(newNodes));
+      getInsertTarget(path).insertAfter(...toArray(newNodes));
     });
   },
 
