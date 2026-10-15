@@ -576,6 +576,303 @@ console.log(transform.parser) // 'flow'
 defineInlineTest(transform, /* ... */)
 ```
 
+
+
+### Cookbook: Practical Recipes for Common Tasks
+
+This section provides simple, copy-pasteable examples for common codemod tasks. Each recipe includes a before/after example and the complete transform code.
+
+#### 1. Changing a Literal Value in an Object Property
+
+Transform object property values using `j.propertyChange` to update nested values:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.ObjectExpression)
+    .forEach(function(path) {
+      path.node.properties.forEach(function(prop) {
+        if (prop.key.name === 'foo' && prop.value.type === 'Literal') {
+          prop.value.value = 4; // Change foo: 3 → foo: 4
+        }
+        if (prop.key.name === 'bar' && prop.value.type === 'Literal') {
+          prop.value.value = '5'; // Change bar: '5' → bar: '5' (already correct)
+        }
+      });
+    })
+    .toSource();
+};
+```
+
+**Before:**
+```js
+const someObj = {
+  x: {
+    foo: 3
+  }
+};
+```
+
+**After:**
+```js
+const someObj = {
+  x: {
+    foo: 4,
+    bar: '5'
+  }
+};
+```
+
+#### 2. Adding a New Property to an Object
+
+Use `j.property` to create new object properties:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.ObjectExpression)
+    .forEach(function(path) {
+      path.node.properties.push(
+        j.property(
+          'init',
+          j.identifier('newKey'),
+          j.literal('newValue')
+        )
+      );
+    })
+    .toSource();
+};
+```
+
+**Before:**
+```js
+const obj = { existing: true };
+```
+
+**After:**
+```js
+const obj = { existing: true, newKey: 'newValue' };
+```
+
+#### 3. Renaming an Identifier Throughout a File
+
+Find all instances of an identifier and replace the name:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.Identifier, { name: 'oldName' })
+    .replaceWith(j.identifier('newName'))
+    .toSource();
+};
+```
+
+**Before:**
+```js
+const oldName = 1;
+console.log(oldName);
+```
+
+**After:**
+```js
+const newName = 1;
+console.log(newName);
+```
+
+#### 4. Converting CommonJS to ES Modules
+
+Replace `require()` calls with `import` statements and `module.exports` with `export default`:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  let hasDefaultExport = false;
+
+  // Collect require statements
+  const requires = j(file.source)
+    .find(j.CallExpression, { callee: { name: 'require' } })
+    .nodes();
+
+  // Replace module.exports = X with export default X
+  j(file.source)
+    .find(j.AssignmentExpression, {
+      left: { object: { name: 'module' }, property: { name: 'exports' } }
+    })
+    .forEach(function(path) {
+      hasDefaultExport = true;
+      j(path.node.right).replaceWith(
+        j.exportDefaultDeclaration(path.node.right)
+      );
+      path.prune();
+    });
+
+  // Add import statements at the top if there are requires
+  if (requires.length > 0 && hasDefaultExport) {
+    // Note: This is a simplified example. Real transforms need more edge case handling.
+  }
+
+  return j(file.source).toSource();
+};
+```
+
+**Before:**
+```js
+const React = require('react');
+module.exports = MyComponent;
+```
+
+**After:**
+```js
+import React from 'react';
+export default MyComponent;
+```
+
+#### 5. Wrapping a Function Call with a Higher-Order Function
+
+Add logging or error handling around function calls:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.CallExpression)
+    .forEach(function(path) {
+      const calleeName = path.node.callee.name;
+      if (calleeName === 'someFunction') {
+        j(path).replaceWith(
+          j.callExpression(
+            j.identifier('wrapFunction'),
+            [path.node.callee]
+          )
+        );
+      }
+    })
+    .toSource();
+};
+```
+
+#### 6. Converting Array.indexOf() !== -1 to Array.includes()
+
+A common modern JavaScript pattern upgrade:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.BinaryExpression, { operator: '!==' })
+    .forEach(function(path) {
+      const { left, right } = path.node;
+
+      // Check for: arr.indexOf(x) !== -1
+      if (
+        left.type === 'CallExpression' &&
+        left.callee.type === 'MemberExpression' &&
+        left.callee.property.name === 'indexOf' &&
+        right.type === 'Literal' &&
+        right.value === -1
+      ) {
+        j(path).replaceWith(
+          j.callExpression(
+            j.memberExpression(left.callee.object, j.identifier('includes')),
+            left.arguments
+          )
+        );
+      }
+    })
+    .toSource();
+};
+```
+
+**Before:**
+```js
+if (arr.indexOf(x) !== -1) { ... }
+```
+
+**After:**
+```js
+if (arr.includes(x)) { ... }
+```
+
+#### 7. Using forEach Instead of for Loop
+
+Transform classic for loops to forEach:
+
+```js
+// transform.js
+module.exports = function transformer(file, api) {
+  const j = api.jscodeshift;
+
+  return j(file.source)
+    .find(j.ForStatement)
+    .forEach(function(path) {
+      const { init, test, body } = path.node;
+
+      // Match: for (let i = 0; i < arr.length; i++)
+      if (
+        init &&
+        init.type === 'VariableDeclaration' &&
+        init.declarations.length === 1 &&
+        test &&
+        test.type === 'BinaryExpression' &&
+        test.operator === '<' &&
+        test.right.type === 'MemberExpression' &&
+        test.right.property.name === 'length' &&
+        path.node.update &&
+        path.node.update.type === 'UpdateExpression' &&
+        path.node.update.operator === '++'
+      ) {
+        const varName = init.declarations[0].id.name;
+        const arrayExpr = test.right.object;
+
+        j(path).replaceWith(
+          j.callExpression(
+            j.memberExpression(arrayExpr, j.identifier('forEach')),
+            [j.arrowFunctionExpression(
+              [j.identifier(varName)],
+              body
+            )]
+          )
+        );
+      }
+    })
+    .toSource();
+};
+```
+
+**Before:**
+```js
+for (let i = 0; i < arr.length; i++) {
+  console.log(arr[i]);
+}
+```
+
+**After:**
+```js
+arr.forEach(function(item) {
+  console.log(item);
+});
+```
+
+---
+
+For more complex transformations, explore the [ast-types](https://github.com/benjamn/ast-types) and [babel types](https://babeljs.io/docs/en/babel-types) documentation to understand available builder methods.
+
+
 ### Example Codemods
 
 - [react-codemod](https://github.com/reactjs/react-codemod) - React codemod scripts to update React APIs.

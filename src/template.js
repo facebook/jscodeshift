@@ -111,7 +111,13 @@ module.exports = function withParser(parser) {
   function statements(template/*, ...nodes*/) {
     template = Array.from(template);
     const nodes = Array.from(arguments).slice(1);
+    if (nodes.length === 0) {
+      return [];
+    }
     const varNames = nodes.map(() => getUniqueVarName());
+    // Build string by interleaving varNames with template elements.
+    // reduce without initial value: first iteration has result=template[0], elem=template[1], i=1
+    // so varNames[i-1] correctly accesses varNames[0], etc.
     const src = template.reduce(
       (result, elem, i) => result + varNames[i - 1] + elem
     );

@@ -23,6 +23,12 @@ try {
   presetEnv = require('@babel/preset-env');
 } catch (_) {}
 
+// Helper to safely access default export from a module that may use
+// either module.exports.default or exports.default pattern
+function getDefaultExport(module) {
+  return module && module.default !== undefined ? module.default : module;
+}
+
 let emitter;
 let finish;
 let notify;
@@ -56,14 +62,14 @@ function setup(tr, babel) {
     const presets = [];
     if (presetEnv) {
       presets.push([
-        presetEnv.default,
+        getDefaultExport(presetEnv),
         {targets: {node: true}},
       ]);
     }
     presets.push(
       /\.tsx?$/.test(tr) ?
-        require('@babel/preset-typescript').default :
-        require('@babel/preset-flow').default
+        getDefaultExport(require('@babel/preset-typescript')) :
+        getDefaultExport(require('@babel/preset-flow'))
     );
 
     require('@babel/register')({
@@ -71,11 +77,11 @@ function setup(tr, babel) {
       babelrc: false,
       presets,
       plugins: [
-        require('@babel/plugin-transform-class-properties').default,
-        require('@babel/plugin-transform-nullish-coalescing-operator').default,
-        require('@babel/plugin-transform-optional-chaining').default,
-        require('@babel/plugin-transform-modules-commonjs').default,
-        require('@babel/plugin-transform-private-methods').default,
+        getDefaultExport(require('@babel/plugin-transform-class-properties')),
+        getDefaultExport(require('@babel/plugin-transform-nullish-coalescing-operator')),
+        getDefaultExport(require('@babel/plugin-transform-optional-chaining')),
+        getDefaultExport(require('@babel/plugin-transform-modules-commonjs')),
+        getDefaultExport(require('@babel/plugin-transform-private-methods')),
       ],
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       // By default, babel register only compiles things inside the current working directory.
