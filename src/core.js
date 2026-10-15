@@ -180,4 +180,6 @@ function enrichCore(core, parser) {
   return core;
 }
 
-module.exports = enrichCore(core, getParser());
+const enrichedCore = enrichCore(core, getParser());
+enrichedCore.registerMethods = Collection.registerMethods;
+module.exports = enrichedCore;
