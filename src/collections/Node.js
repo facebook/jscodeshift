@@ -69,8 +69,8 @@ const traversalMethods = {
   /**
    * Traverse the AST up and finds the closest node of the provided type.
    *
-   * @param {Collection}
-   * @param {filter}
+   * @param {Type} type
+   * @param {filter} filter
    * @return {Collection}
    */
   closest: function(type, filter) {
