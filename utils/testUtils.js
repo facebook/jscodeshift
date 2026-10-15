@@ -47,3 +47,17 @@ function getFileContent(filePath) {
   return fs.readFileSync(filePath).toString();
 }
 exports.getFileContent = getFileContent;
+
+function runTest(transformName, { jscodeshift = require('jscodeshift'), ...options } = {}) {
+  const dirName = path.dirname(require.resolve('jscodeshift'));
+  let module;
+  try {
+    module = require(path.join(dirName, '..', transformName));
+  } catch (e) {
+    console.log('Error importing module', e);
+  }
+  const j = jscodeshift;
+  return (input, { dry, bench } = {}) =>
+    j(input, { dry, ...options, jscodeshift: j, babel: true, ...module }, { bench });
+}
+exports.runTest = runTest;
