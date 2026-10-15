@@ -16,6 +16,7 @@ jest.setTimeout(600000); // 10 minutes
 
 const child_process = require('child_process');
 const fs = require('fs');
+const http = require('http');
 const path = require('path');
 const testUtils = require('../../utils/testUtils');
 
@@ -187,6 +188,22 @@ describe('jscodeshift CLI', () => {
           }
         ),
       ]);
+    });
+
+    it('supports Typescript transform URLs with a query string', () => {
+      const sourceA = createTempFileWith('a', 'sourceA', '.js');
+      const server = http.createServer((req, res) => {
+        res.end('module.exports = function() { const a: number | null = 42; return String(a!); };');
+      });
+      return new Promise(resolve => server.listen(0, resolve))
+        .then(() => {
+          const url = `http://localhost:${server.address().port}/transform.ts?token=abc`;
+          return run(['-t', url, sourceA]);
+        })
+        .then(() => {
+          expect(readFile(sourceA).toString()).toEqual('42');
+        })
+        .finally(() => server.close());
     });
 
     it('transpiles imported Typescript files in transform files', () => {

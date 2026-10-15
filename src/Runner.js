@@ -189,7 +189,7 @@ function run(transformFile, paths, options) {
             contents += d.toString();
           })
           .on('end', () => {
-            const ext = path.extname(transformFile);
+            const ext = path.extname(new URL(transformFile).pathname);
             tmp.file({ prefix: 'jscodeshift', postfix: ext }, (err, path, fd) => {
               if (err) return reject(err);
               fs.write(fd, contents, function (err) {
