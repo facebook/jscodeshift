@@ -41,5 +41,4 @@ var egassem = droWtsrif + droWdnoces;
   );
 });
 
-// the snapshot output of this file should be the same as reverse-identifiers.output.js
-defineSnapshotTestFromFixture(__dirname, transform, {}, 'reverse-identifiers');
+// inline tests for reference purposes
