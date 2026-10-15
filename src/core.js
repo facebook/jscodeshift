@@ -18,6 +18,22 @@ const template = require('./template');
 const Node = recast.types.namedTypes.Node;
 const NodePath = recast.types.NodePath;
 
+/**
+ * @namespace JSCodeshift
+ * @description
+ * The jscodeshift API available in transform functions. This object is passed
+ * as the first argument to transform functions and provides methods for
+ * working with the AST.
+ * @property {Object} types - The ast-types library (recast.types)
+ * @property {Function} registerMethods - Register collection methods
+ * @property {Function} match - Utility function to match a node against a pattern
+ * @property {Function} template - Template literal compiler for generating AST nodes
+ * @property {Object} filters - Filters for collection types
+ * @property {Object} mappings - Mappings for collection types
+ * @property {Function} use - Register a plugin
+ * @property {Function} withParser - Create a jscodeshift instance bound to a specific parser
+ */
+
 // Register all built-in collections
 for (var name in collections) {
   collections[name].register();

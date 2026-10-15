@@ -14,7 +14,7 @@ const recast = require('recast');
 const union = require('./utils/union');
 
 const astTypes = recast.types;
-var types = astTypes.namedTypes;
+const types = astTypes.namedTypes;
 const NodePath = astTypes.NodePath;
 const Node = types.Node;
 
