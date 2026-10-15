@@ -110,7 +110,13 @@ function dirFiles (dir, callback, acc) {
     // (this should not happen as long as calls do the necessary checks)
     if (err) throw err;
 
+    if (files.length === 0) {
+      done();
+      return;
+    }
+
     acc.remaining += files.length;
+    done();
     files.forEach(file => {
       let name = path.join(dir, file);
       fs.stat(name, (err, stats) => {
@@ -131,7 +137,6 @@ function dirFiles (dir, callback, acc) {
         }
       });
     });
-    done();
   });
 }
 
