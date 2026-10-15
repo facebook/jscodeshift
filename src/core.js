@@ -104,6 +104,21 @@ function match(path, filter) {
 const plugins = [];
 
 /**
+ * Printer configuration for TypeScript type members.
+ * This ensures proper separator handling when TSPropertySignature nodes are removed.
+ */
+const printerConfig = {
+  printer: {
+   _TYPESCRIPT: {
+      TSPropertySignature: {
+        trailingSeparator: 'always',
+        leadingSeparator: 'never',
+      },
+    },
+  },
+};
+
+/**
  * Utility function for registering plugins.
  *
  * Plugins are simple functions that are passed the core jscodeshift instance.
