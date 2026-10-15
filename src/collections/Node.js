@@ -16,6 +16,7 @@ const recast = require('recast');
 
 const Node = recast.types.namedTypes.Node;
 var types = recast.types.namedTypes;
+var ClassProperty = types.ClassProperty;
 
 /**
 * @mixin
