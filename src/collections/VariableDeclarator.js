@@ -184,7 +184,8 @@ const transformMethods = {
             // Identifier with the same structure.
             const parent = path.parent.node;
             if (
-              types.Property.check(parent) &&
+              (types.Property.check(parent) ||
+                types.ObjectProperty.check(parent)) &&
               parent.shorthand &&
               !parent.method
             )  {

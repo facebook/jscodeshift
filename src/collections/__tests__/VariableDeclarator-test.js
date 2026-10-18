@@ -241,6 +241,20 @@ describe('VariableDeclarators', function() {
         ).toBe(1);
       })
 
+      it('properly renames a shorthand property', function () {
+        const ast = recast.parse('var foo = 42; var obj = { foo };', {
+          parser: getParser('babylon'),
+        });
+        nodes = [ast.program];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+
+        expect(recast.print(ast).code).toBe(
+          'var newFoo = 42; var obj = { foo: newFoo };'
+        );
+      });
+
       it('does not rename class method', function () {
         nodes = [
           recast.parse('var foo = 42; class A { foo() {} }', {
