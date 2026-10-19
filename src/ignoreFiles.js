@@ -3,7 +3,10 @@
 const fs = require('fs');
 const picomatch = require('picomatch');
 
-const matchers = [];
+// One rule per added pattern, in the order the patterns were added. `globs`
+// approximates the gitignore-style pattern and `negated` is true when the
+// pattern started with `!`.
+const rules = [];
 
 /**
  * Add glob patterns to ignore matched files and folders.
@@ -13,14 +16,37 @@ const matchers = [];
  */
 function addIgnorePattern(val) {
   if (val && typeof val === 'string' && val[0] !== '#') {
-    let pattern = val;
-    if (pattern.indexOf('/') === -1) {
-      matchers.push('**/' + pattern);
-    } else if (pattern[pattern.length-1] === '/') {
-      matchers.push('**/' + pattern + '**');
-      matchers.push(pattern + '**');
+    // As in .gitignore, a leading `!` negates the pattern: paths it matches
+    // are included again even if an earlier pattern ignored them. A pattern
+    // that starts with a literal `!` can be written as `\!`.
+    // See https://github.com/facebook/jscodeshift/issues/342
+    const negated = val[0] === '!';
+    let pattern = negated ? val.slice(1) : val;
+    // `!!foo` re-includes a literal `!foo`, so keep picomatch from reading the
+    // second `!` as "anything except".
+    if (negated && pattern[0] === '!') {
+      pattern = '\\' + pattern;
     }
-    matchers.push(pattern);
+    if (!pattern) {
+      return;
+    }
+    const globs = [];
+    if (negated && pattern[pattern.length-1] === '/') {
+      // A negated directory pattern only re-includes the directory itself.
+      // The paths inside it are still checked against the other patterns.
+      const dir = pattern.slice(0, -1);
+      if (!dir) {
+        return;
+      }
+      globs.push('**/' + dir, dir);
+    } else if (pattern.indexOf('/') === -1) {
+      globs.push('**/' + pattern);
+    } else if (pattern[pattern.length-1] === '/') {
+      globs.push('**/' + pattern + '**');
+      globs.push(pattern + '**');
+    }
+    globs.push(pattern);
+    rules.push({ globs: globs, negated: negated });
   }
 }
 
@@ -59,7 +85,7 @@ function addIgnoreFromFile(input) {
 }
 
 function shouldIgnore(path) {
-  if (!matchers.length) {
+  if (!rules.length) {
     return false;
   }
   // Files discovered from a relative source path (e.g. `../src` or `./src`)
@@ -71,11 +97,19 @@ function shouldIgnore(path) {
   // so ignore behavior is consistent regardless of how the source path was
   // specified. See https://github.com/facebook/jscodeshift/issues/556
   const normalizedPath = path.replace(/^(?:\.\.?[/\\])+/, '');
-  return (
-    picomatch.isMatch(path, matchers, { dot: true }) ||
-    (normalizedPath !== path &&
-      picomatch.isMatch(normalizedPath, matchers, { dot: true }))
-  );
+  // As in .gitignore, the last rule that matches the path decides whether it
+  // is ignored.
+  for (let i = rules.length - 1; i >= 0; i--) {
+    const globs = rules[i].globs;
+    if (
+      picomatch.isMatch(path, globs, { dot: true }) ||
+      (normalizedPath !== path &&
+        picomatch.isMatch(normalizedPath, globs, { dot: true }))
+    ) {
+      return !rules[i].negated;
+    }
+  }
+  return false;
 }
 
 exports.add = addIgnoreFromInput;
