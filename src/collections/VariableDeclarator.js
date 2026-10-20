@@ -148,6 +148,17 @@ const transformMethods = {
             return false;
           }
 
+          if (types.ExportSpecifier.check(parent)) {
+            if (parent.exported === path.node && parent.local !== path.node) {
+              // export { oldName }
+              return false;
+            }
+            if (path.parent.parent.node.source) {
+              // export { oldName } from 'module'
+              return false;
+            }
+          }
+
           if (
             types.JSXAttribute.check(parent) &&
             parent.name === path.node &&
@@ -190,6 +201,17 @@ const transformMethods = {
             )  {
 
               path.parent.get('shorthand').replace(false);
+            }
+
+            if (
+              types.ExportSpecifier.check(parent) &&
+              parent.local === path.node &&
+              parent.exported.name === oldName
+            ) {
+              // `local` and `exported` share the same source range in
+              // `export { oldName }`, so force recast to reprint the whole
+              // specifier as `export { newName as oldName }`.
+              parent.original = null;
             }
 
             path.get('name').replace(newName);
