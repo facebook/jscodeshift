@@ -22,6 +22,26 @@ const JSXAttribute = types.JSXAttribute;
 const Literal = types.Literal;
 
 /**
+ * Returns the value an attribute carries, so filters can work on values instead
+ * of AST nodes: both `attr="foo"` and `attr={'foo'}` give 'foo', `attr={true}`
+ * gives true and a value-less `attr` gives null. An attribute whose value is
+ * computed (`attr={foo()}`) has no static value, so its expression node is
+ * returned.
+ */
+function getAttributeValue(value) {
+  if (!value) {
+    return value;
+  }
+  if (Literal.check(value)) {
+    return value.value;
+  }
+  if (value.expression && Literal.check(value.expression)) {
+    return value.expression.value;
+  }
+  return value.expression;
+}
+
+/**
  * Contains filter methods and mutation methods for processing JSXElements.
  * @mixin
  */
@@ -71,6 +91,10 @@ const filterMethods = {
   /**
    * Filter method for attributes.
    *
+   * Each entry of the filter maps an attribute name to the value the attribute
+   * must carry: either a literal to look for, compared against the attribute
+   * value as strings, or a callback that receives the attribute value.
+   *
    * @param {Object} attributeFilter
    * @return {function}
    */
@@ -96,20 +120,24 @@ const filterMethods = {
 
         const value = elementAttributes[name].value;
         const expected = attributeFilter[name];
-
-        // Only when value is truthy access it's properties
-        const actual = !value
-          ? value
-          : Literal.check(value)
-          ? value.value
-          : value.expression;
+        const actual = getAttributeValue(value);
 
         if (typeof expected === 'function') {
           return expected(actual);
         }
 
-         // Literal attribute values are always strings
-        return String(expected) === actual;
+        // Only attributes that carry a value can be compared to the filter. Both
+        // sides become strings so `{count: 1}` matches `count={1}` the way
+        // `{name: 'foo'}` has always matched `name="foo"`.
+        switch (typeof actual) {
+          case 'string':
+          case 'number':
+          case 'boolean':
+          case 'bigint':
+            return String(expected) === String(actual);
+          default:
+            return false;
+        }
       });
     };
   },
