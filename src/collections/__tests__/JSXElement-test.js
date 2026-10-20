@@ -129,6 +129,101 @@ describe('JSXCollection API', function() {
     });
   });
 
+  describe('Filtering by attribute values written as expressions', function() {
+    /**
+     * `<Foo a={1} />` carries its value in a JSXExpressionContainer, unlike
+     * `<Foo a="1" />`, so these need a fixture of their own.
+     */
+    function findElements(source) {
+      return Collection
+        .fromNodes([recast.parse(source, {parser: getParser()}).program])
+        .findJSXElements();
+    }
+
+    const source = [
+      '<FooBar a={true} b={1} c={\'str\'}>',
+      '  <Bar a={false} b={2} c={"other"} flag />',
+      '  <Baz a={compute()} />',
+      '</FooBar>'
+    ].join('\n');
+
+    it('matches boolean and number values', function() {
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({a: true}))
+          .length
+      ).toBe(1);
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({b: 1}))
+          .length
+      ).toBe(1);
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({b: 2}))
+          .length
+      ).toBe(1);
+    });
+
+    it('matches string values wrapped in an expression container', function() {
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({c: 'str'}))
+          .length
+      ).toBe(1);
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({c: 'other'}))
+          .length
+      ).toBe(1);
+    });
+
+    it('compares the filter to the value as strings', function() {
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({b: '1'}))
+          .length
+      ).toBe(1);
+    });
+
+    it('passes attribute values, not nodes, to filter callbacks', function() {
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes(
+            {a: value => value === false}
+          )).length
+      ).toBe(1);
+    });
+
+    it('handles value-less and computed attributes', function() {
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes(
+            {flag: value => value === null}
+          )).length
+      ).toBe(1);
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes({flag: null}))
+          .length
+      ).toBe(0);
+      expect(
+        findElements(source)
+          .filter(JSXElementCollection.filters.hasAttributes(
+            {a: value => value && value.type === 'CallExpression'}
+          )).length
+      ).toBe(1);
+    });
+
+    it('leaves plain string attributes working', function() {
+      expect(
+        findElements('var els = [<Foo foo="bar" />, <Bar foo="baz" />];')
+          .filter(JSXElementCollection.filters.hasAttributes({foo: 'bar'}))
+          .length
+      ).toBe(1);
+    });
+  });
+
   describe('Mappings', function() {
     it('gets the root names of JSXElements', function() {
       const names = Collection.fromNodes(nodes)
