@@ -126,9 +126,9 @@ const filterMethods = {
           return expected(actual);
         }
 
-        // Only attributes that carry a value can be compared to the filter. Both
-        // sides become strings so `{count: 1}` matches `count={1}` the way
-        // `{name: 'foo'}` has always matched `name="foo"`.
+        // Only attributes that carry a value can be compared to the filter.
+        // Both sides become strings, so `{count: 1}` matches `count={1}` the
+        // way `{name: 'foo'}` has always matched `name="foo"`.
         switch (typeof actual) {
           case 'string':
           case 'number':

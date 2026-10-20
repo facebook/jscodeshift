@@ -195,7 +195,7 @@ describe('JSXCollection API', function() {
       ).toBe(1);
     });
 
-    it('keeps matching attributes without a value and computed ones', function() {
+    it('handles value-less and computed attributes', function() {
       expect(
         findElements(source)
           .filter(JSXElementCollection.filters.hasAttributes(
@@ -215,7 +215,7 @@ describe('JSXCollection API', function() {
       ).toBe(1);
     });
 
-    it('still filters elements written with plain string attributes', function() {
+    it('leaves plain string attributes working', function() {
       expect(
         findElements('var els = [<Foo foo="bar" />, <Bar foo="baz" />];')
           .filter(JSXElementCollection.filters.hasAttributes({foo: 'bar'}))
