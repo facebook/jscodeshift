@@ -204,6 +204,42 @@ describe('VariableDeclarators', function() {
       expect(identifiers.length).toBe(2);
     });
 
+    it('keeps the exported name when renaming an exported variable', function () {
+      const ast = recast.parse([
+        'var foo = 42;',
+        'export { foo };',
+        'export { foo as baz };',
+      ].join('\n'), {parser: getParser()});
+      nodes = [ast.program];
+
+      Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo').renameTo('newFoo');
+
+      expect(recast.print(ast).code).toBe([
+        'var newFoo = 42;',
+        'export { newFoo as foo };',
+        'export { newFoo as baz };',
+      ].join('\n'));
+    });
+
+    it('does not rename specifiers re-exported from another module', function () {
+      const ast = recast.parse([
+        'var foo = 42;',
+        'export { foo as baz } from "module";',
+        'export { foo } from "module2";',
+      ].join('\n'), {parser: getParser()});
+      nodes = [ast.program];
+
+      Collection.fromNodes(nodes)
+        .findVariableDeclarators('foo').renameTo('newFoo');
+
+      expect(recast.print(ast).code).toBe([
+        'var newFoo = 42;',
+        'export { foo as baz } from "module";',
+        'export { foo } from "module2";',
+      ].join('\n'));
+    });
+
     describe('parsing with bablylon', function() {
       it('does not rename object property', function () {
         nodes = [
