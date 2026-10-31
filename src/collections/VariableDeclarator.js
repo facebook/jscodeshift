@@ -149,6 +149,21 @@ const transformMethods = {
           }
 
           if (
+            (types.LabeledStatement.check(parent) ||
+              types.BreakStatement.check(parent) ||
+              types.ContinueStatement.check(parent)) &&
+            parent.label === path.node
+          ) {
+            // oldName: for (;;) { break oldName; }
+            return false;
+          }
+
+          if (types.PrivateName.check(parent)) {
+            // class A { #oldName = 3 }
+            return false;
+          }
+
+          if (
             types.JSXAttribute.check(parent) &&
             parent.name === path.node &&
             !parent.computed
