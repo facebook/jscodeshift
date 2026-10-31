@@ -259,6 +259,33 @@ describe('VariableDeclarators', function() {
         ).toBe(1);
       })
     });
+
+    describe('other namespaces', function() {
+      function renameFoo(source, parser) {
+        nodes = [recast.parse(source, {parser: getParser(parser)}).program];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+        return recast.print(nodes[0]).code;
+      }
+
+      it('does not rename statement labels', function () {
+        expect(renameFoo(
+          'var foo = 1; foo: for (;;) { if (foo) break foo; else continue foo; }'
+        )).toBe(
+          'var newFoo = 1; foo: for (;;) { if (newFoo) break foo; else continue foo; }'
+        );
+      });
+
+      it('does not rename private class members', function () {
+        expect(renameFoo(
+          'const foo = 1; class A { #foo = foo; m() { return this.#foo; } }',
+          'babylon'
+        )).toBe(
+          'const newFoo = 1; class A { #foo = newFoo; m() { return this.#foo; } }'
+        );
+      });
+    });
   });
 
 });
