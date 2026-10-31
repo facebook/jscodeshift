@@ -149,6 +149,26 @@ const transformMethods = {
           }
 
           if (
+            (types.TSPropertySignature.check(parent) ||
+              types.TSMethodSignature.check(parent) ||
+              types.ObjectTypeProperty.check(parent)) &&
+            parent.key === path.node &&
+            !parent.computed
+          ) {
+            // interface A { oldName: string; oldName(): void }
+            // type A = { oldName: number }
+            return false;
+          }
+
+          if (
+            types.TSEnumMember.check(parent) &&
+            parent.id === path.node
+          ) {
+            // enum A { oldName }
+            return false;
+          }
+
+          if (
             types.JSXAttribute.check(parent) &&
             parent.name === path.node &&
             !parent.computed

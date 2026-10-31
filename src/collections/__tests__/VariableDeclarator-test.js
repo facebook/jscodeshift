@@ -259,6 +259,40 @@ describe('VariableDeclarators', function() {
         ).toBe(1);
       })
     });
+
+    describe('type members', function() {
+      function renameFoo(source, parser) {
+        nodes = [recast.parse(source, {parser: getParser(parser)}).program];
+        Collection
+          .fromNodes(nodes)
+          .findVariableDeclarators('foo').renameTo('newFoo');
+        return recast.print(nodes[0]).code;
+      }
+
+      it('does not rename TypeScript property and method signatures', function () {
+        expect(renameFoo(
+          'const foo = 1; interface X { foo: string; foo(): void } type T = { foo: number };',
+          'ts'
+        )).toBe(
+          'const newFoo = 1; interface X { foo: string; foo(): void } type T = { foo: number };'
+        );
+      });
+
+      it('does not rename TypeScript enum members', function () {
+        expect(renameFoo('const foo = 1; enum E { foo }', 'ts'))
+          .toBe('const newFoo = 1; enum E { foo }');
+      });
+
+      it('does not rename Flow object type properties', function () {
+        expect(renameFoo('const foo = 1; type T = { foo: number };', 'flow'))
+          .toBe('const newFoo = 1; type T = { foo: number };');
+      });
+
+      it('still renames a computed type member key', function () {
+        expect(renameFoo('const foo = "k"; interface X { [foo]: string }', 'ts'))
+          .toBe('const newFoo = "k"; interface X { [newFoo]: string }');
+      });
+    });
   });
 
 });
